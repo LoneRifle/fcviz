@@ -1,9 +1,3 @@
-body{font-family: arial, sans-serif;max-width: 900px; margin:0 auto; padding: 0 10px;}
-
-table{width: 100%;}
-td{border-top: 1px solid #CCC; text-align: center;}
-
-
 .barlabels{font-weight: bold;}
 .barvalues{fill:#333;}
 g.arc text.barvalues{fill:#FFF;}
