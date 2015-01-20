@@ -7,7 +7,7 @@ var bidSummaryTab = $("#bids-summary")[0];
 if (bidSummaryTab.attributes["class"].value.indexOf("active") != -1) {
   renderBidSummaryCharts();
 }
-  
+
 function renderBidSummaryCharts() {
   var tableOrig = $("#bids_summary").find("table");
 
@@ -41,10 +41,13 @@ function renderBidSummaryCharts() {
     l.text( l.text().trim() );
   });
 
+  var rowCount = rows.children().size();
+  
   //Create a div to hold the chart and related controls
   var chartDiv = document.createElement("div");
   chartDiv.id = "bids_summary_chart";
-
+  jQuery(chartDiv).width($("#bids_summary").width() * 0.95);
+  
   var chartControlDiv = document.createElement("div");
   chartControlDiv.id = "bids_summary_chart_control";
   chartControlDiv.appendChild(document.createTextNode("Bar | Pie | None"));
@@ -54,7 +57,7 @@ function renderBidSummaryCharts() {
   $("#bids_summary").append(table);
 
   //Generate the chart based on the data found in table
-  createChart('bar', '#'+table.id, 'Amount', {
+  createChart(rowCount > 35? 'bar' : 'column', '#'+table.id, 'Amount', {
     "targetDiv": '#'+chartDiv.id,
     "showTable": true,
     "labels": "Rate",
