@@ -15,9 +15,21 @@ window.fcViz = function (e) {
       break;
   }
 } 
- 
+
 $('.tabs').tabs().bind('change', window.fcViz);
- 
+
+//Observe mutations made to #bids-summary, so that we can reapply window.fcViz
+var MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
+var observer = new MutationObserver(function(mutations) {
+  mutations.forEach(function(mutation) {
+    if(mutation.addedNodes.length > 0 && mutation.addedNodes[0].id == "bids_summary") {
+      renderBidSummaryCharts();
+    }
+  })
+});
+
+observer.observe(document, { childList: true, subtree: true });
+
 var bidSummaryTab = $("#bids-summary")[0];
 
 if (bidSummaryTab.attributes["class"].value.indexOf("active") != -1) {  
