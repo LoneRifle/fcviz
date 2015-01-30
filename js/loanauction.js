@@ -1,10 +1,26 @@
 /**
  * FCViz 
- * Seed script for loan auction pages
+ * Payload script for loan auction pages
  */
+ 
+window.fcViz = function (e) {
+  targetUrl = $(e.target).attr('href');
+  switch(targetUrl) {
+    case "#bids-summary":
+      if ($("#bids_summary_chart").length == 0) {
+        renderBidSummaryCharts();
+      }
+      break;
+    default:
+      break;
+  }
+} 
+ 
+$('.tabs').tabs().bind('change', window.fcViz);
+ 
 var bidSummaryTab = $("#bids-summary")[0];
 
-if (bidSummaryTab.attributes["class"].value.indexOf("active") != -1) {
+if (bidSummaryTab.attributes["class"].value.indexOf("active") != -1) {  
   renderBidSummaryCharts();
 }
 
