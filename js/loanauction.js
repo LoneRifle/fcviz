@@ -38,65 +38,75 @@ if (bidSummaryTab.attributes["class"].value.indexOf("active") != -1) {
 
 function renderBidSummaryCharts() {
   var tableOrig = $("#bids_summary").find("table");
-
-  //Clone the table and hide it so that we can make it useful to createChart
-  var table = tableOrig.clone()[0];
-  table.id = "bids_summary_data";
-  table.style.visibility = "hidden";  
-
-  var header = jQuery(table).find("th");
-  //Trim the header text to ensure that createChart can find them
-  header.each(function(){ $(this).text( $(this).text().trim()); });
-  //Remove the status header
-  header.last().remove();
     
-  var rows = jQuery(table).find("tbody");
+  var rows = jQuery(tableOrig).find("tbody");
 
-  //Trim all bid-groups from the table
   //TODO: iterate through the bid-groups and note information about the user's bid.
   //Interpolate that on the chart.
-  var bidGroups = rows.find(".sub-accepted, .sub-group").remove();
 
   //Remove the column of the table since it containing the status of the bids at that rate
   //Capture the rate found in the first element (because FC may mangle the rate 
   //when including user bids), then trim the last element
   var rateRegexp = /\d+\.\d%/;
-  var rates = [];
-  var amounts = [];
+  var data = [];
   rows.children().filter(":not(.sub-accepted, .sub-group)").each(function(){
-    rates.push(+$(this).attr("data-annualised_rate"));
-    amounts.push(+$(this).attr("data-amount"));
+    data.push({ 
+      name: +$(this).attr("data-annualised_rate"),
+      value: +$(this).attr("data-amount")
+    });
   });
   
-  rows.children().each(function(){
-    $(this).find(".status").remove();
-    var f = $(this).find("td").first();
-    f.text( rateRegexp.exec(f.text())[0] );
-    var l = $(this).find("td").last();
-    l.text( l.text().trim() );
-  });
-
+  if (data.length > 1) {
+    data[0].name = "Rej";
+  }
+  
   var rowCount = rows.children().size();
-  
-  //Create a div to hold the chart and related controls
-  var chartDiv = document.createElement("div");
-  chartDiv.id = "bids_summary_chart";
-  jQuery(chartDiv).width($("#bids_summary").width() * 0.95);
-  
+    
   var chartControlDiv = document.createElement("div");
   chartControlDiv.id = "bids_summary_chart_control";
-  chartControlDiv.appendChild(document.createTextNode("Bar | Pie | None"));
-  chartControlDiv.appendChild(chartDiv);
 
   tableOrig.before(chartControlDiv);
-  $("#bids_summary").append(table);
+    
+  var margin = {top: 20, right: 30, bottom: 30, left: 55},
+    width = $("#bids_summary").width() * 0.95 - margin.left - margin.right,
+    height = 250 - margin.top - margin.bottom;
 
-  //Generate the chart based on the data found in table
-  createChart(rowCount > 35? 'bar' : 'column', '#'+table.id, 'Amount', {
-    "targetDiv": '#'+chartDiv.id,
-    "showTable": true,
-    "labels": "Rate",
-    "addComma": true,
-    "prefix": "£"
-  });
+  var x = d3.scale.ordinal()
+      .rangeRoundBands([0, width], .1);
+
+  var y = d3.scale.linear()
+      .range([height, 0]);
+
+  var xAxis = d3.svg.axis()
+      .scale(x)
+      .orient("bottom");
+
+  var yAxis = d3.svg.axis()
+      .scale(y)
+      .orient("left");
+
+  var chart = d3.select("#bids_summary_chart_control").append("svg")
+      .attr("id", "bids_summary_viz")
+      .attr("width", width + margin.left + margin.right)
+      .attr("height", height + margin.top + margin.bottom)
+    .append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+    
+  x.domain(data.map(function(d) { return d.name; }));
+  y.domain([0, d3.max(data, function(d) { return d.value; })]);
+  
+  chart.append("g")      
+    .attr("transform", "translate(0," + height + ")")
+    .call(xAxis);
+
+  chart.append("g").call(yAxis);    
+  
+  chart.selectAll("rect")
+    .data(data)
+  .enter().append("rect")
+    .attr("x", function(d) { return x(d.name+""); })
+    .attr("y", function(d) { return y(d.value); })
+    .attr("height", function(d) { return height - y(d.value); })
+    .attr("width", x.rangeBand());
+  
 }
