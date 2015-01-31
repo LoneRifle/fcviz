@@ -61,6 +61,13 @@ function renderBidSummaryCharts() {
   //Capture the rate found in the first element (because FC may mangle the rate 
   //when including user bids), then trim the last element
   var rateRegexp = /\d+\.\d%/;
+  var rates = [];
+  var amounts = [];
+  rows.children().filter(":not(.sub-accepted, .sub-group)").each(function(){
+    rates.push(+$(this).attr("data-annualised_rate"));
+    amounts.push(+$(this).attr("data-amount"));
+  });
+  
   rows.children().each(function(){
     $(this).find(".status").remove();
     var f = $(this).find("td").first();
