@@ -66,7 +66,7 @@ function renderBidSummaryCharts() {
 
   tableOrig.before(chartControlDiv);
     
-  var margin = {top: 20, right: 30, bottom: 30, left: 55},
+  var margin = {top: 20, right: 30, bottom: 30, left: 30},
     width = $("#bids_summary").width() * 0.95 - margin.left - margin.right,
     height = 250 - margin.top - margin.bottom;
 
@@ -82,7 +82,8 @@ function renderBidSummaryCharts() {
 
   var yAxis = d3.svg.axis()
       .scale(y)
-      .orient("left");
+      .orient("left")
+      .tickFormat(function(d){ return d3.formatPrefix(d, 3).scale(d); });
 
   var chart = d3.select("#bids_summary_chart_control").append("svg")
       .attr("id", "bids_summary_viz")
@@ -98,14 +99,25 @@ function renderBidSummaryCharts() {
     .attr("transform", "translate(0," + height + ")")
     .call(xAxis);
 
-  chart.append("g").call(yAxis);    
+  chart.append("g")
+    .call(yAxis)
+  .append("text")
+    .attr("transform", "translate(10,-15)")
+    .attr("dy", ".71em")
+    .style("text-anchor", "end")
+    .text("(£'000)");
   
   chart.selectAll("rect")
     .data(data)
   .enter().append("rect")
+    .style("fill", "#772d72")
     .attr("x", function(d) { return x(d.name+""); })
     .attr("y", function(d) { return y(d.value); })
     .attr("height", function(d) { return height - y(d.value); })
     .attr("width", x.rangeBand());
   
+  chart.selectAll("path")
+    .attr("stroke-width", 1)
+    .attr("width", 1)
+    .attr("shape-rendering", crispEdges);
 }
