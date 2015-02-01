@@ -44,9 +44,8 @@ function renderBidSummaryCharts() {
   //TODO: iterate through the bid-groups and note information about the user's bid.
   //Interpolate that on the chart.
 
-  //Remove the column of the table since it containing the status of the bids at that rate
-  //Capture the rate found in the first element (because FC may mangle the rate 
-  //when including user bids), then trim the last element
+  //Capture the rate and amount found in the first element 
+  //(because FC may mangle the rate when including user bids)
   var rateRegexp = /\d+\.\d%/;
   var data = [];
   rows.children().filter(":not(.sub-accepted, .sub-group)").each(function(){
