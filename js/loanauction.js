@@ -96,11 +96,13 @@ function renderBidSummaryCharts() {
   y.domain([0, d3.max(data, function(d) { return d.value; })]);
   
   chart.append("g")      
+    .attr("class", "x axis")
     .attr("transform", "translate(0," + height + ")")
     .call(xAxis);
 
   chart.append("g")
-    .call(yAxis)
+    .attr("class", "y axis")
+    .call(yAxis)    
   .append("text")
     .attr("transform", "translate(10,-15)")
     .attr("dy", ".71em")
@@ -116,8 +118,7 @@ function renderBidSummaryCharts() {
     .attr("height", function(d) { return height - y(d.value); })
     .attr("width", x.rangeBand());
   
-  chart.selectAll("path")
-    .attr("stroke-width", 1)
-    .attr("width", 1)
-    .attr("shape-rendering", crispEdges);
+  //Render the first bar in the chart semi-transparent since the rate is rejected
+  chart.select("rect")
+    .style("opacity", 0.5);
 }
