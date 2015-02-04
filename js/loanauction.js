@@ -55,7 +55,7 @@ function renderBidSummaryCharts() {
     });
   });
   
-  if (data.length > 1) {
+  if (data.length > 1 && data[0].name === data[1].name) {
     data[0].name = "Rej";
   }
   
@@ -118,7 +118,8 @@ function renderBidSummaryCharts() {
     .attr("height", function(d) { return height - y(d.value); })
     .attr("width", x.rangeBand());
   
-  //Render the first bar in the chart semi-transparent since the rate is rejected
-  chart.select("rect")
-    .style("opacity", 0.5);
+  //Render the first bar in the chart semi-transparent if the rate is rejected
+  if (data[0].name === "Rej") {
+    chart.select("rect").style("opacity", 0.5);
+  }
 }
