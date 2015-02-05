@@ -12,13 +12,12 @@
       "css": ["table-to-svg/css/tableToSVG.css"],
       "js": [
         "js/loanauctioninjector.js"
-	    ]
+      ]
     }
   ],
   
   "web_accessible_resources": [
     "js/loanauction.js",
-    "table-to-svg/js/d3.min.js",
-    "table-to-svg/js/tableToSVG.js"
+    "js/d3.min.js"
   ]
 }

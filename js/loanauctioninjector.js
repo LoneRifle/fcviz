@@ -5,8 +5,7 @@
  */
  
 var scripts = [
-  "table-to-svg/js/d3.min.js",
-  "table-to-svg/js/tableToSVG.js",
+  "js/d3.min.js",
   "js/loanauction.js"
 ];
 
