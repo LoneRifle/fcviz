@@ -37,17 +37,40 @@ if (bidSummaryTab.attributes["class"].value.indexOf("active") != -1) {
 }
 
 function renderBidSummaryCharts() {
-  var tableOrig = $("#bids_summary").find("table");
+  var table = $("#bids_summary").find("table");
+  var chartControlDiv = document.createElement("div");
+  chartControlDiv.id = "bids_summary_chart_control";
+  table.before(chartControlDiv);
     
-  var rows = jQuery(tableOrig).find("tbody");
+  var data = makeDataFrom(table);
+  var cumData = makeCumulative(data);
+    
+  makeBidSummaryChart(data, cumData);
+}
+
+function makeCumulative(data) {
+  var cumData = [];
+
+  for (i=0;i<data.length;++i) {
+    if (i==0) {
+      cumData.push({ name: data[i].name, value: data[i].name === "Rej"? 0 : data[i].value});
+    } else {
+      cumData.push({ name: data[i].name, value: data[i].value + cumData[i-1].value});
+    }
+  }
+  
+  var total = +document.getElementById("amount").innerHTML.replace("£","").replace(",","");
+  cumData.forEach(function(d){ d.value = d.value/total * 100; });
+  return cumData;  
+}
+
+function makeDataFrom(table) {
+  var rows = table.find("tbody");
 
   //TODO: iterate through the bid-groups and note information about the user's bid.
   //Interpolate that on the chart.
 
-  //Capture the rate and amount found in the first element 
-  //(because FC may mangle the rate when including user bids)
-  var rateRegexp = /\d+\.\d%/;
-  var data = [], cumData = [];
+  var data = [];
   
   rows.children().filter(":not(.sub-accepted, .sub-group)").each(function(){
     data.push({ 
@@ -59,28 +82,13 @@ function renderBidSummaryCharts() {
   if (data.length > 1 && data[0].name === data[1].name) {
     data[0].name = "Rej";
   }
-  
-  for (i=0;i<data.length;++i) {
-    if (i==0) {
-      cumData.push({ name: data[i].name, value: data[i].name === "Rej"? 0 : data[i].value});
-    } else {
-      cumData.push({ name: data[i].name, value: data[i].value + cumData[i-1].value});
-    }
-  }
-  
-  var total = +document.getElementById("amount").innerHTML.replace("£","").replace(",","");
-  cumData.forEach(function(d){ d.value = d.value/total * 100; })
-  
-  var rowCount = rows.children().size();
-    
-  var chartControlDiv = document.createElement("div");
-  chartControlDiv.id = "bids_summary_chart_control";
+  return data;
+}
 
-  tableOrig.before(chartControlDiv);
-    
+function makeBidSummaryChart(data, cumData) {
   var margin = {top: 20, right: 30, bottom: 30, left: 30},
-    width = $("#bids_summary").width() * 0.95 - margin.left - margin.right,
-    height = 250 - margin.top - margin.bottom;
+  width = $("#bids_summary").width() * 0.95 - margin.left - margin.right,
+  height = 250 - margin.top - margin.bottom;
 
   var x = d3.scale.ordinal()
       .rangeRoundBands([0, width], .1);
