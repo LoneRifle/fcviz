@@ -3,8 +3,17 @@
 
 .cum {
   fill: none;
-  stroke: #88d28d;
-  stroke-width: 1.5px;
+  stroke: #097fc9;
+  stroke-width: 2.5px;
 }
 
-.fcviz { fill: #772d72; }
+rect.fcviz { fill: #772d72; }
+
+div.tooltip {   
+  position: absolute;           
+  text-align: center;
+  padding: 2px;
+  background: #F2F2F2;   
+  border: 0px;       
+  pointer-events: none;         
+}

@@ -147,6 +147,10 @@ function makeBidSummaryChart(data, cumData) {
     .style("text-anchor", "end")
     .text("%");
   
+  var div = d3.select("body").append("div")   
+    .attr("class", "tooltip")               
+    .style("opacity", 0);
+  
   chart.selectAll("rect")
     .data(data)
   .enter().append("rect")
@@ -154,7 +158,20 @@ function makeBidSummaryChart(data, cumData) {
     .attr("x", function(d) { return x(d.name+""); })
     .attr("y", function(d) { return y(d.value); })
     .attr("height", function(d) { return height - y(d.value); })
-    .attr("width", x.rangeBand());
+    .attr("width", x.rangeBand())
+    .on("mouseover", function(d){ 
+      div.transition()        
+        .duration(200)      
+        .style("opacity", .9);      
+      div.html("£"+d.value+" @ "+d.name+"%")  
+        .style("left", (d3.event.pageX) + "px")     
+        .style("top", (d3.event.pageY - 28) + "px");
+    })
+    .on("mouseout", function(d){ 
+      div.transition()        
+        .duration(500)      
+        .style("opacity", 0);    
+    });
   
   var line = d3.svg.line()
     .x(function(d) { return x(d.name); })
@@ -165,6 +182,9 @@ function makeBidSummaryChart(data, cumData) {
     .attr("class", "cum")
     .attr("transform", "translate(" + x.rangeBand()/2 + ",0)")
     .attr("d", line)
+    .attr("opacity", 0.5)
+    .on("mouseover", function(d){ this.setAttribute("opacity", 1.0); })
+    .on("mouseout", function(d){ this.setAttribute("opacity", 0.5); });
       
   //Render the first bar in the chart semi-transparent if the rate is rejected
   if (data[0].name === "Rej") {
