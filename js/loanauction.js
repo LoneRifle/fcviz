@@ -142,7 +142,7 @@ function renderBidSummaryCharts() {
   chart.selectAll("rect")
     .data(data)
   .enter().append("rect")
-    .style("fill", "#772d72")
+    .attr("class", "fcviz")
     .attr("x", function(d) { return x(d.name+""); })
     .attr("y", function(d) { return y(d.value); })
     .attr("height", function(d) { return height - y(d.value); })
@@ -154,10 +154,7 @@ function renderBidSummaryCharts() {
   
   chart.append("path")
     .datum(cumData)
-    .attr("class", "cum_line")
-    .attr("fill", "none")
-    .attr("stroke", "#88d28d")
-    .attr("stroke-width", "1.5px")
+    .attr("class", "cum")
     .attr("transform", "translate(" + x.rangeBand()/2 + ",0)")
     .attr("d", line)
       

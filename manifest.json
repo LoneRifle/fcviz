@@ -9,13 +9,13 @@
   "content_scripts": [
     {
       "matches": ["https://www.fundingcircle.com/loans/*/auction"],
-      "js": [
-        "js/loanauctioninjector.js"
-      ]
+      "css": [ "css/fcviz.css" ],
+      "js": [ "js/loanauctioninjector.js" ]
     }
   ],
   
   "web_accessible_resources": [
+    "css/fcviz.css",
     "js/loanauction.js",
     "js/d3.min.js"
   ]
