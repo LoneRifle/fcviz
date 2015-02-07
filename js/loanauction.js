@@ -7,7 +7,7 @@ window.fcViz = function (e) {
   targetUrl = $(e.target).attr('href');
   switch(targetUrl) {
     case "#bids-summary":
-      if ($("#bids_summary_chart").length == 0) {
+      if ($("#bids_summary_chart_control").length == 0) {
         renderBidSummaryCharts();
       }
       break;
@@ -22,7 +22,7 @@ $('.tabs').tabs().bind('change', window.fcViz);
 var MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
 var observer = new MutationObserver(function(mutations) {
   mutations.forEach(function(mutation) {
-    if(mutation.addedNodes.length > 0 && mutation.addedNodes[0].id == "bids_summary") {
+    if(mutation.addedNodes.length > 0 && mutation.addedNodes[0].id == "bids_summary" && $("#bids_summary_chart_control").length == 0) {
       renderBidSummaryCharts();
     }
   })
@@ -103,6 +103,15 @@ function makeBidSummaryChart(data, cumData) {
       .scale(x)
       .orient("bottom");
 
+  if (data.length > 30) {
+    //Hide every other tick on the x-axis.
+    //Do this by inspecting the 3rd element,
+    //inferring if it is even or odd, and 
+    //hiding the tick if it is the other.
+    var isOdd = data[2].name * 10 % 2;
+    xAxis.tickFormat(function(d){ return d === "Rej" || isOdd == d * 10 % 2? d : ""; });
+  }
+      
   var yAxis = d3.svg.axis()
       .scale(y)
       .orient("left")
