@@ -50,13 +50,9 @@ function renderBidSummaryCharts() {
 
 function makeCumulative(data) {
   var cumData = [];
-
-  for (i=0;i<data.length;++i) {
-    if (i==0) {
-      cumData.push({ name: data[i].name, value: data[i].name === "Rej"? 0 : data[i].value});
-    } else {
-      cumData.push({ name: data[i].name, value: data[i].value + cumData[i-1].value});
-    }
+  cumData.push({ name: data[0].name, value: data[0].name === "Rej"? 0 : data[0].value});
+  for (i=1;i<data.length;++i) {
+    cumData.push({ name: data[i].name, value: data[i].value + cumData[i-1].value});
   }
   
   var total = +document.getElementById("amount").innerHTML.replace("£","").replace(",","");
@@ -108,8 +104,9 @@ function makeBidSummaryChart(data, cumData) {
     //Do this by inspecting the 3rd element,
     //inferring if it is even or odd, and 
     //hiding the tick if it is the other.
-    var isOdd = data[2].name * 10 % 2;
-    xAxis.tickFormat(function(d){ return d === "Rej" || isOdd == d * 10 % 2? d : ""; });
+    var labels = [];
+    data.forEach(function(d){ labels.push(d.name)});
+    xAxis.tickFormat(function(d){ return labels.indexOf(d) % 2? "" : d; });
   }
       
   var yAxis = d3.svg.axis()
