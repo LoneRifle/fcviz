@@ -7,6 +7,14 @@
   stroke-width: 2.5px;
 }
 
+table.tooltip  {
+  margin-bottom: 0px;
+}
+
+table.tooltip  td, td:first-child {
+  padding: 2px 2px 2px 2px;
+}
+
 rect.fcviz { fill: #772d72; }
 
 div.tooltip {   

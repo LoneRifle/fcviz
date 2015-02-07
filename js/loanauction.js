@@ -44,8 +44,24 @@ function renderBidSummaryCharts() {
     
   var data = makeDataFrom(table);
   var cumData = makeCumulative(data);
+  var bidGroups = findBidGroups(table);
     
-  makeBidSummaryChart(data, cumData);
+  makeBidSummaryChart(data, cumData, bidGroups);
+}
+
+function findBidGroups(table) {
+  var bidGroups = {};
+  
+  table.find("tr.accepted[data-my-bids=1]").each(function(){
+    var key = $(this).attr("data-annualised_rate");
+    var bidGroup = $(this).nextUntil(":not(.sub-accepted, .sub-group)").clone();
+    bidGroup.each(function(){ 
+      $(this).children().last().detach();
+      $(this).children().attr("class","tooltip").first().attr("style", null);
+    });
+    bidGroups[key] = bidGroup;
+  });
+  return bidGroups;
 }
 
 function makeCumulative(data) {
@@ -81,7 +97,7 @@ function makeDataFrom(table) {
   return data;
 }
 
-function makeBidSummaryChart(data, cumData) {
+function makeBidSummaryChart(data, cumData, bidGroups) {
   var margin = {top: 20, right: 30, bottom: 30, left: 30},
   width = $("#bids_summary").width() * 0.95 - margin.left - margin.right,
   height = 250 - margin.top - margin.bottom;
@@ -157,6 +173,8 @@ function makeBidSummaryChart(data, cumData) {
     .attr("class", "tooltip")               
     .style("opacity", 0);
   
+  var commaSeparator = d3.format(",d");
+  
   chart.selectAll("rect")
     .data(data)
   .enter().append("rect")
@@ -169,7 +187,13 @@ function makeBidSummaryChart(data, cumData) {
       div.transition()        
         .duration(200)      
         .style("opacity", .9);      
-      div.html("£"+d.value+" @ "+d.name+"%")  
+      var bidGroupSuffix = "";
+      if (bidGroups[d.name]) {
+        bidGroupSuffix += "<table class=tooltip>";
+        bidGroups[d.name].each(function(){ bidGroupSuffix += "<tr class=sub-group>"+$(this).html()+"</tr>"; });
+        bidGroupSuffix += "</table>";
+      }
+      div.html("£"+commaSeparator(d.value)+" @ "+d.name+"%"+bidGroupSuffix)  
         .style("left", (d3.event.pageX) + "px")     
         .style("top", (d3.event.pageY - 28) + "px");
     })
