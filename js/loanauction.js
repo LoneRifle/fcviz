@@ -120,9 +120,10 @@ function makeBidSummaryChart(data, cumData, bidGroups) {
     //Do this by inspecting the 3rd element,
     //inferring if it is even or odd, and 
     //hiding the tick if it is the other.
+    var labelInterval = $("#bid_form").length > 0? 4 : 2;
     var labels = [];
     data.forEach(function(d){ labels.push(d.name)});
-    xAxis.tickFormat(function(d){ return labels.indexOf(d) % 2? "" : d; });
+    xAxis.tickFormat(function(d){ return labels.indexOf(d) % labelInterval? "" : d; });
   }
       
   var yAxis = d3.svg.axis()
