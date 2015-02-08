@@ -78,10 +78,6 @@ function makeCumulative(data) {
 
 function makeDataFrom(table) {
   var rows = table.find("tbody");
-
-  //TODO: iterate through the bid-groups and note information about the user's bid.
-  //Interpolate that on the chart.
-
   var data = [];
   
   rows.children().filter(":not(.sub-accepted, .sub-group)").each(function(){
