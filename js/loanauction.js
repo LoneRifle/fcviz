@@ -106,7 +106,7 @@ function makeDataFrom(table) {
 
 function makeBidSummaryChart(data, cumData, bidGroups) {
   var margin = {top: 20, right: 30, bottom: 30, left: 30},
-  width = $("#bids_summary").width() * 0.95 - margin.left - margin.right,
+  width = $("#bids-summary").width() * 0.95 - margin.left - margin.right,
   height = 250 - margin.top - margin.bottom;
 
   var x = d3.scale.ordinal()
