@@ -11,6 +11,9 @@ window.fcViz = function (e) {
         renderBidSummaryCharts();
       }
       break;
+    case "#bids-all":
+    
+      break;
     default:
       break;
   }
@@ -22,19 +25,27 @@ $('.tabs').tabs().bind('change', window.fcViz);
 var MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
 var observer = new MutationObserver(function(mutations) {
   mutations.forEach(function(mutation) {
-    if(mutation.addedNodes.length > 0 && mutation.addedNodes[0].id == "bids_summary" && $("#bids_summary_chart_control").length == 0) {
-      renderBidSummaryCharts();
+    if(mutation.addedNodes.length > 0) {
+      var el = jQuery(document.createElement("a"));
+      switch(mutation.addedNodes[0].id) {
+        case "bids_summary":
+          window.fcViz({ target: el.attr("href", "#bids-summary") });
+          break;
+        case "loan_offers":
+          window.fcViz({ target: el.attr("href", "#bids-all") });
+          break;
+        default:
+          break;
+      }
     }
   })
 });
 
 observer.observe(document, { childList: true, subtree: true });
 
-var bidSummaryTab = $("#bids-summary")[0];
-
-if (bidSummaryTab.attributes["class"].value.indexOf("active") != -1) {  
-  renderBidSummaryCharts();
-}
+var activeId = $("div.active").filter("div.tab-pane").attr("id");
+var el = jQuery(document.createElement("a")).attr("href", "#"+activeId);
+window.fcViz({target: el});
 
 function renderBidSummaryCharts() {
   var table = $("#bids_summary").find("table");
