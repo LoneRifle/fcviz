@@ -2,20 +2,36 @@
  * FCViz 
  * Payload script for loan auction pages
  */
- 
+
+window.renderBidSummaryCharts = function (table, id) {
+  var data = makeSummaryDataFrom(table);
+  var cumData = makeSummaryCumulative(data);
+  var bidGroups = findBidGroups(table);
+    
+  makeBidSummaryChart(id, data, cumData, bidGroups);
+}
+
+window.renderAllBidCharts = function (table, id) {
+  
+}
+
 window.fcViz = function (e) {
-  targetUrl = $(e.target).attr('href');
+  var targetUrl = $(e.target).attr('href');
+  var id = null;
+  var renderer = null;
   switch(targetUrl) {
     case "#bids-summary":
-      if ($("#bids_summary_chart_control").length == 0) {
-        renderBidSummaryCharts();
-      }
+      id = "bids_summary_chart_control";
+      renderer = renderBidSummaryCharts;
       break;
     case "#bids-all":
     
       break;
     default:
       break;
+  }
+  if (id != null && renderer != null) {
+    render(targetUrl, id, renderer);
   }
 } 
 
@@ -47,17 +63,18 @@ var activeId = $("div.active").filter("div.tab-pane").attr("id");
 var el = jQuery(document.createElement("a")).attr("href", "#"+activeId);
 window.fcViz({target: el});
 
-function renderBidSummaryCharts() {
-  var table = $("#bids_summary").find("table");
+function render(targetUrl, id, renderer) {
+  if ($("#"+id).length == 0) {
+    var table = $(targetUrl).find("table");
+    placeChartDivBeforeTable(table, id);
+    renderer(table, id);
+  }
+}
+
+function placeChartDivBeforeTable(table, chart) {
   var chartControlDiv = document.createElement("div");
-  chartControlDiv.id = "bids_summary_chart_control";
+  chartControlDiv.id = chart;
   table.before(chartControlDiv);
-    
-  var data = makeDataFrom(table);
-  var cumData = makeCumulative(data);
-  var bidGroups = findBidGroups(table);
-    
-  makeBidSummaryChart(data, cumData, bidGroups);
 }
 
 function findBidGroups(table) {
@@ -75,7 +92,7 @@ function findBidGroups(table) {
   return bidGroups;
 }
 
-function makeCumulative(data) {
+function makeSummaryCumulative(data) {
   var cumData = [];
   cumData.push({ name: data[0].name, value: data[0].name === "Rej"? 0 : data[0].value});
   for (i=1;i<data.length;++i) {
@@ -87,7 +104,7 @@ function makeCumulative(data) {
   return cumData;  
 }
 
-function makeDataFrom(table) {
+function makeSummaryDataFrom(table) {
   var rows = table.find("tbody");
   var data = [];
   
@@ -104,7 +121,7 @@ function makeDataFrom(table) {
   return data;
 }
 
-function makeBidSummaryChart(data, cumData, bidGroups) {
+function makeBidSummaryChart(id, data, cumData, bidGroups) {
   var margin = {top: 20, right: 30, bottom: 30, left: 30},
   width = $("#bids-summary").width() * 0.95 - margin.left - margin.right,
   height = 250 - margin.top - margin.bottom;
@@ -142,7 +159,7 @@ function makeBidSummaryChart(data, cumData, bidGroups) {
       .scale(cumY)
       .orient("right");
       
-  var chart = d3.select("#bids_summary_chart_control").append("svg")
+  var chart = d3.select("#"+id).append("svg")
       .attr("id", "bids_summary_viz")
       .attr("width", width + margin.left + margin.right)
       .attr("height", height + margin.top + margin.bottom)
