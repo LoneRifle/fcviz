@@ -12,7 +12,8 @@ window.renderBidSummaryCharts = function (table, id) {
 }
 
 window.renderAllBidCharts = function (table, id) {
-  
+  var data = makeAllDataFrom(table);
+  console.log("done");
 }
 
 window.fcViz = function (e) {
@@ -25,7 +26,8 @@ window.fcViz = function (e) {
       renderer = renderBidSummaryCharts;
       break;
     case "#bids-all":
-    
+      id = "bids_all_chart_control";
+      renderer = renderAllBidCharts;
       break;
     default:
       break;
@@ -36,6 +38,7 @@ window.fcViz = function (e) {
 } 
 
 $('.tabs').tabs().bind('change', window.fcViz);
+window.summaryVizWidth = $("#bids-summary").width();
 
 //Observe mutations made to #bids-summary, so that we can reapply window.fcViz
 var MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
@@ -123,7 +126,7 @@ function makeSummaryDataFrom(table) {
 
 function makeBidSummaryChart(id, data, cumData, bidGroups) {
   var margin = {top: 20, right: 30, bottom: 30, left: 30},
-  width = $("#bids-summary").width() * 0.95 - margin.left - margin.right,
+  width = window.summaryVizWidth * 0.95 - margin.left - margin.right,
   height = 250 - margin.top - margin.bottom;
 
   var x = d3.scale.ordinal()
@@ -245,4 +248,30 @@ function makeBidSummaryChart(id, data, cumData, bidGroups) {
   if (data[0].name === "Rej") {
     chart.select("rect").style("opacity", 0.5);
   }
+}
+
+function makeAllDataFrom(table) {
+  var rows = table.find("tbody");
+  var data = {};
+  
+  rows.children().filter(".accepted").each(function(){
+    var time = +$(this).attr("data-created_at"),
+        rate = +$(this).attr("data-annualised_rate"),
+        user = $(this).children().filter(".text").last().html().trim(),
+        amount = +$(this).attr("data-amount"),
+        rank = +$(this).children().filter(".text").first().html();
+    var roughTime = new Date(time);
+    roughTime.setMilliseconds(0);
+    roughTime.setSeconds(0);
+    roughTime = roughTime.getTime();
+    if (!data[[roughTime,rate,user]]) {
+      data[[roughTime,rate,user]] = {
+        total: 0,
+        bids: []
+      };
+    }
+    data[[roughTime,rate,user]].total += amount;
+    data[[roughTime,rate,user]].bids.push([rank,amount,time]);
+  });
+  return data;
 }
