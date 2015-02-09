@@ -12,18 +12,12 @@ s.onload = function() {
 };
 (document.head||document.documentElement).appendChild(s);
  
+var s = document.createElement('script');
 
-var scripts = [
-  "js/d3.min.js",
-  "js/loanauction.js"
-];
-
-scripts.forEach(function (entry) {
+s.src = chrome.extension.getURL("js/d3.min.js");
+s.onload = function() {
   var s = document.createElement('script');
-
-  s.src = chrome.extension.getURL(entry);
-  s.onload = function() {
-      this.parentNode.removeChild(this);
-  };
+  s.src = chrome.extension.getURL("js/loanauction.js");
   (document.head||document.documentElement).appendChild(s);
-});
+};
+(document.head||document.documentElement).appendChild(s);
