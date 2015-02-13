@@ -3,7 +3,9 @@
  * Payload script for loan auction pages
  */
 
-window.renderBidSummaryCharts = function (table, id) {
+window.renderBidSummaryCharts = function (targetUrl, id) {  
+  var table = $(targetUrl).find("table");
+  placeChartDivBefore(table, id);
   var data = makeSummaryDataFrom(table);
   var cumData = makeSummaryCumulative(data);
   var bidGroups = findBidGroups(table);
@@ -11,7 +13,11 @@ window.renderBidSummaryCharts = function (table, id) {
   makeBidSummaryChart(id, data, cumData, bidGroups);
 }
 
-window.renderAllBidCharts = function (table, id) {
+window.renderAllBidCharts = function (targetUrl, id) {
+  var paginatorTop = $(targetUrl).find("#paginator_top");
+  placeChartDivBefore(paginatorTop, id);
+  $("#"+id).html("Retrieving and parsing page 1..");
+  var table = $(targetUrl).find("table");
   var data = makeAllDataFrom(table);
   console.log("done");
 }
@@ -38,7 +44,7 @@ window.fcViz = function (e) {
 } 
 
 $('.tabs').tabs().bind('change', window.fcViz);
-window.summaryVizWidth = $("#bids-summary").width();
+window.summaryVizWidth = $("div.active").filter(".tab-pane").width();
 
 //Observe mutations made to #bids-summary, so that we can reapply window.fcViz
 var MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
@@ -68,16 +74,14 @@ window.fcViz({target: el});
 
 function render(targetUrl, id, renderer) {
   if ($("#"+id).length == 0) {
-    var table = $(targetUrl).find("table");
-    placeChartDivBeforeTable(table, id);
-    renderer(table, id);
+    renderer(targetUrl, id);
   }
 }
 
-function placeChartDivBeforeTable(table, chart) {
+function placeChartDivBefore(el, chart) {
   var chartControlDiv = document.createElement("div");
   chartControlDiv.id = chart;
-  table.before(chartControlDiv);
+  el.before(chartControlDiv);
 }
 
 function findBidGroups(table) {
