@@ -16,10 +16,29 @@ window.renderBidSummaryCharts = function (targetUrl, id) {
 window.renderAllBidCharts = function (targetUrl, id) {
   var paginatorTop = $(targetUrl).find("#paginator_top");
   placeChartDivBefore(paginatorTop, id);
-  $("#"+id).html("Retrieving and parsing page 1..");
-  var table = $(targetUrl).find("table");
-  var data = makeAllDataFrom(table);
-  console.log("done");
+  var page = 1;
+  var pageData = [];
+  var href = $("li.last").first().find("a").attr("href");
+  var last = +href.substring(href.indexOf("=")+1);
+  
+  $.get( "bids?page="+page, window.getAllBidPage.bind(window, pageData, id, page, last)).fail(function(jqXHR, textStatus, errorThrown) {
+    $("#"+id).html("Failed to retrieve page "+page+", chart render aborted: "+textStatus);
+  });
+}
+
+window.getAllBidPage = function(pageData, id, page, last, d) {  
+  $("#"+id).html("Retrieving and parsing page "+page+"/"+last);
+  pageData = pageData.concat(d);
+  if (page === last) {
+    var table = $("#"+id).parent().find("table");
+    var data = makeAllDataFrom(pageData);
+    $("#"+id).html("Done!");
+    return;
+  }
+  var nextPage = page + 1;
+  $.get( "bids?page="+nextPage, window.getAllBidPage.bind(window, pageData, id, nextPage, last)).fail(function(jqXHR, textStatus, errorThrown) {
+    $("#"+id).html("Failed to retrieve page "+nextPage+", chart render aborted: "+textStatus);
+  });
 }
 
 window.fcViz = function (e) {
@@ -43,7 +62,12 @@ window.fcViz = function (e) {
   }
 } 
 
-$('.tabs').tabs().bind('change', window.fcViz);
+$('.tabs').tabs().bind('change', function (e) {  
+  var targetUrl = $(e.target).attr('href');
+  if (targetUrl !== "#bids-all") {
+    window.fcViz(e);
+  }
+});
 window.summaryVizWidth = $("div.active").filter(".tab-pane").width();
 
 //Observe mutations made to #bids-summary, so that we can reapply window.fcViz
@@ -70,7 +94,9 @@ observer.observe(document, { childList: true, subtree: true });
 
 var activeId = $("div.active").filter("div.tab-pane").attr("id");
 var el = jQuery(document.createElement("a")).attr("href", "#"+activeId);
-window.fcViz({target: el});
+if (activeId !== "bids-all") {
+  window.fcViz({target: el});
+}
 
 function render(targetUrl, id, renderer) {
   if ($("#"+id).length == 0) {
@@ -254,28 +280,38 @@ function makeBidSummaryChart(id, data, cumData, bidGroups) {
   }
 }
 
-function makeAllDataFrom(table) {
-  var rows = table.find("tbody");
-  var data = {};
+function makeAllDataFrom(pageData) {
+  var data = { keys:[] };
   
-  rows.children().filter(".accepted").each(function(){
-    var time = +$(this).attr("data-created_at"),
-        rate = +$(this).attr("data-annualised_rate"),
-        user = $(this).children().filter(".text").last().html().trim(),
-        amount = +$(this).attr("data-amount"),
-        rank = +$(this).children().filter(".text").first().html();
-    var roughTime = new Date(time);
-    roughTime.setMilliseconds(0);
-    roughTime.setSeconds(0);
-    roughTime = roughTime.getTime();
-    if (!data[[roughTime,rate,user]]) {
-      data[[roughTime,rate,user]] = {
-        total: 0,
-        bids: []
-      };
+  jQuery(pageData).each(function(i,d){
+    var status = d.status;
+    if (status !== "rejected") {
+      d.rank = i+1;
+      
+      var key = [Date.parse(d.bid_time),d.annualised_rate];
+      
+      if (!data[key]) {
+        data.keys.push(key);
+        data[key] = {
+          total: 0,
+          keys:[]
+        };
+      }
+      
+      var rateAtTime = data[key];
+      rateAtTime.total += d.bid_amount;
+      
+      if (!rateAtTime[d.lender_display_name]) {
+        rateAtTime.keys.push(d.lender_display_name);
+        rateAtTime[d.lender_display_name] = {
+          total: 0,
+          bids:[]
+        }
+      }
+      
+      rateAtTime[d.lender_display_name].total += d.bid_amount;
+      rateAtTime[d.lender_display_name].bids.push(d);
     }
-    data[[roughTime,rate,user]].total += amount;
-    data[[roughTime,rate,user]].bids.push([rank,amount,time]);
   });
   return data;
 }
