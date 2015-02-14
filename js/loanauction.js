@@ -322,7 +322,12 @@ function makeAllDataFrom(pageData, live) {
   return data;
 }
 
+window.largeInvestors = ["British Business Bank", "Business Finance Partnership"];
+
 function pushBidTo(data, d) {  
+  if (window.largeInvestors.indexOf(d.lender_display_name) !== -1) {
+    return;
+  }
   var roughTime = new Date(d.bid_time);
   roughTime.setMilliseconds(0);
   roughTime.setSeconds(0);
@@ -351,7 +356,7 @@ function pushBidTo(data, d) {
 function makeAllBidsChart(id, dataBlob) {
   var margin = {top: 20, right: 30, bottom: 30, left: 35},
     width = window.summaryVizWidth * 0.95 - margin.left - margin.right,
-    height = 500 - margin.top - margin.bottom;
+    height = 350 - margin.top - margin.bottom;
   
   var data = dataBlob.keys;
   var total = +document.getElementById("amount").innerHTML.replace("£","").replace(",","");
