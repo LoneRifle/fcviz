@@ -14,6 +14,10 @@ window.renderBidSummaryCharts = function (targetUrl, id) {
 }
 
 window.renderAllBidCharts = function (targetUrl, id) {
+  if (window.renderBusy) {
+    return;
+  }
+  window.renderBusy = true;
   var paginatorTop = $(targetUrl).find("#paginator_top");
   placeChartDivBefore(paginatorTop, id);
   var page = 1;
@@ -30,15 +34,20 @@ window.getAllBidPage = function(pageData, id, page, last, d) {
   $("#"+id).html("Retrieving and parsing page "+page+"/"+last);
   pageData = pageData.concat(d);
   if (page === last) {
-    var table = $("#"+id).parent().find("table");
-    var data = makeAllDataFrom(pageData);
-    $("#"+id).html("Done!");
+    window.completeAllBidRender(pageData, id);
     return;
   }
   var nextPage = page + 1;
   $.get( "bids?page="+nextPage, window.getAllBidPage.bind(window, pageData, id, nextPage, last)).fail(function(jqXHR, textStatus, errorThrown) {
     $("#"+id).html("Failed to retrieve page "+nextPage+", chart render aborted: "+textStatus);
   });
+}
+
+window.completeAllBidRender = function(pageData, id) {
+  var table = $("#"+id).parent().find("table");
+  var data = makeAllDataFrom(pageData);
+  $("#"+id).html("Done!");
+  window.renderBusy = false;
 }
 
 window.fcViz = function (e) {
