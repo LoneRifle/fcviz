@@ -374,7 +374,7 @@ function makeAllBidsChart(id, dataBlob) {
   
   //Take y-domain (rate) to be 0.1 either side of the real domain.
   var y = d3.scale.linear()
-    .domain([d3.min(data, function(d) { return d[1]; }) - 0.1, d3.max(data, function(d) { return d[1]; }) + 0.1])
+    .domain([d3.min(data, function(d) { return d[1]; }) - 0.5, d3.max(data, function(d) { return d[1]; }) + 0.1])
     .range([ height, 0 ]);
     
   var chart = d3.select("#"+id)
