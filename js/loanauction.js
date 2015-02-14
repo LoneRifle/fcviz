@@ -301,17 +301,12 @@ function makeAllDataFrom(pageData, live) {
   
   var parseHTML = function (i,d) {
     var bid = {
-      created_at: +$(this).attr("data-created_at"),
+      bid_time: +$(this).attr("data-created_at"),
       annualised_rate: +$(this).attr("data-annualised_rate"),
       lender_display_name: $(this).children().filter(".text").last().html().trim(),
       bid_amount: +$(this).attr("data-amount"),
       rank: +$(this).children().filter(".text").first().html()
     }
-    var roughTime = new Date(bid.created_at);
-    roughTime.setMilliseconds(0);
-    roughTime.setSeconds(0);
-    roughTime = roughTime.getTime();
-    bid.bid_time = roughTime;
     pushBidTo(data, bid);
   }
   
@@ -320,7 +315,6 @@ function makeAllDataFrom(pageData, live) {
     if (status !== "rejected") {
       d.rank = i+1;
       d.bid_time = Date.parse(d.bid_time);
-      d.created_at = d.bid_time;
       pushBidTo(data, d);
     }
   }
@@ -328,8 +322,12 @@ function makeAllDataFrom(pageData, live) {
   return data;
 }
 
-function pushBidTo(data, d) {
-  var key = [d.bid_time,d.annualised_rate];  
+function pushBidTo(data, d) {  
+  var roughTime = new Date(d.bid_time);
+  roughTime.setMilliseconds(0);
+  roughTime.setSeconds(0);
+  roughTime = roughTime.getTime();
+  var key = [roughTime,d.annualised_rate];  
   if (!data[key]) {
     data.keys.push(key);
     data[key] = {
