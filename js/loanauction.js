@@ -53,7 +53,7 @@ window.getAllBidPage = function(pageData, id, page, live, last, d) {
 window.completeAllBidRender = function(pageData, live, id) {
   var table = $("#"+id).parent().find("table");
   var data = makeAllDataFrom(pageData, live);
-  $("#"+id).html("Done!");
+  makeAllBidsChart(id, data);
   window.renderBusy = false;
 }
 
@@ -346,4 +346,71 @@ function pushBidTo(data, d) {
   }
   rateAtTime[d.lender_display_name].total += d.bid_amount;
   rateAtTime[d.lender_display_name].bids.push(d);
+}
+
+function makeAllBidsChart(id, dataBlob) {
+  var margin = {top: 20, right: 30, bottom: 30, left: 35},
+    width = window.summaryVizWidth * 0.95 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+  
+  var data = dataBlob.keys;
+  var total = +document.getElementById("amount").innerHTML.replace("£","").replace(",","");
+  
+  //Take x-domain (bid time) to be 6 hours either side of the real domain.
+  var x = d3.scale.linear()
+    .domain([
+      d3.min(data, function(d) { return d[0]; }) - 6 * 60 * 60 * 1000, 
+      d3.max(data, function(d) { return d[0]; }) + 6 * 60 * 60 * 1000
+    ]).range([ 0, width ]);
+  
+  //Take y-domain (rate) to be 0.1 either side of the real domain.
+  var y = d3.scale.linear()
+    .domain([d3.min(data, function(d) { return d[1]; }) - 0.1, d3.max(data, function(d) { return d[1]; }) + 0.1])
+    .range([ height, 0 ]);
+    
+  var chart = d3.select("#"+id)
+    .append('svg')
+    .attr("id", "bids_all_viz")
+    .attr('width', width + margin.right + margin.left)
+    .attr('height', height + margin.top + margin.bottom)
+    .attr('class', 'chart')
+
+  var main = chart.append('g')
+    .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
+    .attr('width', width)
+    .attr('height', height)
+    .attr('class', 'main')   
+        
+    // draw the x axis
+  var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient('bottom')
+    .tickFormat(function(d){ 
+      var date = new Date(d);
+      return d3.time.format("%d/%m %H:%M").format(date); 
+    });
+
+  main.append('g')
+    .attr('transform', 'translate(0,' + height + ')')
+    .attr('class', 'x axis date')
+    .call(xAxis);
+
+    // draw the y axis
+  var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient('left');
+
+  main.append('g')
+    .attr('transform', 'translate(0,0)')
+    .attr("class", "y axis")
+    .call(yAxis);
+
+  var g = main.append("g"); 
+  
+  g.selectAll("scatter-dots")
+    .data(data)
+    .enter().append("circle")
+        .attr("cx", function (d,i) { return x(d[0]); } )
+        .attr("cy", function (d) { return y(d[1]); } )
+        .attr("r", function(d){ return Math.log(1 + dataBlob[d].total/total) * 1000; });
 }
