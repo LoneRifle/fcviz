@@ -387,7 +387,7 @@ function makeAllBidsChart(id, dataBlob) {
     .orient('bottom')
     .tickFormat(function(d){ 
       var date = new Date(d);
-      return d3.time.format("%d/%m %H:%M").format(date); 
+      return d3.time.format("%d/%m %H:%M")(date); 
     });
 
   main.append('g')
