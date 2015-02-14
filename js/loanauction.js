@@ -24,28 +24,35 @@ window.renderAllBidCharts = function (targetUrl, id) {
   var pageData = [];
   var href = $("li.last").first().find("a").attr("href");
   var last = +href.substring(href.indexOf("=")+1);
+  var live = $("#bid_form").length > 0;
+  var urlPrefix = live? "auction/" : "";
   
-  $.get( "bids?page="+page, window.getAllBidPage.bind(window, pageData, id, page, last)).fail(function(jqXHR, textStatus, errorThrown) {
+  $.get( urlPrefix + "bids?page=" + page, window.getAllBidPage.bind(window, pageData, id, page, live, last)).fail(function(jqXHR, textStatus, errorThrown) {
     $("#"+id).html("Failed to retrieve page "+page+", chart render aborted: "+textStatus);
   });
 }
 
-window.getAllBidPage = function(pageData, id, page, last, d) {  
+window.getAllBidPage = function(pageData, id, page, live, last, d) {  
   $("#"+id).html("Retrieving and parsing page "+page+"/"+last);
-  pageData = pageData.concat(d);
+  var data = d;
+  if (live) {
+    data = $(document.createElement("table")).html(d).find("tr.live");
+  }
+  pageData = jQuery.merge(pageData, data);
   if (page === last) {
-    window.completeAllBidRender(pageData, id);
+    window.completeAllBidRender(pageData, live, id);
     return;
   }
   var nextPage = page + 1;
-  $.get( "bids?page="+nextPage, window.getAllBidPage.bind(window, pageData, id, nextPage, last)).fail(function(jqXHR, textStatus, errorThrown) {
+  var urlPrefix = live? "auction/" : "";
+  $.get( urlPrefix + "bids?page=" + nextPage, window.getAllBidPage.bind(window, pageData, id, nextPage, live, last)).fail(function(jqXHR, textStatus, errorThrown) {
     $("#"+id).html("Failed to retrieve page "+nextPage+", chart render aborted: "+textStatus);
   });
 }
 
-window.completeAllBidRender = function(pageData, id) {
+window.completeAllBidRender = function(pageData, live, id) {
   var table = $("#"+id).parent().find("table");
-  var data = makeAllDataFrom(pageData);
+  var data = makeAllDataFrom(pageData, live);
   $("#"+id).html("Done!");
   window.renderBusy = false;
 }
@@ -289,38 +296,56 @@ function makeBidSummaryChart(id, data, cumData, bidGroups) {
   }
 }
 
-function makeAllDataFrom(pageData) {
+function makeAllDataFrom(pageData, live) {
   var data = { keys:[] };
   
-  jQuery(pageData).each(function(i,d){
+  var parseHTML = function (i,d) {
+    var bid = {
+      created_at: +$(this).attr("data-created_at"),
+      annualised_rate: +$(this).attr("data-annualised_rate"),
+      lender_display_name: $(this).children().filter(".text").last().html().trim(),
+      bid_amount: +$(this).attr("data-amount"),
+      rank: +$(this).children().filter(".text").first().html()
+    }
+    var roughTime = new Date(bid.created_at);
+    roughTime.setMilliseconds(0);
+    roughTime.setSeconds(0);
+    roughTime = roughTime.getTime();
+    bid.bid_time = roughTime;
+    pushBidTo(data, bid);
+  }
+  
+  var parseJSON = function(i,d) {
     var status = d.status;
     if (status !== "rejected") {
       d.rank = i+1;
-      
-      var key = [Date.parse(d.bid_time),d.annualised_rate];
-      
-      if (!data[key]) {
-        data.keys.push(key);
-        data[key] = {
-          total: 0,
-          keys:[]
-        };
-      }
-      
-      var rateAtTime = data[key];
-      rateAtTime.total += d.bid_amount;
-      
-      if (!rateAtTime[d.lender_display_name]) {
-        rateAtTime.keys.push(d.lender_display_name);
-        rateAtTime[d.lender_display_name] = {
-          total: 0,
-          bids:[]
-        }
-      }
-      
-      rateAtTime[d.lender_display_name].total += d.bid_amount;
-      rateAtTime[d.lender_display_name].bids.push(d);
+      d.bid_time = Date.parse(d.bid_time);
+      d.created_at = d.bid_time;
+      pushBidTo(data, d);
     }
-  });
+  }
+  jQuery(pageData).each(live? parseHTML : parseJSON);
   return data;
+}
+
+function pushBidTo(data, d) {
+  var key = [d.bid_time,d.annualised_rate];  
+  if (!data[key]) {
+    data.keys.push(key);
+    data[key] = {
+      total: 0,
+      keys:[]
+    };
+  }  
+  var rateAtTime = data[key];
+  rateAtTime.total += d.bid_amount;
+  if (!rateAtTime[d.lender_display_name]) {
+    rateAtTime.keys.push(d.lender_display_name);
+    rateAtTime[d.lender_display_name] = {
+      total: 0,
+      bids:[]
+    }
+  }
+  rateAtTime[d.lender_display_name].total += d.bid_amount;
+  rateAtTime[d.lender_display_name].bids.push(d);
 }
