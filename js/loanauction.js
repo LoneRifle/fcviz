@@ -363,6 +363,7 @@ function makeAllBidsChart(id, dataBlob) {
     height = 250 - margin.top - margin.bottom;
   
   var data = dataBlob.keys;
+  data.sort(function(a,b){ return dataBlob[b].total - dataBlob[a].total; })
   var total = +document.getElementById("amount").innerHTML.replace("£","").replace(",","");
   
   //Take x-domain (bid time) to be 6 hours either side of the real domain.
@@ -420,6 +421,7 @@ function makeAllBidsChart(id, dataBlob) {
       .attr("cx", function (d,i) { return x(d[0]); } )
       .attr("cy", function (d) { return y(d[1]); } )
       .attr("r", function(d){ return Math.log(1 + dataBlob[d].total/total) * 1000; })
+      .attr("style", function(d,i){ return "z-index: "+i; })
       .attr("class", "inactive")
       .on("mouseover", function(d){ 
         if ($(this).attr("class") !== "clicked"){ 
