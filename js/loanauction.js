@@ -331,6 +331,8 @@ function pushBidTo(data, d) {
   var roughTime = new Date(d.bid_time);
   roughTime.setMilliseconds(0);
   roughTime.setSeconds(0);
+  roughTime.setMinutes(roughTime.getMinutes() < 30?  0 : 30);
+  
   roughTime = roughTime.getTime();
   var key = [roughTime,d.annualised_rate];  
   if (!data[key]) {
@@ -356,7 +358,7 @@ function pushBidTo(data, d) {
 function makeAllBidsChart(id, dataBlob) {
   var margin = {top: 20, right: 30, bottom: 30, left: 35},
     width = window.summaryVizWidth * 0.95 - margin.left - margin.right,
-    height = 350 - margin.top - margin.bottom;
+    height = 250 - margin.top - margin.bottom;
   
   var data = dataBlob.keys;
   var total = +document.getElementById("amount").innerHTML.replace("£","").replace(",","");
@@ -377,14 +379,12 @@ function makeAllBidsChart(id, dataBlob) {
     .append('svg')
     .attr("id", "bids_all_viz")
     .attr('width', width + margin.right + margin.left)
-    .attr('height', height + margin.top + margin.bottom)
-    .attr('class', 'chart')
+    .attr('height', height + margin.top + margin.bottom);
 
   var main = chart.append('g')
     .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')')
     .attr('width', width)
-    .attr('height', height)
-    .attr('class', 'main')   
+    .attr('height', height);
         
     // draw the x axis
   var xAxis = d3.svg.axis()

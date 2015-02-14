@@ -25,3 +25,14 @@ div.tooltip {
   border: 0px;       
   pointer-events: none;         
 }
+
+circle {
+  stroke-width: 0.75px;
+  stroke: white;
+  fill: #772d72;
+}
+
+.date text {
+  transform: rotate(10deg);
+}
+
