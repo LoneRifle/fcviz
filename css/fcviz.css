@@ -3,7 +3,7 @@
 
 .cum {
   fill: none;
-  stroke: #097fc9;
+  stroke: #0fb3ca;
   stroke-width: 2.5px;
 }
 
@@ -29,7 +29,18 @@ div.tooltip {
 circle {
   stroke-width: 0.75px;
   stroke: white;
+}
+
+circle.inactive {
   fill: #772d72;
+}
+
+circle.active {
+  fill: #c7eefe;
+}
+
+circle.clicked {
+  fill: #0fb3ca;
 }
 
 .date text {

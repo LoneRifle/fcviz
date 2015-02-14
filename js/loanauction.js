@@ -26,14 +26,14 @@ window.renderAllBidCharts = function (targetUrl, id) {
   var last = +href.substring(href.indexOf("=")+1);
   var live = $("#bid_form").length > 0;
   var urlPrefix = live? "auction/" : "";
-  
+  $("#"+id).html("Retrieving and parsing page "+page+"/"+last);
   $.get( urlPrefix + "bids?page=" + page, window.getAllBidPage.bind(window, pageData, id, page, live, last)).fail(function(jqXHR, textStatus, errorThrown) {
     $("#"+id).html("Failed to retrieve page "+page+", chart render aborted: "+textStatus);
   });
 }
 
 window.getAllBidPage = function(pageData, id, page, live, last, d) {  
-  $("#"+id).html("Retrieving and parsing page "+page+"/"+last);
+  
   var data = d;
   if (live) {
     data = $(document.createElement("table")).html(d).find("tr.live");
@@ -45,6 +45,7 @@ window.getAllBidPage = function(pageData, id, page, live, last, d) {
   }
   var nextPage = page + 1;
   var urlPrefix = live? "auction/" : "";
+  $("#"+id).html("Retrieving and parsing page "+nextPage+"/"+last);
   $.get( urlPrefix + "bids?page=" + nextPage, window.getAllBidPage.bind(window, pageData, id, nextPage, live, last)).fail(function(jqXHR, textStatus, errorThrown) {
     $("#"+id).html("Failed to retrieve page "+nextPage+", chart render aborted: "+textStatus);
   });
@@ -53,6 +54,7 @@ window.getAllBidPage = function(pageData, id, page, live, last, d) {
 window.completeAllBidRender = function(pageData, live, id) {
   var table = $("#"+id).parent().find("table");
   var data = makeAllDataFrom(pageData, live);
+  $("#"+id).html("Place pointer over each point for more details. Click to keep details on screen");
   makeAllBidsChart(id, data);
   window.renderBusy = false;
 }
@@ -287,8 +289,8 @@ function makeBidSummaryChart(id, data, cumData, bidGroups) {
     .attr("transform", "translate(" + x.rangeBand()/2 + ",0)")
     .attr("d", line)
     .attr("opacity", 0.5)
-    .on("mouseover", function(d){ this.setAttribute("opacity", 1.0); })
-    .on("mouseout", function(d){ this.setAttribute("opacity", 0.5); });
+    .on("mouseover", function(d){ $(this).attr("opacity", 1.0); })
+    .on("mouseout", function(d){ $(this).attr("opacity", 0.5); });
       
   //Render the first bar in the chart semi-transparent if the rate is rejected
   if (data[0].name === "Rej") {
@@ -415,7 +417,22 @@ function makeAllBidsChart(id, dataBlob) {
   g.selectAll("scatter-dots")
     .data(data)
     .enter().append("circle")
-        .attr("cx", function (d,i) { return x(d[0]); } )
-        .attr("cy", function (d) { return y(d[1]); } )
-        .attr("r", function(d){ return Math.log(1 + dataBlob[d].total/total) * 1000; });
+      .attr("cx", function (d,i) { return x(d[0]); } )
+      .attr("cy", function (d) { return y(d[1]); } )
+      .attr("r", function(d){ return Math.log(1 + dataBlob[d].total/total) * 1000; })
+      .attr("class", "inactive")
+      .on("mouseover", function(d){ 
+        if ($(this).attr("class") !== "clicked"){ 
+          $(this).attr("class", "active"); 
+        }
+      })
+      .on("click", function(d){ 
+        $("circle.clicked").attr("class", "inactive");
+        $(this).attr("class", "clicked"); 
+      })
+      .on("mouseout", function(d){ 
+        if ($(this).attr("class") !== "clicked"){ 
+          $(this).attr("class", "inactive"); 
+        } 
+      });
 }
