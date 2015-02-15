@@ -3,6 +3,9 @@
  * Payload script for loan auction pages
  */
 
+window.formatTimestamp = d3.time.format("%d/%m %H:%M");
+window.commaSeparator = d3.format(",d");
+
 window.renderBidSummaryCharts = function (targetUrl, id) {  
   var table = $(targetUrl).find("table");
   placeChartDivBefore(table, id);
@@ -26,9 +29,11 @@ window.renderAllBidCharts = function (targetUrl, id) {
   progress.id = id+"_progress";
   $("#"+id).append(progress);
   
+  var live = $("#bid_form").length > 0;
+  
   var details = document.createElement("div");
   details.id = "bid_block_infobox";
-  $(details).attr("class", "bid_block_details");
+  $(details).attr("class", live? "bid_block_details_live" : "bid_block_details");
   $(".bids").parent().attr("style", "position: relative");
   $(".bids").after(details);
   
@@ -36,7 +41,6 @@ window.renderAllBidCharts = function (targetUrl, id) {
   var pageData = [];
   var href = $("li.last").first().find("a").attr("href");
   var last = +href.substring(href.indexOf("=")+1);
-  var live = $("#bid_form").length > 0;
   var urlPrefix = live? "auction/" : "";
   $(progress).html("Retrieving and parsing page "+page+"/"+last);
   $.get( urlPrefix + "bids?page=" + page, window.getAllBidPage.bind(window, pageData, id, page, live, last)).fail(function(jqXHR, textStatus, errorThrown) {
@@ -261,8 +265,6 @@ function makeBidSummaryChart(id, data, cumData, bidGroups) {
     .attr("class", "tooltip")               
     .style("opacity", 0);
   
-  var commaSeparator = d3.format(",d");
-  
   chart.selectAll("rect")
     .data(data)
   .enter().append("rect")
@@ -407,7 +409,7 @@ function makeAllBidsChart(id, dataBlob) {
     .orient('bottom')
     .tickFormat(function(d){ 
       var date = new Date(d);
-      return d3.time.format("%d/%m %H:%M")(date); 
+      return window.formatTimestamp(date); 
     });
 
   main.append('g')
@@ -438,15 +440,66 @@ function makeAllBidsChart(id, dataBlob) {
       .on("mouseover", function(d){ 
         if ($(this).attr("class") !== "clicked"){ 
           $(this).attr("class", "active"); 
+          populateBidBox(d, dataBlob, 0.8);
         }
       })
       .on("click", function(d){ 
         $("circle.clicked").attr("class", "inactive");
         $(this).attr("class", "clicked"); 
+        window.clickedKey = d;
+        populateBidBox(d, dataBlob, 1.0);
       })
       .on("mouseout", function(d){ 
         if ($(this).attr("class") !== "clicked"){ 
           $(this).attr("class", "inactive"); 
+          populateBidBox(window.clickedKey, dataBlob, 1.0);
         } 
       });
+}
+
+function populateBidBox(key, dataBlob, opacity) {
+  var data = dataBlob[key];
+  var time = [key[0], key[0] + 29 * 60000];
+  var h5 = $(document.createElement("h5")).attr("style", "line-height: 20px").html(
+    window.formatTimestamp(new Date(time[0])) + " - " +
+    d3.time.format("%H:%M")(new Date(time[1])) + 
+    ": £" + commaSeparator(data.total) + "@" + key[1] + "%, " + data.keys.length + " users"
+  );
+  
+  var headers = ["#", "Lender", "Amount", "Date"];
+  var thead = $(document.createElement("thead"));
+  $(headers).each(function(i,d){
+    thead.append($(document.createElement("th")).html(d));
+  });
+  
+  var tbody = $(document.createElement("tbody"));
+  var userAmounts = [];
+  var bids = [];  
+  $(data.keys).each(function(i,key){
+    var userBids = data[key];
+    userAmounts.push([key, userBids.total]);
+    $(userBids.bids).each(function (i,bid){
+      bids.push([bid.rank, bid.lender_display_name, bid.bid_amount, d3.time.format("%d/%m %X.%L")(new Date(bid.bid_time))]);
+    });
+  });
+  
+  $(bids).each(function(i,bid){
+    var tr = $(document.createElement("tr"));
+    $(bid).each(function(i,d){ tr.append($(document.createElement("td")).html(d)); })
+    tbody.append(tr);
+  });
+  
+  var table = $(document.createElement("table")).attr("class", "brand").attr("id", "bid_box_table");
+  
+  table.append(thead);
+  table.append(tbody);
+  
+  
+  var tableBox = $(document.createElement("div")).attr("class", "scroll-box")
+    .attr("style","height: "+($("#bid_block_infobox").height() - 20)+"px".append(table);
+  
+  $("#bid_block_infobox").children().detach();
+  $("#bid_block_infobox").append(h5);
+  $("#bid_block_infobox").append(tableBox);  
+  $("#bid_block_infobox").attr("style", "opacity: "+opacity);
 }

@@ -47,6 +47,24 @@ circle.clicked {
   transform: rotate(10deg);
 }
 
+div.bid_block_details_live {   
+  width: 362px;
+  height: 114px;
+  position: absolute;
+  top: -60px;
+  left: 355px;
+}
+
+.bid_block_details_live th, .bid_block_details_live td, 
+.bid_block_details_live td:first-child, .bid_block_details_live td:last-child,
+.bid_block_details_live th:first-child, .bid_block_details_live th:last-child  {
+  padding: 0px 0px 0px 0px;
+}
+
+.bid_block_details_live h5 {
+  text-align: center;
+}
+
 div.bid_block_details {   
   width: 462px;
   height: 114px;
@@ -55,5 +73,13 @@ div.bid_block_details {
   left: 405px;
 }
 
+.bid_block_details th, .bid_block_details td, 
+.bid_block_details td:first-child, .bid_block_details td:last-child,
+.bid_block_details th:first-child, .bid_block_details th:last-child  {
+  padding: 0px 0px 0px 0px;
+}
 
+.bid_block_details h5 {
+  text-align: center;
+}
 
