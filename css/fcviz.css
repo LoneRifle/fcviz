@@ -47,3 +47,13 @@ circle.clicked {
   transform: rotate(10deg);
 }
 
+div.bid_block_details {   
+  width: 462px;
+  height: 114px;
+  position: absolute;
+  top: -53px;
+  left: 405px;
+}
+
+
+

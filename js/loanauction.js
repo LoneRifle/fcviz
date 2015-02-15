@@ -20,10 +20,17 @@ window.renderAllBidCharts = function (targetUrl, id) {
   window.renderBusy = true;
   var paginatorTop = $(targetUrl).find("#paginator_top");
   placeChartDivBefore(paginatorTop, id);
+  $("#"+id).attr("style", "position: relative");
   
   var progress = document.createElement("div");
   progress.id = id+"_progress";
   $("#"+id).append(progress);
+  
+  var details = document.createElement("div");
+  details.id = "bid_block_infobox";
+  $(details).attr("class", "bid_block_details");
+  $(".bids").parent().attr("style", "position: relative");
+  $(".bids").after(details);
   
   var page = 1;
   var pageData = [];
@@ -59,7 +66,7 @@ window.getAllBidPage = function(pageData, id, page, live, last, d) {
 window.completeAllBidRender = function(pageData, live, id) {
   var table = $("#"+id).parent().find("table");
   var data = makeAllDataFrom(pageData, live);
-  $("#"+id+"_progress").html("Place pointer over each point for more details. Click to keep details on screen");
+  $("#"+id+"_progress").html("Place pointer over each point for more details. Click to keep on screen");
   makeAllBidsChart(id, data);
   window.renderBusy = false;
 }
@@ -364,7 +371,7 @@ function pushBidTo(data, d) {
 
 function makeAllBidsChart(id, dataBlob) {
   var margin = {top: 20, right: 30, bottom: 30, left: 35},
-    width = window.summaryVizWidth * 0.95 - margin.left - margin.right,
+    width = window.summaryVizWidth - margin.left - margin.right,
     height = 250 - margin.top - margin.bottom;
   
   var data = dataBlob.keys;
