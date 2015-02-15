@@ -20,15 +20,20 @@ window.renderAllBidCharts = function (targetUrl, id) {
   window.renderBusy = true;
   var paginatorTop = $(targetUrl).find("#paginator_top");
   placeChartDivBefore(paginatorTop, id);
+  
+  var progress = document.createElement("div");
+  progress.id = id+"_progress";
+  $("#"+id).append(progress);
+  
   var page = 1;
   var pageData = [];
   var href = $("li.last").first().find("a").attr("href");
   var last = +href.substring(href.indexOf("=")+1);
   var live = $("#bid_form").length > 0;
   var urlPrefix = live? "auction/" : "";
-  $("#"+id).html("Retrieving and parsing page "+page+"/"+last);
+  $(progress).html("Retrieving and parsing page "+page+"/"+last);
   $.get( urlPrefix + "bids?page=" + page, window.getAllBidPage.bind(window, pageData, id, page, live, last)).fail(function(jqXHR, textStatus, errorThrown) {
-    $("#"+id).html("Failed to retrieve page "+page+", chart render aborted: "+textStatus);
+    $(progress).html("Failed to retrieve page "+page+", chart render aborted: "+textStatus);
   });
 }
 
@@ -45,16 +50,16 @@ window.getAllBidPage = function(pageData, id, page, live, last, d) {
   }
   var nextPage = page + 1;
   var urlPrefix = live? "auction/" : "";
-  $("#"+id).html("Retrieving and parsing page "+nextPage+"/"+last);
+  $("#"+id+"_progress").html("Retrieving and parsing page "+nextPage+"/"+last);
   $.get( urlPrefix + "bids?page=" + nextPage, window.getAllBidPage.bind(window, pageData, id, nextPage, live, last)).fail(function(jqXHR, textStatus, errorThrown) {
-    $("#"+id).html("Failed to retrieve page "+nextPage+", chart render aborted: "+textStatus);
+    $("#"+id+"_progress").html("Failed to retrieve page "+nextPage+", chart render aborted: "+textStatus);
   });
 }
 
 window.completeAllBidRender = function(pageData, live, id) {
   var table = $("#"+id).parent().find("table");
   var data = makeAllDataFrom(pageData, live);
-  $("#"+id).html("Place pointer over each point for more details. Click to keep details on screen");
+  $("#"+id+"_progress").html("Place pointer over each point for more details. Click to keep details on screen");
   makeAllBidsChart(id, data);
   window.renderBusy = false;
 }
