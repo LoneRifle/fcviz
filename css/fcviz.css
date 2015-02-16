@@ -48,11 +48,16 @@ circle.clicked {
 }
 
 div.bid_block_details_live {   
-  width: 362px;
+  width: 375px;
   height: 114px;
   position: absolute;
   top: -60px;
   left: 355px;
+}
+.bid_block_details_live span {   
+  position: absolute;
+  top: 0px;
+  left: 365px;
 }
 
 .bid_block_details_live th, .bid_block_details_live td, 
@@ -71,6 +76,12 @@ div.bid_block_details {
   position: absolute;
   top: -53px;
   left: 405px;
+}
+
+.bid_block_details span {   
+  position: absolute;
+  top: 0px;
+  left: 452px;
 }
 
 .bid_block_details th, .bid_block_details td, 

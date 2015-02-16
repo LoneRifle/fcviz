@@ -452,7 +452,11 @@ function makeAllBidsChart(id, dataBlob) {
       .on("mouseout", function(d){ 
         if ($(this).attr("class") !== "clicked"){ 
           $(this).attr("class", "inactive"); 
-          populateBidBox(window.clickedKey, dataBlob, 1.0);
+          if (window.clickedKey) {
+            populateBidBox(window.clickedKey, dataBlob, 1.0);
+          } else {
+            $("#bid_block_infobox").html("");
+          }
         } 
       });
 }
@@ -466,7 +470,7 @@ function populateBidBox(key, dataBlob, opacity) {
     ": £" + commaSeparator(data.total) + "@" + key[1] + "%, " + data.keys.length + " users"
   );
   
-  var headers = ["#", "Lender", "Amount", "Date"];
+  var headers = ["#", "Lender", "Amount", "Time"];
   var thead = $(document.createElement("thead"));
   $(headers).each(function(i,d){
     thead.append($(document.createElement("th")).html(d));
@@ -479,7 +483,7 @@ function populateBidBox(key, dataBlob, opacity) {
     var userBids = data[key];
     userAmounts.push([key, userBids.total]);
     $(userBids.bids).each(function (i,bid){
-      bids.push([bid.rank, bid.lender_display_name, bid.bid_amount, d3.time.format("%d/%m %X.%L")(new Date(bid.bid_time))]);
+      bids.push([bid.rank, bid.lender_display_name, bid.bid_amount, d3.time.format("%X.%L")(new Date(bid.bid_time))]);
     });
   });
   
@@ -496,10 +500,30 @@ function populateBidBox(key, dataBlob, opacity) {
   
   
   var tableBox = $(document.createElement("div")).attr("class", "scroll-box")
-    .attr("style","height: "+($("#bid_block_infobox").height() - 20)+"px".append(table);
+    .attr("style","height: "+($("#bid_block_infobox").height() - 20)+"px").append(table);
+  
+  var close = document.createElement("span");
+  $(close).html("<a>X</a>")
+    .on("click", function(){ 
+      $("circle.clicked").attr("class", "inactive");
+      $("#bid_block_infobox").children().detach(); 
+      document.body.style.cursor = "default";
+    })
+    .on("mouseover", function(){ 
+      document.body.style.cursor = "pointer";
+    })
+    .on("mouseout", function(){ 
+      document.body.style.cursor = "default";
+    });
   
   $("#bid_block_infobox").children().detach();
   $("#bid_block_infobox").append(h5);
+  $("#bid_block_infobox").append(close);
   $("#bid_block_infobox").append(tableBox);  
-  $("#bid_block_infobox").attr("style", "opacity: "+opacity);
+  if (opacity == 1.0) {
+    $("#bid_block_infobox").attr("style", "background: rgba(255, 255, 255, 1.0)");
+  } else {
+    $("#bid_block_infobox").attr("style", "opacity: "+opacity);
+  }
+  
 }
