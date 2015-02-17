@@ -486,7 +486,7 @@ function populateBidBox(key, dataBlob, opacity) {
       bids.push([bid.rank, bid.lender_display_name, bid.bid_amount, bid.bid_time]);
     });
   });
-  
+    
   bids.sort(function(a,b){
     return a[3] - b[3];
   });
@@ -498,14 +498,14 @@ function populateBidBox(key, dataBlob, opacity) {
     tbody.append(tr);
   });
   
-  var table = $(document.createElement("table")).attr("class", "brand").attr("id", "bid_box_table");
+  var table = $(document.createElement("table")).attr("class", "brand").attr("id", "bid_box_table");  
+  table.append(thead).append(tbody);
   
-  table.append(thead);
-  table.append(tbody);
-  
-  
+  var tableHeight = $("#bid_block_infobox").height() - 20;
+  var pieDimension = tableHeight;
+  var tableWidth = $("#bid_block_infobox").width() - pieDimension;
   var tableBox = $(document.createElement("div")).attr("class", "scroll-box")
-    .attr("style","height: "+($("#bid_block_infobox").height() - 20)+"px").append(table);
+    .attr("style","position: absolute; top: 20px; left: "+tableHeight+"px; height: "+tableHeight+"px; width: "+tableWidth+"px;").append(table);
   
   var close = document.createElement("span");
   $(close).html("<a>X</a>")
@@ -521,9 +521,11 @@ function populateBidBox(key, dataBlob, opacity) {
       document.body.style.cursor = "default";
     });
   
+  var pieBox = makeBidBoxPieChart(userAmounts,pieDimension);
   $("#bid_block_infobox").children().detach();
   $("#bid_block_infobox").append(h5);
   $("#bid_block_infobox").append(close);
+  $("#bid_block_infobox").append(pieBox);  
   $("#bid_block_infobox").append(tableBox);  
   if (opacity == 1.0) {
     $("#bid_block_infobox").attr("style", "background: rgba(255, 255, 255, 1.0)");
@@ -531,4 +533,11 @@ function populateBidBox(key, dataBlob, opacity) {
     $("#bid_block_infobox").attr("style", "opacity: "+opacity);
   }
   
+}
+
+function makeBidBoxPieChart(userAmounts, pieDimension) {
+  var pieBox = $(document.createElement("div"))
+    .attr("class", "bid_box_pie").attr("id", "bid_box_pie")
+    .attr("style", "height: "+pieDimension+"px; width: "+pieDimension+"px;");  
+  return pieBox;
 }
