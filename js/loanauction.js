@@ -510,6 +510,7 @@ function populateBidBox(key, dataBlob, opacity) {
   var close = document.createElement("span");
   $(close).html("<a>X</a>")
     .on("click", function(){ 
+      window.clickedKey = null;
       $("circle.clicked").attr("class", "inactive");
       $("#bid_block_infobox").children().detach(); 
       document.body.style.cursor = "default";
@@ -521,11 +522,10 @@ function populateBidBox(key, dataBlob, opacity) {
       document.body.style.cursor = "default";
     });
   
-  var pieBox = makeBidBoxPieChart(userAmounts,pieDimension);
   $("#bid_block_infobox").children().detach();
   $("#bid_block_infobox").append(h5);
   $("#bid_block_infobox").append(close);
-  $("#bid_block_infobox").append(pieBox);  
+  makeBidBoxPieChart(userAmounts,pieDimension);
   $("#bid_block_infobox").append(tableBox);  
   if (opacity == 1.0) {
     $("#bid_block_infobox").attr("style", "background: rgba(255, 255, 255, 1.0)");
@@ -539,5 +539,79 @@ function makeBidBoxPieChart(userAmounts, pieDimension) {
   var pieBox = $(document.createElement("div"))
     .attr("class", "bid_box_pie").attr("id", "bid_box_pie")
     .attr("style", "height: "+pieDimension+"px; width: "+pieDimension+"px;");  
-  return pieBox;
+  
+  $("#bid_block_infobox").append(pieBox);  
+  
+  var radius = pieDimension / 2;
+  
+  var arc = d3.svg.arc()
+    .outerRadius(radius - 2)
+    .innerRadius(30);
+  
+  var pie = d3.layout.pie()
+    .sort(null)
+    .value(function(d) { return d[1]; });
+  
+  var svg = d3.select("#bid_box_pie").append("svg")
+    .attr("width", pieDimension)
+    .attr("height", pieDimension)
+  .append("g")
+    .attr("transform", "translate(" + pieDimension / 2 + "," + pieDimension / 2 + ")");
+  
+  var g = svg.selectAll(".arc")
+    .data(pie(userAmounts))
+    .enter().append("g")
+    .attr("class", "arc")
+    .style("stroke", "#fff");
+    
+  g.append("path")
+    .attr("d", arc)
+    .style("fill", function(d) { 
+      if (!window.userToColor[d.data[0]]) {
+        window.userToColor[d.data[0]] = window.randomColor();
+      }
+      return window.userToColor[d.data[0]]; 
+    });
+  
+  g.append("text")
+    .attr("transform", function(d) { return "translate(" + arc.centroid(d) + ")"; })
+    .attr("dy", ".35em");  
 }
+
+window.userToColor = {};
+
+window.randomColor = (function(){
+  var golden_ratio_conjugate = 0.618033988749895;
+  var h = Math.random();
+
+  var hslToRgb = function (h, s, l){
+      var r, g, b;
+
+      if(s == 0){
+          r = g = b = l; // achromatic
+      }else{
+          function hue2rgb(p, q, t){
+              if(t < 0) t += 1;
+              if(t > 1) t -= 1;
+              if(t < 1/6) return p + (q - p) * 6 * t;
+              if(t < 1/2) return q;
+              if(t < 2/3) return p + (q - p) * (2/3 - t) * 6;
+              return p;
+          }
+
+          var q = l < 0.5 ? l * (1 + s) : l + s - l * s;
+          var p = 2 * l - q;
+          r = hue2rgb(p, q, h + 1/3);
+          g = hue2rgb(p, q, h);
+          b = hue2rgb(p, q, h - 1/3);
+      }
+
+      return '#'+Math.round(r * 255).toString(16)+Math.round(g * 255).toString(16)+Math.round(b * 255).toString(16);
+  };
+  
+  return function(){
+    h += golden_ratio_conjugate;
+    h %= 1;
+    return hslToRgb(h, 0.5, 0.60);
+  };
+})();
