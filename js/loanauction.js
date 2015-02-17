@@ -483,12 +483,17 @@ function populateBidBox(key, dataBlob, opacity) {
     var userBids = data[key];
     userAmounts.push([key, userBids.total]);
     $(userBids.bids).each(function (i,bid){
-      bids.push([bid.rank, bid.lender_display_name, bid.bid_amount, d3.time.format("%X.%L")(new Date(bid.bid_time))]);
+      bids.push([bid.rank, bid.lender_display_name, bid.bid_amount, bid.bid_time]);
     });
+  });
+  
+  bids.sort(function(a,b){
+    return a[3] - b[3];
   });
   
   $(bids).each(function(i,bid){
     var tr = $(document.createElement("tr"));
+    bid[3] = d3.time.format("%X.%L")(new Date(bid[3]));
     $(bid).each(function(i,d){ tr.append($(document.createElement("td")).html(d)); })
     tbody.append(tr);
   });
