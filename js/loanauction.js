@@ -580,6 +580,10 @@ function makeBidBoxPieChart(userAmounts, pieDimension) {
 
 window.userToColor = {};
 
+/**
+ * Derived from http://bl.ocks.org/jdarling/06019d16cb5fd6795edf , 
+ * algorithm from http://martin.ankerl.com/2009/12/09/how-to-create-random-colors-programmatically/
+ */
 window.randomColor = (function(){
   var golden_ratio_conjugate = 0.618033988749895;
   var h = Math.random();
