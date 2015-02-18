@@ -513,6 +513,7 @@ function populateBidBox(key, dataBlob, opacity) {
       window.clickedKey = null;
       $("circle.clicked").attr("class", "inactive");
       $("#bid_block_infobox").children().detach(); 
+      $("#bid_block_infobox").attr("style", null);
       document.body.style.cursor = "default";
     })
     .on("mouseover", function(){ 
@@ -525,7 +526,7 @@ function populateBidBox(key, dataBlob, opacity) {
   $("#bid_block_infobox").children().detach();
   $("#bid_block_infobox").append(h5);
   $("#bid_block_infobox").append(close);
-  makeBidBoxPieChart(userAmounts,pieDimension);
+  makeBidBoxPieChart(userAmounts,commaSeparator(data.total),key[1],pieDimension);
   $("#bid_block_infobox").append(tableBox);  
   if (opacity == 1.0) {
     $("#bid_block_infobox").attr("style", "background: rgba(255, 255, 255, 1.0)");
@@ -535,7 +536,7 @@ function populateBidBox(key, dataBlob, opacity) {
   
 }
 
-function makeBidBoxPieChart(userAmounts, pieDimension) {
+function makeBidBoxPieChart(userAmounts, total, rate, pieDimension) {
   var pieBox = $(document.createElement("div"))
     .attr("class", "bid_box_pie").attr("id", "bid_box_pie")
     .attr("style", "height: "+pieDimension+"px; width: "+pieDimension+"px;");  
@@ -543,6 +544,8 @@ function makeBidBoxPieChart(userAmounts, pieDimension) {
   $("#bid_block_infobox").append(pieBox);  
   
   var radius = pieDimension / 2;
+  
+  var outerRadius = radius - 2, innerRadius = 30;
   
   var arc = d3.svg.arc()
     .outerRadius(radius - 2)
@@ -558,6 +561,15 @@ function makeBidBoxPieChart(userAmounts, pieDimension) {
   .append("g")
     .attr("transform", "translate(" + pieDimension / 2 + "," + pieDimension / 2 + ")");
   
+  var text = svg.append("text")
+    .style("text-anchor", "middle")
+    .text("£"+total);
+  
+  var rateText = svg.append("text")
+    .attr("transform", "translate(0,15)")
+    .style("text-anchor", "middle")
+    .text("@ "+rate+"%");  
+  
   var g = svg.selectAll(".arc")
     .data(pie(userAmounts))
     .enter().append("g")
@@ -571,6 +583,16 @@ function makeBidBoxPieChart(userAmounts, pieDimension) {
         window.userToColor[d.data[0]] = window.randomColor();
       }
       return window.userToColor[d.data[0]]; 
+    })
+    .on("mouseover", function(d) {
+      text.text("£"+commaSeparator(d.data[1]));
+      $("#bid_block_infobox").find("tr").filter(function(){ 
+        return $(this).children().eq(1).html() !== d.data[0] 
+      }).attr("style","display: none");
+    })
+    .on("mouseout", function(d) {
+      text.text("£"+total);
+      $("#bid_block_infobox").find("tr").attr("style", null);
     });
   
   g.append("text")
