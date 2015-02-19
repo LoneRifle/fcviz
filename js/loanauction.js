@@ -315,9 +315,17 @@ function makeBidSummaryChart(id, data, cumData, bidGroups) {
 function makeAllDataFrom(pageData, live) {
   var data = { keys:[] };
   
+  var gmtOffset = 0;  
   var parseHTML = function (i,d) {
+    if (gmtOffset == 0) {
+      var roughTime = new Date(+$(this).attr("data-created_at"));
+      roughTime.setMilliseconds(0);
+      roughTime.setSeconds(0);
+      var displayTime = new Date($(this).find(".date").html());
+      gmtOffset = roughTime.getTime() - displayTime.getTime();
+    }
     var bid = {
-      bid_time: +$(this).attr("data-created_at"),
+      bid_time: +$(this).attr("data-created_at") - gmtOffset,
       annualised_rate: +$(this).attr("data-annualised_rate"),
       lender_display_name: $(this).children().filter(".text").last().html().trim(),
       bid_amount: +$(this).attr("data-amount"),
