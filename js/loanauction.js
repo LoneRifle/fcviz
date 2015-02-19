@@ -40,7 +40,7 @@ window.renderAllBidCharts = function (targetUrl, id) {
   var page = 1;
   var pageData = [];
   var href = $("li.last").first().find("a").attr("href");
-  var last = +href.substring(href.indexOf("=")+1);
+  var last = href? +href.substring(href.indexOf("=")+1) : 1;
   var urlPrefix = live? "auction/" : "";
   $(progress).html("Retrieving and parsing page "+page+"/"+last);
   $.get( urlPrefix + "bids?page=" + page, window.getAllBidPage.bind(window, pageData, id, page, live, last)).fail(function(jqXHR, textStatus, errorThrown) {
