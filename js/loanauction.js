@@ -106,7 +106,7 @@ window.summaryVizWidth = $("div.active").filter(".tab-pane").width();
 
 //Observe mutations made to #bids-summary, so that we can reapply window.fcViz
 var MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
-var observer = new MutationObserver(function(mutations) {
+window.fcVizObserver = new MutationObserver(function(mutations) {
   mutations.forEach(function(mutation) {
     if(mutation.addedNodes.length > 0) {
       var el = jQuery(document.createElement("a"));
@@ -124,11 +124,11 @@ var observer = new MutationObserver(function(mutations) {
   })
 });
 
-observer.observe(document, { childList: true, subtree: true });
+window.fcVizObserver.observe(document, { childList: true, subtree: true });
 
 var activeId = $("div.active").filter("div.tab-pane").attr("id");
 var el = jQuery(document.createElement("a")).attr("href", "#"+activeId);
-if (activeId !== "bids-all") {
+if (activeId !== "bids-all" && activeId != undefined) {
   window.fcViz({target: el});
 }
 
