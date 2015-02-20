@@ -7,9 +7,20 @@
 window.fcVizObserver.disconnect();
  
 var prependLinkToCell = function(){$(this).before(
-  $(document.createElement("a")).html("+").attr("class","seemore").attr("style", "cursor: pointer")
+  $(document.createElement("a")).attr("class","see_more")
+    .attr("style", "cursor: pointer").before("[").html("+").after("] ")
 )};
  
 $("#watch_form").find("a.mediumText").each(prependLinkToCell);
 
-$(".seemore").before("[").after("] ");
+$(".see_more").on("click", function(){
+  $(this).html($(this).html() === "+"? "-" : "+");
+  switch($(this).html()) {
+    case "-":
+      console.log("open");
+      break;
+    case "+":
+      console.log("closed");
+      break;
+  }
+});
