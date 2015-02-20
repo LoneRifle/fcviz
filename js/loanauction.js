@@ -517,17 +517,12 @@ function populateBidBox(key, dataBlob, opacity) {
   
   var close = document.createElement("span");
   $(close).html("<a>X</a>")
+    .attr("style", "cursor: pointer; text-decoration: none;")
     .on("click", function(){ 
       window.clickedKey = null;
       $("circle.clicked").attr("class", "inactive");
       $("#bid_block_infobox").children().detach(); 
       $("#bid_block_infobox").attr("style", null);
-      document.body.style.cursor = "default";
-    })
-    .on("mouseover", function(){ 
-      document.body.style.cursor = "pointer";
-    })
-    .on("mouseout", function(){ 
       document.body.style.cursor = "default";
     });
   
