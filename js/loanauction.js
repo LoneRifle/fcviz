@@ -448,6 +448,7 @@ function makeAllBidsChart(id, dataBlob) {
       .on("mouseover", function(d){ 
         if ($(this).attr("class") !== "clicked"){ 
           $(this).attr("class", "active"); 
+          window.clickedKeyInfoBox = $("#bid_block_infobox").children();
           populateBidBox(d, dataBlob, 0.8);
         }
       })
@@ -461,7 +462,8 @@ function makeAllBidsChart(id, dataBlob) {
         if ($(this).attr("class") !== "clicked"){ 
           $(this).attr("class", "inactive"); 
           if (window.clickedKey) {
-            populateBidBox(window.clickedKey, dataBlob, 1.0);
+            $("#bid_block_infobox").children().detach();
+            $("#bid_block_infobox").append(clickedKeyInfoBox);
           } else {
             $("#bid_block_infobox").html("");
           }
@@ -589,11 +591,14 @@ function makeBidBoxPieChart(userAmounts, total, rate, pieDimension) {
     })
     .on("mouseover", function(d) {
       text.text("£"+commaSeparator(d.data[1]));
+      var self = $(this);
+      $("g.arc").find("path").filter(function(){ return this != self[0] }).each(function(d){d3.select(this).style("opacity","0.5")});
       $("#bid_block_infobox").find("tr").filter(function(){ 
         return $(this).children().eq(1).html() !== d.data[0] 
       }).attr("style","display: none");
     })
     .on("mouseout", function(d) {
+      $("g.arc").find("path").each(function(d){d3.select(this).style("opacity",null)});
       text.text("£"+total);
       $("#bid_block_infobox").find("tr").attr("style", null);
     });
