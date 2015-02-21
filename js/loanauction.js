@@ -103,7 +103,12 @@ $('.tabs').tabs().bind('change', function (e) {
     window.fcViz(e);
   }
 });
-window.summaryVizWidth = $("div.active").filter(".tab-pane").width();
+
+window.summaryVizDimensions = {
+  height: 250,
+  width: $("div.active").filter(".tab-pane").width(),
+  margin: {top: 20, right: 30, bottom: 30, left: 35}
+}
 
 //Observe mutations made to #bids-summary, so that we can reapply window.fcViz
 var MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
@@ -189,9 +194,9 @@ function makeSummaryDataFrom(table) {
 }
 
 function makeBidSummaryChart(id, data, cumData, bidGroups) {
-  var margin = {top: 20, right: 30, bottom: 30, left: 30},
-  width = window.summaryVizWidth * 0.95 - margin.left - margin.right,
-  height = 250 - margin.top - margin.bottom;
+  var margin = window.summaryVizDimensions.margin,
+    width = window.summaryVizDimensions.width * 0.95 - margin.left - margin.right,
+    height = window.summaryVizDimensions.height - margin.top - margin.bottom;
 
   var x = d3.scale.ordinal()
       .rangeRoundBands([0, width], .1);
@@ -380,9 +385,9 @@ function pushBidTo(data, d) {
 }
 
 function makeAllBidsChart(id, dataBlob) {
-  var margin = {top: 20, right: 30, bottom: 30, left: 35},
-    width = window.summaryVizWidth - margin.left - margin.right,
-    height = 250 - margin.top - margin.bottom;
+  var margin = window.summaryVizDimensions.margin,
+    width = window.summaryVizDimensions.width * 0.95 - margin.left - margin.right,
+    height = window.summaryVizDimensions.height - margin.top - margin.bottom;
   
   var data = dataBlob.keys;
   data.sort(function(a,b){ return dataBlob[b].total - dataBlob[a].total; })
@@ -466,6 +471,7 @@ function makeAllBidsChart(id, dataBlob) {
           if (window.clickedKey) {
             $("#bid_block_infobox").children().detach();
             $("#bid_block_infobox").append(clickedKeyInfoBox);
+            $("#bid_block_infobox").attr("style", "background: rgba(255, 255, 255, 1.0)");
           } else {
             $("#bid_block_infobox").html("");
           }
