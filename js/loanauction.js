@@ -6,11 +6,11 @@
 window.formatTimestamp = d3.time.format("%d/%m %H:%M");
 window.commaSeparator = d3.format(",d");
 
-window.renderBidSummaryCharts = function (targetUrl, id) {  
+window.renderBidSummaryCharts = function (total, targetUrl, id) {  
   var table = $(targetUrl).find("table");
   placeChartDivBefore(table, id);
   var data = makeSummaryDataFrom(table);
-  var cumData = makeSummaryCumulative(data);
+  var cumData = makeSummaryCumulative(data, total);
   var bidGroups = findBidGroups(table);
     
   makeBidSummaryChart(id, data, cumData, bidGroups);
@@ -44,7 +44,7 @@ window.renderAllBidCharts = function (targetUrl, id) {
   var urlPrefix = live? "auction/" : "";
   $(progress).html("Retrieving and parsing page "+page+"/"+last);
   $.get( urlPrefix + "bids?page=" + page, window.getAllBidPage.bind(window, pageData, id, page, live, last)).fail(function(jqXHR, textStatus, errorThrown) {
-    $(progress).html("Failed to retrieve page "+page+", chart render aborted: "+textStatus);
+    $(progress).html("Failed to retrieve page "+page+", chart render aborted: "+errorThrown);
   });
 }
 
@@ -63,7 +63,7 @@ window.getAllBidPage = function(pageData, id, page, live, last, d) {
   var urlPrefix = live? "auction/" : "";
   $("#"+id+"_progress").html("Retrieving and parsing page "+nextPage+"/"+last);
   $.get( urlPrefix + "bids?page=" + nextPage, window.getAllBidPage.bind(window, pageData, id, nextPage, live, last)).fail(function(jqXHR, textStatus, errorThrown) {
-    $("#"+id+"_progress").html("Failed to retrieve page "+nextPage+", chart render aborted: "+textStatus);
+    $("#"+id+"_progress").html("Failed to retrieve page "+nextPage+", chart render aborted: "+errorThrown);
   });
 }
 
@@ -82,7 +82,8 @@ window.fcViz = function (e) {
   switch(targetUrl) {
     case "#bids-summary":
       id = "bids_summary_chart_control";
-      renderer = renderBidSummaryCharts;
+      var total = +document.getElementById("amount").innerHTML.replace("£","").replace(",","");
+      renderer = window.renderBidSummaryCharts.bind(window,total);
       break;
     case "#bids-all":
       id = "bids_all_chart_control";
@@ -159,14 +160,13 @@ function findBidGroups(table) {
   return bidGroups;
 }
 
-function makeSummaryCumulative(data) {
+function makeSummaryCumulative(data, total) {
   var cumData = [];
   cumData.push({ name: data[0].name, value: data[0].name === "Rej"? 0 : data[0].value});
   for (i=1;i<data.length;++i) {
     cumData.push({ name: data[i].name, value: data[i].value + cumData[i-1].value});
   }
   
-  var total = +document.getElementById("amount").innerHTML.replace("£","").replace(",","");
   cumData.forEach(function(d){ d.value = d.value/total * 100; });
   return cumData;  
 }
