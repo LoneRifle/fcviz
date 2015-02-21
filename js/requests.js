@@ -7,20 +7,38 @@
 window.fcVizObserver.disconnect();
  
 var prependLinkToCell = function(){$(this).before(
-  $(document.createElement("a")).attr("class","see_more")
-    .attr("style", "cursor: pointer").before("[").html("+").after("] ")
+  $(document.createElement("span")).attr("class","see_more").before("[").html("+").after("] ")
 )};
  
 $("#watch_form").find("a.mediumText").each(prependLinkToCell);
 
 $(".see_more").on("click", function(){
   $(this).html($(this).html() === "+"? "-" : "+");
-  switch($(this).html()) {
-    case "-":
-      console.log("open");
-      break;
-    case "+":
-      console.log("closed");
-      break;
+  var tr = $(this).closest("tr");
+  if (tr.next().attr("class") !== "filler") {
+    createPreviewUnder(tr);
   }
+  tr.next().next().animate({height: "toggle"}, "slow");
 });
+
+function createPreviewUnder(row) {
+  //Create a junk element that is hidden from the user
+  //so that we can somehow give the illusion of maintaining
+  //the table row background colors.
+  var filler = $(document.createElement("tr"))
+    .attr("class", "filler")
+    .attr("id", "filler-"+row.attr("id"));
+  filler.attr("style", "display: none;");
+  
+  var td = $(document.createElement("td"))
+    .attr("colspan", 9)
+    .html("Loading...");
+  
+  var preview = $(document.createElement("tr"))
+    .attr("class", "preview")
+    .attr("id", "preview-"+row.attr("id"));
+
+  preview.append(td);
+  preview.attr("style", "display: none;");
+  row.after(filler,preview);
+}

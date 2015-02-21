@@ -94,6 +94,17 @@ div.bid_block_details {
   text-align: center;
 }
 
-a.see_more {
+span.see_more {
   font-family: "Courier New";
+  color: #097fc9;
+  font-weight: 600;
+  cursor: pointer;
+}
+
+tr.preview {
+  height: 100px;
+}
+
+tr.preview  td {
+  border-top-width: 0px;
 }
