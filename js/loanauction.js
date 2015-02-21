@@ -577,6 +577,18 @@ function makeBidBoxPieChart(userAmounts, total, rate, pieDimension) {
     .style("text-anchor", "middle")
     .text("@ "+rate+"%");  
   
+  var close = svg.append("text").attr("transform", "translate(35,-40)").text("x")
+    .style("cursor", "pointer")
+    .style("display", "none")
+    .on("click", function(d){ 
+      window.infoBoxActiveSlice = null;
+      window.infoBoxActiveData = null;
+      close.style("display", "none");    
+      $("g.arc").find("path").each(function(d){d3.select(this).style("opacity",null)});
+      text.text("£"+total);
+      $("#bid_block_infobox").find("tr").attr("style", null);
+    });
+  
   var g = svg.selectAll(".arc")
     .data(pie(userAmounts))
     .enter().append("g")
@@ -606,6 +618,7 @@ function makeBidBoxPieChart(userAmounts, total, rate, pieDimension) {
       d3.select(window.infoBoxActiveSlice).style("opacity","0.5");
       window.infoBoxActiveSlice = this;
       window.infoBoxActiveData = d;
+      close.style("display",null);
     })
     .on("mouseout", function(d) {
       if (window.infoBoxActiveSlice == null) {
