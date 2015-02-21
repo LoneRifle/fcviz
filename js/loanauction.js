@@ -455,7 +455,9 @@ function makeAllBidsChart(id, dataBlob) {
       .on("click", function(d){ 
         $("circle.clicked").attr("class", "inactive");
         $(this).attr("class", "clicked"); 
-        window.clickedKey = d;
+        window.clickedKey = d;      
+        window.infoBoxActiveSlice = null;
+        window.infoBoxActiveData = null;
         populateBidBox(d, dataBlob, 1.0);
       })
       .on("mouseout", function(d){ 
@@ -557,7 +559,7 @@ function makeBidBoxPieChart(userAmounts, total, rate, pieDimension) {
     .innerRadius(30);
   
   var pie = d3.layout.pie()
-    .sort(null)
+    .sort(function(a,b){ return d3.ascending(a[0].toUpperCase(), b[0].toUpperCase()) })
     .value(function(d) { return d[1]; });
   
   var svg = d3.select("#bid_box_pie").append("svg")
@@ -591,16 +593,33 @@ function makeBidBoxPieChart(userAmounts, total, rate, pieDimension) {
     })
     .on("mouseover", function(d) {
       text.text("£"+commaSeparator(d.data[1]));
-      var self = $(this);
-      $("g.arc").find("path").filter(function(){ return this != self[0] }).each(function(d){d3.select(this).style("opacity","0.5")});
-      $("#bid_block_infobox").find("tr").filter(function(){ 
+      var self = this;
+      d3.select(this).style("opacity",null);
+      $("g.arc").find("path")
+        .filter(function(){ return this != self  && this != window.infoBoxActiveSlice })
+        .each(function(d){d3.select(this).style("opacity","0.5")});
+      $("#bid_block_infobox").find("tr").attr("style", null).filter(function(){ 
         return $(this).children().eq(1).html() !== d.data[0] 
       }).attr("style","display: none");
     })
+    .on("click", function(d) {
+      d3.select(window.infoBoxActiveSlice).style("opacity","0.5");
+      window.infoBoxActiveSlice = this;
+      window.infoBoxActiveData = d;
+    })
     .on("mouseout", function(d) {
-      $("g.arc").find("path").each(function(d){d3.select(this).style("opacity",null)});
-      text.text("£"+total);
-      $("#bid_block_infobox").find("tr").attr("style", null);
+      if (window.infoBoxActiveSlice == null) {
+        $("g.arc").find("path").each(function(d){d3.select(this).style("opacity",null)});
+        text.text("£"+total);
+        $("#bid_block_infobox").find("tr").attr("style", null);
+      } else {
+        d3.select(this).style("opacity","0.5");
+        d3.select(window.infoBoxActiveSlice).style("opacity",null);
+        $("#bid_block_infobox").find("tr").attr("style", null).filter(function(){ 
+          return $(this).children().eq(1).html() !== window.infoBoxActiveData.data[0] 
+        }).attr("style","display: none");
+        text.text("£"+commaSeparator(window.infoBoxActiveData.data[1]));
+      }
     });
   
   g.append("text")
