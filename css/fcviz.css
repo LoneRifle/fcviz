@@ -108,3 +108,12 @@ tr.preview {
 tr.preview  td {
   border-top-width: 0px;
 }
+
+tr.preview dt:before {
+  content: "";
+  display: block;
+}
+tr.preview dl dt, dl dd {
+  font-size: 14px;
+  display: inline;
+}

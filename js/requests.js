@@ -32,16 +32,16 @@ function createPreviewUnder(row) {
     .attr("id", "filler-"+row.attr("id"));
   filler.attr("style", "display: none;");
   
-  var id = "preview-"+row.attr("id");
+  var id = row.attr("id");
   
   var tdLeft = $(document.createElement("td"))
     .attr("colspan", 2)
-    .attr("id", id+"-pane-left")
+    .attr("id", "preview-"+id+"-pane-left")
     .html("Loading...");
   
   var tdRight = $(document.createElement("td"))
     .attr("colspan", 7)
-    .attr("id", id+"-pane-right");
+    .attr("id", "preview-"+id+"-pane-right");
   
   var href = row.find("a.mediumText").attr("href");
   
@@ -53,7 +53,7 @@ function createPreviewUnder(row) {
   
   var preview = $(document.createElement("tr"))
     .attr("class", "preview")
-    .attr("id", id);
+    .attr("id", "preview-"+id);
     
   preview.append(tdLeft, tdRight);
   preview.attr("style", "display: none;");
@@ -66,7 +66,8 @@ window.summaryVizDimensions = {
   margin: {top: 2, right: 10, bottom: 10, left: 10}
 };
 
-window.populatePreview = function (previewPaneLeft, previewPaneRight, id, total, data){
+window.populatePreview = function (previewPaneLeft, previewPaneRight, origId, total, data){
+  var id = "preview-"+origId;
   previewPaneLeft.html("");
   var detailsStartIndex = data.indexOf("<div class='span5'>\n<h3>");
   var dd = $(document.createElement("span"))
@@ -83,29 +84,46 @@ window.populatePreview = function (previewPaneLeft, previewPaneRight, id, total,
     .append(title[1] + ", " + indicateMoreThan + (/\d+/.exec(title[2])[0]) + " years");
   previewPaneLeft.append(previewDetails);
   
-  var dataTableStartIndex = data.indexOf("<table class='brand'>");
-  previewPaneLeft.append(data.substring(dataTableStartIndex, data.indexOf("</table>", dataTableStartIndex)) + "</table>");
-  previewPaneLeft.find("table").attr("style", "display: none");
+  if ($("#"+origId).html().indexOf("Property Investment") == -1 && $("#"+origId).html().indexOf("Property Development") == -1) {
+    var dataTableStartIndex = data.indexOf("<table class='brand'>");
+    previewPaneLeft.append(data.substring(dataTableStartIndex, data.indexOf("</table>", dataTableStartIndex)) + "</table>");
+    previewPaneLeft.find("table").attr("style", "display: none");
   
-  window.renderBidSummaryCharts(total, "#"+previewPaneLeft.attr("id"), id+"-bids");
-  $("#"+id).find("svg").find("g.tick").attr("style", "display: none;");
-  $("#"+id).find("svg").find("g").find("text").attr("style", "display: none;");
-  previewPaneLeft.find("table").detach();  
+    window.renderBidSummaryCharts(total, "#"+previewPaneLeft.attr("id"), id+"-bids");
+    $("#"+id).find("svg").find("g.tick").attr("style", "display: none;");
+    $("#"+id).find("svg").find("g").find("text").attr("style", "display: none;");
+    previewPaneLeft.find("table").detach(); 
+  } else {
+    var propDetailsStartIndex = data.indexOf("<div class='span3'>\n<h3>");
+    var propLoanDetails = $(document.createElement("span"))
+      .html(data.substring(propDetailsStartIndex, data.indexOf("</div>", propDetailsStartIndex)))
+      .find("dl");
+    propLoanDetails.children().slice(0,8).detach();
+    propLoanDetails.find("sup").detach();
+    previewPaneLeft.append(propLoanDetails);
+  }
   
-  if (title[1] === "Limited Company") {
-    var chartGenStart = data.indexOf("if (have_chart_data)");
-    var chartGenString = data.substring(chartGenStart, data.indexOf("loaded", chartGenStart));
-    previewPaneRight.append(
-      $(document.createElement("span")).attr("id", id+"-credit-history-chart"),
-      $(document.createElement("span")).attr("id", id+"-relative-score-chart")
-    );
-    chartGenString = chartGenString.replace("credit-history-chart",id+"-credit-history-chart");
-    chartGenString = chartGenString.replace("relative-score-chart",id+"-relative-score-chart");
-    chartGenString = chartGenString.replace(/width: 440/g,"width: 275");
-    chartGenString = chartGenString.replace(/height: 320/g,"height: 160");
-    var have_chart_data = true;
-    eval(chartGenString);
-    var text = previewPaneRight.find("text");
-    d3.selectAll(text).style("font-family","myriad-pro,Helvetica,sans-serif");
+  if ($("#"+origId).html().indexOf("Property Development") == -1) {
+    if (title[1] === "Limited Company") {
+      var chartGenStart = data.indexOf("if (have_chart_data)");
+      var chartGenString = data.substring(chartGenStart, data.indexOf("loaded", chartGenStart));
+      previewPaneRight.append(
+        $(document.createElement("span")).attr("id", id+"-credit-history-chart"),
+        $(document.createElement("span")).attr("id", id+"-relative-score-chart")
+      );
+      chartGenString = chartGenString.replace("credit-history-chart",id+"-credit-history-chart");
+      chartGenString = chartGenString.replace("relative-score-chart",id+"-relative-score-chart");
+      chartGenString = chartGenString.replace(/width: 440/g,"width: 275");
+      chartGenString = chartGenString.replace(/height: 320/g,"height: 160");
+      var have_chart_data = true;
+      eval(chartGenString);
+      var text = previewPaneRight.find("text");
+      d3.selectAll(text).style("font-family","myriad-pro,Helvetica,sans-serif");
+    } else {
+      var nonLimitedTable = data.substring(
+        data.indexOf("<table id='non-limited-history'>"), data.indexOf("<div id='non-limited-history-info'>")
+      );
+      previewPaneRight.append(nonLimitedTable);
+    }
   } 
 }
