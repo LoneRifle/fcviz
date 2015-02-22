@@ -17,8 +17,10 @@ $(".see_more").on("click", function(){
   var tr = $(this).closest("tr");
   if (tr.next().attr("class") !== "filler") {
     createPreviewUnder(tr);
+    tr.next().next().animate({height: "toggle"}, "fast");
+  } else {
+    tr.next().next().attr("style", "display: "+($(this).html() === "+"? "none" : "table-row"));
   }
-  tr.next().next().animate({height: "toggle"}, "slow");
 });
 
 function createPreviewUnder(row) {
@@ -45,7 +47,7 @@ function createPreviewUnder(row) {
   
   var total = +row.find("td").eq(3).html().replace("£","").replace(",","");
   
-  $.get(href, window.populatePreview.bind(window, tdLeft, id, total)).fail(function(jqXHR, textStatus, errorThrown) {
+  $.get(href, window.populatePreview.bind(window, tdLeft, tdRight, id, total)).fail(function(jqXHR, textStatus, errorThrown) {
     $(tdLeft).html("Failed to retrieve "+href+", chart render aborted: "+errorThrown);
   });
   
@@ -64,7 +66,7 @@ window.summaryVizDimensions = {
   margin: {top: 2, right: 10, bottom: 10, left: 10}
 };
 
-window.populatePreview = function (previewPaneLeft, id, total, data){
+window.populatePreview = function (previewPaneLeft, previewPaneRight, id, total, data){
   previewPaneLeft.html("");
   var detailsStartIndex = data.indexOf("<div class='span5'>\n<h3>");
   var dd = $(document.createElement("span"))
@@ -89,4 +91,21 @@ window.populatePreview = function (previewPaneLeft, id, total, data){
   $("#"+id).find("svg").find("g.tick").attr("style", "display: none;");
   $("#"+id).find("svg").find("g").find("text").attr("style", "display: none;");
   previewPaneLeft.find("table").detach();  
+  
+  if (title[1] === "Limited Company") {
+    var chartGenStart = data.indexOf("if (have_chart_data)");
+    var chartGenString = data.substring(chartGenStart, data.indexOf("loaded", chartGenStart));
+    previewPaneRight.append(
+      $(document.createElement("span")).attr("id", id+"-credit-history-chart"),
+      $(document.createElement("span")).attr("id", id+"-relative-score-chart")
+    );
+    chartGenString = chartGenString.replace("credit-history-chart",id+"-credit-history-chart");
+    chartGenString = chartGenString.replace("relative-score-chart",id+"-relative-score-chart");
+    chartGenString = chartGenString.replace(/width: 440/g,"width: 275");
+    chartGenString = chartGenString.replace(/height: 320/g,"height: 160");
+    var have_chart_data = true;
+    eval(chartGenString);
+    var text = previewPaneRight.find("text");
+    d3.selectAll(text).style("font-family","myriad-pro,Helvetica,sans-serif");
+  } 
 }
