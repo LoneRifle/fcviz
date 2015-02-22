@@ -41,6 +41,8 @@ function createPreviewUnder(row) {
   
   var tdRight = $(document.createElement("td"))
     .attr("colspan", 7)
+    .attr("class", "scroll-box")
+    .attr("style", "position: absolute; width: 607px; height: 185px; padding: 0px 0px 0px 7px")
     .attr("id", "preview-"+id+"-pane-right");
   
   var href = row.find("a.mediumText").attr("href");
@@ -124,6 +126,16 @@ window.populatePreview = function (previewPaneLeft, previewPaneRight, origId, to
         data.indexOf("<table id='non-limited-history'>"), data.indexOf("<div id='non-limited-history-info'>")
       );
       previewPaneRight.append(nonLimitedTable);
+      previewPaneRight.find("#non-limited-history").attr("style","margin-bottom: 0px; width:200px; float: right;");
+      previewPaneRight.find("#non-limited-history").find("th.history-label").html("Date");
     }
   } 
+  var profileIndex = data.indexOf("<div class='span8'>");
+  var profile = data.substring(
+    data.indexOf("<div class='span8'>"), data.indexOf("</div>", profileIndex)
+  ) + "</div>";
+  previewPaneRight.append(profile);
+  previewPaneRight.find(".span8").attr("style", "float: none;");
+  previewPaneRight.find("h3").attr("style","text-align: left; font-size: 14px");
+  previewPaneRight.find("p").attr("style","line-height: auto; font-size: 14px");
 }
