@@ -32,23 +32,28 @@ function createPreviewUnder(row) {
   
   var id = "preview-"+row.attr("id");
   
-  var td = $(document.createElement("td"))
-    .attr("colspan", 9)
-    .attr("id", id)
+  var tdLeft = $(document.createElement("td"))
+    .attr("colspan", 2)
+    .attr("id", id+"-pane-left")
     .html("Loading...");
+  
+  var tdRight = $(document.createElement("td"))
+    .attr("colspan", 7)
+    .attr("id", id+"-pane-right");
   
   var href = row.find("a.mediumText").attr("href");
   
   var total = +row.find("td").eq(3).html().replace("£","").replace(",","");
   
-  $.get(href, window.populatePreview.bind(window, id, total)).fail(function(jqXHR, textStatus, errorThrown) {
-    $(td).html("Failed to retrieve "+href+", chart render aborted: "+errorThrown);
+  $.get(href, window.populatePreview.bind(window, tdLeft, id, total)).fail(function(jqXHR, textStatus, errorThrown) {
+    $(tdLeft).html("Failed to retrieve "+href+", chart render aborted: "+errorThrown);
   });
   
   var preview = $(document.createElement("tr"))
-    .attr("class", "preview");
-
-  preview.append(td);
+    .attr("class", "preview")
+    .attr("id", id);
+    
+  preview.append(tdLeft, tdRight);
   preview.attr("style", "display: none;");
   row.after(filler,preview);
 }
@@ -59,8 +64,8 @@ window.summaryVizDimensions = {
   margin: {top: 2, right: 10, bottom: 10, left: 10}
 };
 
-window.populatePreview = function (id, total, data){
-  $("#"+id).html("");
+window.populatePreview = function (previewPaneLeft, id, total, data){
+  previewPaneLeft.html("");
   var detailsStartIndex = data.indexOf("<div class='span5'>\n<h3>");
   var dd = $(document.createElement("span"))
     .html(data.substring(detailsStartIndex, data.indexOf("</div>", detailsStartIndex)))
@@ -74,7 +79,7 @@ window.populatePreview = function (id, total, data){
     .attr("id", id+"-details")
     .append(title[0]).append(document.createElement("br"))
     .append(title[1] + ", " + indicateMoreThan + (/\d+/.exec(title[2])[0]) + " years");
-  $("#"+id).append(previewDetails);
+  previewPaneLeft.append(previewDetails);
   
   var dataTableStartIndex = data.indexOf("<table class='brand'>");
   var previewBidsId = id+"-bids";
@@ -82,11 +87,11 @@ window.populatePreview = function (id, total, data){
     .attr("id", previewBidsId)
     .attr("style", "width: 300px")
     .html(data.substring(dataTableStartIndex, data.indexOf("</table>", dataTableStartIndex)) + "</table>" );
-  previewBids.find("table").attr("style", "display: none");
-  $("#"+id).append(previewBids);
-
-  window.renderBidSummaryCharts(total, "#"+id, previewBidsId);
+  previewPaneLeft.append(previewBids.html());
+  previewPaneLeft.find("table").attr("style", "display: none");
+  
+  window.renderBidSummaryCharts(total, "#"+previewPaneLeft.attr("id"), previewBidsId);
   $("#"+id).find("svg").find("g.tick").attr("style", "display: none;");
   $("#"+id).find("svg").find("g").find("text").attr("style", "display: none;");
-  previewBids.find("table").detach();  
+  previewPaneLeft.find("table").detach();  
 }
