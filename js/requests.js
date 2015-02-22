@@ -82,15 +82,10 @@ window.populatePreview = function (previewPaneLeft, id, total, data){
   previewPaneLeft.append(previewDetails);
   
   var dataTableStartIndex = data.indexOf("<table class='brand'>");
-  var previewBidsId = id+"-bids";
-  var previewBids = $(document.createElement("span"))
-    .attr("id", previewBidsId)
-    .attr("style", "width: 300px")
-    .html(data.substring(dataTableStartIndex, data.indexOf("</table>", dataTableStartIndex)) + "</table>" );
-  previewPaneLeft.append(previewBids.html());
+  previewPaneLeft.append(data.substring(dataTableStartIndex, data.indexOf("</table>", dataTableStartIndex)) + "</table>");
   previewPaneLeft.find("table").attr("style", "display: none");
   
-  window.renderBidSummaryCharts(total, "#"+previewPaneLeft.attr("id"), previewBidsId);
+  window.renderBidSummaryCharts(total, "#"+previewPaneLeft.attr("id"), id+"-bids");
   $("#"+id).find("svg").find("g.tick").attr("style", "display: none;");
   $("#"+id).find("svg").find("g").find("text").attr("style", "display: none;");
   previewPaneLeft.find("table").detach();  
