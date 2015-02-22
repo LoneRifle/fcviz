@@ -64,15 +64,15 @@ window.populatePreview = function (id, total, data){
   var detailsStartIndex = data.indexOf("<div class='span5'>\n<h3>");
   var dl = $(document.createElement("span"))
     .html(data.substring(detailsStartIndex, data.indexOf("</div>", detailsStartIndex)))
-    .find("dl").attr("style", "display: initial;");
-  dl.children().attr("style", "font-size: 14px;").slice(2,6).detach();
+    .find("dl");
+  dl.children().slice(2,6).detach();
   var title = [];
   dl.find("dd").each(function(){title.push($(this).html().trim())});
   indicateMoreThan = /more than/.test(title[2])? ">" : "";
-  title[2] = indicateMoreThan + (/\d+/.exec(title[2])[0]);
   var previewDetails = $(document.createElement("span"))
     .attr("id", id+"-details")
-    .append(title[0]).append(document.createElement("br")).append(title[1] + ", " + title[2] + " years");
+    .append(title[0]).append(document.createElement("br"))
+    .append(title[1] + ", " + indicateMoreThan + (/\d+/.exec(title[2])[0]) + " years");
   $("#"+id).append(previewDetails);
   
   var dataTableStartIndex = data.indexOf("<table class='brand'>");
