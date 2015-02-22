@@ -62,12 +62,13 @@ window.summaryVizDimensions = {
 window.populatePreview = function (id, total, data){
   $("#"+id).html("");
   var detailsStartIndex = data.indexOf("<div class='span5'>\n<h3>");
-  var dl = $(document.createElement("span"))
+  var dd = $(document.createElement("span"))
     .html(data.substring(detailsStartIndex, data.indexOf("</div>", detailsStartIndex)))
-    .find("dl");
-  dl.children().slice(2,6).detach();
+    .find("dd");
+  var info = [];
+  info = info.concat(dd.first(), dd.eq(dd.length - 2), dd.last());
   var title = [];
-  dl.find("dd").each(function(){title.push($(this).html().trim())});
+  $(info).each(function(){title.push($(this).html().trim())});
   indicateMoreThan = /more than/.test(title[2])? ">" : "";
   var previewDetails = $(document.createElement("span"))
     .attr("id", id+"-details")
