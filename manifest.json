@@ -16,13 +16,19 @@
       "matches": ["https://www.fundingcircle.com/lend/loan-requests/*"],
       "css": [ "css/fcviz.css" ],
       "js": [ "js/requestsinjector.js" ]
+    },    
+    {
+      "matches": ["https://www.fundingcircle.com/my-account/my-lending/"],
+      "css": [ "css/fcviz.css" ],
+      "js": [ "js/summaryinjector.js" ]
     }
   ],
   
   "web_accessible_resources": [
     "css/fcviz.css",
+    "js/d3.min.js",
     "js/loanauction.js",
     "js/requests.js",
-    "js/d3.min.js"
+    "js/summary.js"    
   ]
 }
