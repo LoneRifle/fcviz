@@ -42,7 +42,7 @@ function createPreviewUnder(row) {
   var tdRight = $(document.createElement("td"))
     .attr("colspan", 7)
     .attr("class", "scroll-box")
-    .attr("style", "position: absolute; width: 607px; height: 185px; padding: 0px 0px 0px 7px")
+    .attr("style", "position: absolute; width: 607px; height: 250px; padding: 0px 0px 0px 7px")
     .attr("id", "preview-"+id+"-pane-right");
   
   var href = row.find("a.mediumText").attr("href");
