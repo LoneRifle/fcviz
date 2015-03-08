@@ -23,12 +23,10 @@ window.fcVizObserver = new MutationObserver(function(mutations) {
         }
         $("#hide_repaid").on("change", function(){
           window.repaidHidden = this.checked;
-          $("#all_lends table.brand tbody tr:has(td:contains(Repaid))")
-            .attr("style", window.repaidHidden? "display: none" : null);
+          changeRepaidRowsAndReformat();
         });
         //After installing the checkbox, apply its change method on the table rows.
-        $("#all_lends table.brand tbody tr:has(td:contains(Repaid))")
-          .attr("style", window.repaidHidden? "display: none" : null);
+        changeRepaidRowsAndReformat();
         break;
       default:
         break;
@@ -37,3 +35,17 @@ window.fcVizObserver = new MutationObserver(function(mutations) {
 });
 
 window.fcVizObserver.observe(document, { childList: true, subtree: true });
+
+function changeRepaidRowsAndReformat() {
+  if (window.repaidHidden) {
+    $("#all_lends table.brand tbody tr:has(td:contains(Repaid))")
+      .attr("style", "display: none");
+    $("#all_lends table.brand tbody tr:visible td")
+      .attr("style", "background: white");
+    $("#all_lends table.brand tbody tr:visible:even td")
+      .attr("style", "background: #f9f9f9");
+  } else {
+    $("#all_lends table.brand tbody tr").attr("style", null);
+    $("#all_lends table.brand tbody tr td").attr("style", null);
+  }
+}
