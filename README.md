@@ -14,3 +14,7 @@ Clicking on a plot point will show a pie chart showing amounts bid at that rate 
 ## Summary info box for loan requests page
 Loan requests now have a link that reveals a summary using information from the auction page, including bid summary chart.
 ![Top: original site, Bottom: site with fcviz enabled](http://lonerifle.github.io/fcviz/fcviz-requests.png)
+
+## Hide repaid loans in summary page
+Hide loans or loan parts using a new checkbox near the top right of My Loan Parts section.
+![Top: original site, Bottom: site with fcviz enabled](http://lonerifle.github.io/fcviz/fcviz-hiderepaid.png)
