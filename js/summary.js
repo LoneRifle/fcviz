@@ -40,12 +40,17 @@ function changeRepaidRowsAndReformat() {
   if (window.repaidHidden) {
     $("#all_lends table.brand tbody tr:has(td:contains(Repaid))")
       .attr("style", "display: none");
-    $("#all_lends table.brand tbody tr:visible td")
+    $("#all_lends table.brand tbody tr:visible td:first-child")
       .attr("style", "background: white");
-    $("#all_lends table.brand tbody tr:visible:even td")
+    $("#all_lends table.brand tbody tr:visible:even td:first-child")
       .attr("style", "background: #f9f9f9");
+    $("#all_lends table.brand tbody tr:visible td:not(:first-child)")
+      .attr("style", "text-align:center; background: white");
+    $("#all_lends table.brand tbody tr:visible:even td:not(:first-child)")
+      .attr("style", "text-align:center; background: #f9f9f9");
   } else {
     $("#all_lends table.brand tbody tr").attr("style", null);
-    $("#all_lends table.brand tbody tr td").attr("style", null);
+    $("#all_lends table.brand tbody tr td:first-child").attr("style", null);
+    $("#all_lends table.brand tbody tr:visible:even td:not(:first-child)").attr("style", "text-align:center");
   }
 }
