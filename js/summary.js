@@ -51,6 +51,6 @@ function changeRepaidRowsAndReformat() {
   } else {
     $("#all_lends table.brand tbody tr").attr("style", null);
     $("#all_lends table.brand tbody tr td:first-child").attr("style", null);
-    $("#all_lends table.brand tbody tr:visible:even td:not(:first-child)").attr("style", "text-align:center");
+    $("#all_lends table.brand tbody tr td:not(:first-child)").attr("style", "text-align:center");
   }
 }
