@@ -18,7 +18,7 @@
       "js": [ "js/requestsinjector.js" ]
     },    
     {
-      "matches": ["https://www.fundingcircle.com/my-account/my-lending/"],
+      "matches": ["https://www.fundingcircle.com/my-account/my-lending/*"],
       "css": [ "css/fcviz.css" ],
       "js": [ "js/summaryinjector.js" ]
     }
