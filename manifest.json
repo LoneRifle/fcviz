@@ -4,7 +4,7 @@
   "name": "FCViz",
   "description": "Provides extra visualisations for Funding Circle pages",
   "version": "1.0",
-
+  "icons": {"48": "png/favicon48.png"},
   
   "content_scripts": [
     {
@@ -23,7 +23,6 @@
       "js": [ "js/summaryinjector.js" ]
     }
   ],
-  
   "web_accessible_resources": [
     "css/fcviz.css",
     "js/d3.min.js",
