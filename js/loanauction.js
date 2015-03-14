@@ -211,7 +211,7 @@ function makeBidSummaryChart(id, data, cumData, bidGroups) {
       .scale(x)
       .orient("bottom");
 
-  if (data.length > 30) {
+  if (data.length > ($("#bid_form").length > 0? 28 : 30)) {
     //Hide every other tick on the x-axis.
     //Do this by inspecting the 3rd element,
     //inferring if it is even or odd, and 
