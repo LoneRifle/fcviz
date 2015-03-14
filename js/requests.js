@@ -6,20 +6,31 @@
 //We don't need this mutation observer since we are in the requests page
 window.fcVizObserver.disconnect();
  
-var prependLinkToCell = function(){$(this).before(
-  $(document.createElement("span")).attr("class","see_more").before("[").html("+").after("] ")
-)};
+var prependLinkToCell = function(){  
+  var img = $(document.createElement("img"))
+    .attr("src", "/images/icons/blue_plus.png")
+    .attr("id", "plus");
+  $(this).before(
+    $(document.createElement("span")).attr("class","see_more").append(img, " ")
+  )
+};
  
 $("#watch_form").find("a.mediumText").each(prependLinkToCell);
 
 $(".see_more").on("click", function(){
-  $(this).html($(this).html() === "+"? "-" : "+");
+  var isPlus = $(this).find("img#plus").length == 1;
+  var sign = isPlus? "minus" : "plus";
+  var img = $(document.createElement("img"))
+    .attr("src", "/images/icons/blue_"+sign+".png")
+    .attr("id", sign );
+  $(this).children().detach();
+  $(this).append(img, " ");
   var tr = $(this).closest("tr");
   if (tr.next().attr("class") !== "filler") {
     createPreviewUnder(tr);
     tr.next().next().animate({height: "toggle"}, "fast");
   } else {
-    tr.next().next().attr("style", "display: "+($(this).html() === "+"? "none" : "table-row"));
+    tr.next().next().attr("style", "display: "+(isPlus? "table-row" : "none"));
   }
 });
 
