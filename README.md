@@ -1,4 +1,10 @@
-# fcviz
+# DISCLAIMER
+Not endorsed nor supported by Funding Circle. FCViz adds third-party enhancements to the Funding Circle platform which may lose compatibility over time.
+
+Code and derivative works made available under MIT license.
+This means author accepts NO responsibility for any consequences to any actions taken by Funding Circle users on the Funding Circle platform while using FCViz.
+
+# FCViz
 Chrome extension that provides extra visualisations for Funding Circle pages.
 
 ## Bar charts for bid summary tab
