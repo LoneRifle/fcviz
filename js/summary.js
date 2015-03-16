@@ -3,6 +3,16 @@
  * Payload script for summary page
  */
  
+//Retain a table element in globals so that we can easily reattach 
+//whenever the Loan Parts pane gets wiped
+window.repayGraph = $(document.createElement("td"))
+  .attr("colspan",10)
+  .attr("style", "background-color: #f9f9f9; height: 300px")
+  .attr("id", "repay_graph");
+window.repayGraphContainer = $(document.createElement("tr"))
+  .attr("id", "repay_graph_container")
+  .attr("style", "display: none")
+  .append(window.repayGraph);
  
 //Observe mutations made to table.zebra-striped, so that we can reapply window.fcViz
 var MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
@@ -32,6 +42,16 @@ window.fcVizObserver = new MutationObserver(function(mutations) {
             .attr("id", "repay_graph_link")
             .attr("class", "leftblue");
           $("div#all_lends table.zebra-striped tbody td:first-child a:first-child").after(" ",repayGraphLink);
+          $("div#all_lends table.zebra-striped tbody").append(window.repayGraphContainer);
+          repayGraphLink.on("click", function(){            
+            if (window.repayGraphContainer.find("svg").length == 0) {
+              createRepayGraph();
+              window.repayGraphContainer.animate({height: "toggle"}, "fast");
+            } else {
+              var visible = window.repayGraphContainer.is(":visible");
+              window.repayGraphContainer.attr("style", visible? "display: none" : null);
+            }
+          });
         }
         break;
       default:
@@ -59,4 +79,10 @@ function changeRepaidRowsAndReformat() {
     $("#all_lends table.brand tbody tr td:first-child").attr("style", null);
     $("#all_lends table.brand tbody tr td:not(:first-child)").attr("style", "text-align:center");
   }
+}
+
+
+function createRepayGraph() {
+  window.repayGraph.html("Loading...<br/><br/><br/><br/><br/><br/>");
+  window.repayGraph.append(document.createElement("svg"));
 }
