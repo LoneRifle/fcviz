@@ -39,6 +39,7 @@ window.fcVizObserver = new MutationObserver(function(mutations) {
         }
         if ($("#repay_graph_link").length == 0) {
           var repayGraphLink = $(document.createElement("span")).html("(graph)")
+            .attr("style", "display: none")
             .attr("id", "repay_graph_link")
             .attr("class", "leftblue");
           $("div#all_lends table.zebra-striped tbody td:first-child a:first-child").after(" ",repayGraphLink);
