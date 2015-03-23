@@ -13,7 +13,9 @@ window.repayGraphContainer = $(document.createElement("tr"))
   .attr("id", "repay_graph_container")
   .attr("style", "display: none")
   .append(window.repayGraph);
- 
+
+window.repayByDate = { dates: [] };
+  
 //Observe mutations made to table.zebra-striped, so that we can reapply window.fcViz
 var MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
 window.fcVizObserver = new MutationObserver(function(mutations) {
@@ -85,10 +87,9 @@ function changeRepaidRowsAndReformat() {
 
 function createRepayGraph(href) {
   window.repayGraph.html("Loading...<br/><br/><br/><br/><br/><br/>");
-  //TODO: specify graph layout - work out how to make it scrollable so that 
-  //at any one time you only see one year's worth of repayments
+  window.initialFunds = +$("#account-menu li:not([class]) span.val").html().substring(1);
+  window.finalFunds = initialFunds;    
   d3.csv(href, parseRepayRows, repayGraphCallback);
-  window.repayGraph.append(document.createElement("svg"));
 }
 
 window.parseRepayRows = function (d) {
@@ -102,10 +103,38 @@ window.parseRepayRows = function (d) {
     status: d[" Status"].trim(),
     id: +d["Loan Part ID"],
     name: d[" Borrower"].trim()
-  };
+  };  
+  
+  if (!repayByDate[data.date]) {
+    repayByDate.dates.push(data.date);
+    repayByDate[data.date] = [];
+  }
+  repayByDate[data.date].push(data);
+  finalFunds += data.principal + data.interest - data.fee;
+  
   return data;
 }
 
-window.repayGraphCallback = function (error, rows) {
-  console.log(rows);
+window.repayGraphCallback = function (error, data) {
+  window.repay = data;  
+  repayByDate.dates.sort(function(a,b){ return a - b });
+  window.repayGraph.html("");
+  
+  var margin = {top: 20, right: 30, bottom: 30, left: 40},
+    width = window.repayGraph.width() - margin.left - margin.right,
+    height = window.repayGraph.height() - margin.top - margin.bottom;
+    
+  var x = d3.time.scale()
+    .range([0, width])
+    .domain([new Date(), d3.max(data, function(d){ return d.date })]);
+    
+  var y = d3.scale.linear()
+    .range([0, height])
+    .domain([0, finalFunds]);
+    
+  var chart = d3.select("#repay_graph svg")
+    .attr("width", window.repayGraph.width())
+    .attr("height", window.repayGraph.height());
+  
+  console.log(data);
 }
