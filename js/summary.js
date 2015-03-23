@@ -39,14 +39,14 @@ window.fcVizObserver = new MutationObserver(function(mutations) {
         }
         if ($("#repay_graph_link").length == 0) {
           var repayGraphLink = $(document.createElement("span")).html("(graph)")
-            .attr("style", "display: none")
             .attr("id", "repay_graph_link")
             .attr("class", "leftblue");
-          $("div#all_lends table.zebra-striped tbody td:first-child a:first-child").after(" ",repayGraphLink);
+          var repayCsvLink = $("div#all_lends table.zebra-striped tbody td:first-child a:first-child");
+          repayCsvLink.after(" ",repayGraphLink);
           $("div#all_lends table.zebra-striped tbody").append(window.repayGraphContainer);
           repayGraphLink.on("click", function(){            
             if (window.repayGraphContainer.find("svg").length == 0) {
-              createRepayGraph();
+              createRepayGraph(repayCsvLink.attr("href"));
               window.repayGraphContainer.animate({height: "toggle"}, "fast");
             } else {
               var visible = window.repayGraphContainer.is(":visible");
@@ -83,7 +83,29 @@ function changeRepaidRowsAndReformat() {
 }
 
 
-function createRepayGraph() {
+function createRepayGraph(href) {
   window.repayGraph.html("Loading...<br/><br/><br/><br/><br/><br/>");
+  //TODO: specify graph layout - work out how to make it scrollable so that 
+  //at any one time you only see one year's worth of repayments
+  d3.csv(href, parseRepayRows, repayGraphCallback);
   window.repayGraph.append(document.createElement("svg"));
+}
+
+window.parseRepayRows = function (d) {
+  var data = {
+    date: new Date(d[" Due Date"]),
+    rate: +d[" Annualised Rate"],
+    interest: +d[" Interest due"],
+    fee: +d[" Lender Fee"],
+    principal: +d[" Principal due"],
+    risk: d[" Risk"].trim(),
+    status: d[" Status"].trim(),
+    id: +d["Loan Part ID"],
+    name: d[" Borrower"].trim()
+  };
+  return data;
+}
+
+window.repayGraphCallback = function (error, rows) {
+  console.log(rows);
 }
