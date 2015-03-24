@@ -81,6 +81,9 @@ function changeRepaidRowsAndReformat() {
     $("#all_lends table.brand tbody tr").attr("style", null);
     $("#all_lends table.brand tbody tr td:first-child").attr("style", null);
     $("#all_lends table.brand tbody tr td:not(:first-child)").attr("style", "text-align:center");
+    if ($("#mlpfilter").val() === "all") {
+      $("#all_lends table.brand tbody tr td:nth-child(2)").attr("style", null);
+    }
   }
 }
 
@@ -119,6 +122,7 @@ window.repayGraphCallback = function (error, data) {
   window.repay = data;  
   repayByDate.dates.sort(function(a,b){ return a - b });
   window.repayGraph.html("");
+  window.repayGraph.append(document.createElement("svg"));
   
   var margin = {top: 20, right: 30, bottom: 30, left: 40},
     width = window.repayGraph.width() - margin.left - margin.right,
