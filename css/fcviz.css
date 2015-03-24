@@ -15,7 +15,9 @@ table.tooltip  td, td:first-child {
   padding: 2px 2px 2px 2px;
 }
 
-rect.fcviz { fill: #772d72; }
+rect.fcviz, rect.int { fill: #772d72; }
+
+rect.prin { fill: #DADADA; }
 
 div.tooltip {   
   position: absolute;           
@@ -122,3 +124,4 @@ span#repay_graph_link {
   color: #0099FF;
   cursor: pointer;
 }
+

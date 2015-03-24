@@ -110,9 +110,17 @@ window.parseRepayRows = function (d) {
   
   if (!repayByDate[data.date]) {
     repayByDate.dates.push(data.date);
-    repayByDate[data.date] = [];
+    repayByDate[data.date] = {
+      parts: [],
+      principal: 0,
+      interest: 0,
+      fee: 0
+    };
   }
-  repayByDate[data.date].push(data);
+  repayByDate[data.date].parts.push(data);
+  repayByDate[data.date].principal += data.principal;
+  repayByDate[data.date].interest += data.interest;
+  repayByDate[data.date].fee += data.fee;
   finalFunds += data.principal + data.interest - data.fee;
   
   return data;
@@ -120,9 +128,8 @@ window.parseRepayRows = function (d) {
 
 window.repayGraphCallback = function (error, data) {
   window.repay = data;  
-  repayByDate.dates.sort(function(a,b){ return a - b });
+  window.repayByDate.dates.sort(function(a,b){ return a - b });
   window.repayGraph.html("");
-  window.repayGraph.append(document.createElement("svg"));
   
   var margin = {top: 20, right: 30, bottom: 30, left: 40},
     width = window.repayGraph.width() - margin.left - margin.right,
@@ -130,15 +137,49 @@ window.repayGraphCallback = function (error, data) {
     
   var x = d3.time.scale()
     .range([0, width])
-    .domain([new Date(), d3.max(data, function(d){ return d.date })]);
+    .domain([new Date(), d3.max(window.repayByDate.dates)]);
     
   var y = d3.scale.linear()
-    .range([0, height])
-    .domain([0, finalFunds]);
+    .range([height, 0])
+    .domain([
+      0, 
+      window.finalFunds/10]
+    );
     
-  var chart = d3.select("#repay_graph svg")
+  var chart = d3.select("#repay_graph").append("svg")
     .attr("width", window.repayGraph.width())
-    .attr("height", window.repayGraph.height());
+    .attr("height", window.repayGraph.height())
+    .append("g")
+      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
   
-  console.log(data);
+  var yAxis = d3.svg.axis().scale(y).orient("left");
+  chart.append("g").attr("class", "y axis").call(yAxis);
+  
+  var xAxis = d3.svg.axis().scale(x).orient("bottom");  
+  chart.append("g").attr("class", "x axis")
+    .attr("transform", "translate(0," + height + ")")
+    .call(xAxis);
+  
+  var barWidth = width/window.repayByDate.dates.length/4;
+  
+  chart.selectAll(".prin")
+    .data(window.repayByDate.dates)
+    .enter().append("rect")
+      .attr("class", "prin")
+      .attr("transform", "translate("+(-barWidth/2)+",0)")
+      .attr("x", function(d) { return x(d); })
+      .attr("y", function(d) { return y(window.repayByDate[d].principal); })
+      .attr("height", function(d) { return height - y(window.repayByDate[d].principal); })
+      .attr("width", barWidth);
+      
+  chart.selectAll(".int")
+    .data(window.repayByDate.dates)
+    .enter().append("rect")
+      .attr("class", "int")
+      .attr("transform", "translate("+(-barWidth/2)+",0)")
+      .attr("x", function(d) { return x(d); })
+      .attr("y", function(d) { return y(window.repayByDate[d].interest) - (height - y(window.repayByDate[d].principal)); })
+      .attr("height", function(d) { return height - y(window.repayByDate[d].interest); })
+      .attr("width", barWidth);
+
 }
