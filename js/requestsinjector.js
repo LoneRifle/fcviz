@@ -11,19 +11,20 @@ s.onload = function() {
     this.parentNode.removeChild(this);
 };
 (document.head||document.documentElement).appendChild(s);
- 
-var s = document.createElement('script');
 
-s.src = chrome.extension.getURL("js/d3.min.js");
-s.onload = function() {
-  var s = document.createElement('script');
-  s.src = chrome.extension.getURL("js/loanauction.js");
-  s.onload = function() {
+var load = chainLoad(["js/d3.min.js", "js/loanauction.js", "js/requests.js"]);
+
+load();
+
+function chainLoad(resources) {
+  return inject(resources[0], resources.length > 1? chainLoad(resources.slice(1)) : null);
+}
+
+function inject(resource, onload) {
+  return function() {
     var s = document.createElement('script');
-    s.src = chrome.extension.getURL("js/requests.js");
+    s.src = chrome.extension.getURL(resource);
+    s.onload = onload;
     (document.head||document.documentElement).appendChild(s);
   };
-  (document.head||document.documentElement).appendChild(s);
-};
-
-(document.head||document.documentElement).appendChild(s);
+}

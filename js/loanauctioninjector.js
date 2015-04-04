@@ -12,12 +12,19 @@ s.onload = function() {
 };
 (document.head||document.documentElement).appendChild(s);
  
-var s = document.createElement('script');
+var load = chainLoad(["js/d3.min.js", "js/loanauction.js"]);
 
-s.src = chrome.extension.getURL("js/d3.min.js");
-s.onload = function() {
-  var s = document.createElement('script');
-  s.src = chrome.extension.getURL("js/loanauction.js");
-  (document.head||document.documentElement).appendChild(s);
-};
-(document.head||document.documentElement).appendChild(s);
+load();
+
+function chainLoad(resources) {
+  return inject(resources[0], resources.length > 1? chainLoad(resources.slice(1)) : null);
+}
+
+function inject(resource, onload) {
+  return function() {
+    var s = document.createElement('script');
+    s.src = chrome.extension.getURL(resource);
+    s.onload = onload;
+    (document.head||document.documentElement).appendChild(s);
+  };
+}
