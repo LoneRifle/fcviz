@@ -131,55 +131,39 @@ window.repayGraphCallback = function (error, data) {
   window.repayByDate.dates.sort(function(a,b){ return a - b });
   window.repayGraph.html("");
   
-  var margin = {top: 20, right: 30, bottom: 30, left: 40},
-    width = window.repayGraph.width() - margin.left - margin.right,
-    height = window.repayGraph.height() - margin.top - margin.bottom;
-    
-  var x = d3.time.scale()
-    .range([0, width])
-    .domain([new Date(), d3.max(window.repayByDate.dates)]);
-    
-  var y = d3.scale.linear()
-    .range([height, 0])
-    .domain([
-      0, 
-      window.finalFunds/10]
-    );
-    
-  var chart = d3.select("#repay_graph").append("svg")
-    .attr("width", window.repayGraph.width())
-    .attr("height", window.repayGraph.height())
-    .append("g")
-      .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
-  
-  var yAxis = d3.svg.axis().scale(y).orient("left");
-  chart.append("g").attr("class", "y axis").call(yAxis);
-  
-  var xAxis = d3.svg.axis().scale(x).orient("bottom");  
-  chart.append("g").attr("class", "x axis")
-    .attr("transform", "translate(0," + height + ")")
-    .call(xAxis);
-  
-  var barWidth = width/window.repayByDate.dates.length/4;
-  
-  chart.selectAll(".prin")
-    .data(window.repayByDate.dates)
-    .enter().append("rect")
-      .attr("class", "prin")
-      .attr("transform", "translate("+(-barWidth/2)+",0)")
-      .attr("x", function(d) { return x(d); })
-      .attr("y", function(d) { return y(window.repayByDate[d].principal); })
-      .attr("height", function(d) { return height - y(window.repayByDate[d].principal); })
-      .attr("width", barWidth);
-      
-  chart.selectAll(".int")
-    .data(window.repayByDate.dates)
-    .enter().append("rect")
-      .attr("class", "int")
-      .attr("transform", "translate("+(-barWidth/2)+",0)")
-      .attr("x", function(d) { return x(d); })
-      .attr("y", function(d) { return y(window.repayByDate[d].interest) - (height - y(window.repayByDate[d].principal)); })
-      .attr("height", function(d) { return height - y(window.repayByDate[d].interest); })
-      .attr("width", barWidth);
+  var principal = ['principal',0], interest = ['interest',0], fee = ['fee',0], total = [0];
 
+  var df = d3.time.format("%Y-%m-%d");
+  var dates = ['date', df(new Date())];
+  
+  window.repayByDate.dates.forEach(function (d,i) {
+    interest.push(window.repayByDate[d].interest);
+    principal.push(window.repayByDate[d].principal);
+    fee.push(-window.repayByDate[d].fee);
+    total.push(total[i] + principal[i+1] + interest[i+1] + fee[i+1]);
+    dates.push(df(d));
+  });  
+  
+  total = ['total'].concat(total);
+  
+  var chartArgs = {
+    bindto: '#'+window.repayGraph[0].id,
+    data: {
+      x: 'date',
+      columns: [dates, principal, interest, fee],
+      types: { principal: 'bar', interest: 'bar', fee: 'bar' },      
+      order: 'asc',
+      groups: [[principal[0],interest[0],fee[0]]]
+    },
+    axis: {
+      x: { type: 'timeseries' }
+    },
+    subchart: { show: true },
+    grid: {
+      y: {lines: [{value:0}]}
+    }
+  };
+  
+  c3.generate(chartArgs);
+  repayGraph.find("svg").attr("width", "80%").style("overflow","visible");
 }
