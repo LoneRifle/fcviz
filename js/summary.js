@@ -131,32 +131,41 @@ window.repayGraphCallback = function (error, data) {
   window.repayByDate.dates.sort(function(a,b){ return a - b });
   window.repayGraph.html("");
   
-  var principal = ['principal',0], interest = ['interest',0], fee = ['fee',0], total = [0];
+  var principal = ['principal',0], interest = ['interest',0], fee = ['fee',0], 
+    total = [+$("ul.user-nav li span.val").first().html().substring(1)];
 
   var df = d3.time.format("%Y-%m-%d");
   var dates = ['date', df(new Date())];
   
   window.repayByDate.dates.forEach(function (d,i) {
-    interest.push(window.repayByDate[d].interest);
-    principal.push(window.repayByDate[d].principal);
-    fee.push(-window.repayByDate[d].fee);
-    total.push(total[i] + principal[i+1] + interest[i+1] + fee[i+1]);
+    interest.push(d3.round(window.repayByDate[d].interest,2));
+    principal.push(d3.round(window.repayByDate[d].principal,2));
+    fee.push(d3.round(-window.repayByDate[d].fee,2));
+    total.push(d3.round(total[i] + principal[i+2] + interest[i+2] + fee[i+2],2));
     dates.push(df(d));
   });  
   
   total = ['total'].concat(total);
   
+  var 
+    width = window.repayGraph.width() * 0.8,
+    height = window.repayGraph.height();
+  
   var chartArgs = {
     bindto: '#'+window.repayGraph[0].id,
+    size: { width: width, height: height },
     data: {
       x: 'date',
-      columns: [dates, principal, interest, fee],
+      columns: [dates, principal, interest, fee, total],
       types: { principal: 'bar', interest: 'bar', fee: 'bar' },      
       order: 'asc',
-      groups: [[principal[0],interest[0],fee[0]]]
+      groups: [[principal[0],interest[0],fee[0]]],
+      axes: { principal: 'y', interest: 'y', fee: 'y', total: 'y2'},
+      colors: { principal: '#772d72', interest: '#77C738', fee: '#c7eefe', total: '#0fb3ca' }
     },
     axis: {
-      x: { type: 'timeseries' }
+      x: { type: 'timeseries', tick: {format: '%d %b'} },
+      y2: { show: true }
     },
     subchart: { show: true },
     grid: {
@@ -165,5 +174,7 @@ window.repayGraphCallback = function (error, data) {
   };
   
   c3.generate(chartArgs);
-  repayGraph.find("svg").attr("width", "80%").style("overflow","visible");
+  repayGraph.find(".c3-axis-x").find(".tick line").attr("style", "display: none");
+  repayGraph.find("path.c3-line").attr("fill", "none");
+  repayGraph.find(".domain").parent().attr("class","axis");
 }
