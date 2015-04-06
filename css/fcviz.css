@@ -125,3 +125,12 @@ span#repay_graph_link {
   cursor: pointer;
 }
 
+.c3 rect.extent {
+  color: #dadada;
+  opacity: 0.5;
+}
+
+.c3-tooltip  td.name, .c3-tooltip  td.value {
+  font-size: 14px;
+  padding: 0px 0px 0px 0px;
+}

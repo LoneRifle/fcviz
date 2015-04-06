@@ -130,12 +130,18 @@ window.repayGraphCallback = function (error, data) {
   window.repay = data;  
   window.repayByDate.dates.sort(function(a,b){ return a - b });
   window.repayGraph.html("");
-  
+    
+  var df = d3.time.format("%Y-%m-%d");
   var principal = ['principal',0], interest = ['interest',0], fee = ['fee',0], 
     total = [+$("ul.user-nav li span.val").first().html().substring(1)];
-
-  var df = d3.time.format("%Y-%m-%d");
   var dates = ['date', df(new Date())];
+  
+  var principalWeek = ['principal',0], interestWeek = ['interest',0], feeWeek = ['fee',0], 
+    totalWeek = [+$("ul.user-nav li span.val").first().html().substring(1)];
+  var datesWeek = ['date', df(new Date())];
+  var prinRunTot = 0, intRunTot = 0, feeRunTot = 0;
+  var endOfWeek = new Date();
+  endOfWeek.setDate(endOfWeek.getDate() - endOfWeek.getDay() + 7);
   
   window.repayByDate.dates.forEach(function (d,i) {
     interest.push(d3.round(window.repayByDate[d].interest,2));
@@ -143,9 +149,35 @@ window.repayGraphCallback = function (error, data) {
     fee.push(d3.round(-window.repayByDate[d].fee,2));
     total.push(d3.round(total[i] + principal[i+2] + interest[i+2] + fee[i+2],2));
     dates.push(df(d));
+    
+    //TODO: aggregate by week ending Sunday
+    if (d - endOfWeek > 24 * 60 * 60 * 1000) {      
+      interestWeek.push(d3.round(intRunTot,2));
+      principalWeek.push(d3.round(prinRunTot,2));
+      feeWeek.push(d3.round(-feeRunTot,2));
+      totalWeek.push(d3.round(totalWeek[totalWeek.length - 1] + prinRunTot + intRunTot - feeRunTot,2));
+      datesWeek.push(df(endOfWeek));
+      endOfWeek.setDate(endOfWeek.getDate() + 7);
+      intRunTot = window.repayByDate[d].interest; 
+      prinRunTot = window.repayByDate[d].principal; 
+      feeRunTot = window.repayByDate[d].fee;
+    } else {
+      intRunTot += window.repayByDate[d].interest;
+      prinRunTot += window.repayByDate[d].principal;
+      feeRunTot += window.repayByDate[d].fee;
+    }
   });  
   
+  //Clean up the remaining totals that may still be there        
+  interestWeek.push(d3.round(intRunTot,2));
+  principalWeek.push(d3.round(prinRunTot,2));
+  feeWeek.push(d3.round(-feeRunTot,2));
+  totalWeek.push(d3.round(totalWeek[totalWeek.length - 1] + prinRunTot + intRunTot - feeRunTot,2));
+  datesWeek.push(df(endOfWeek));
+  
+  
   total = ['total'].concat(total);
+  totalWeek = ['total'].concat(totalWeek);
   
   var 
     width = window.repayGraph.width() * 0.8,
@@ -156,7 +188,7 @@ window.repayGraphCallback = function (error, data) {
     size: { width: width, height: height },
     data: {
       x: 'date',
-      columns: [dates, principal, interest, fee, total],
+      columns: [datesWeek, principalWeek, interestWeek, feeWeek, totalWeek],
       types: { principal: 'bar', interest: 'bar', fee: 'bar' },      
       order: 'asc',
       groups: [[principal[0],interest[0],fee[0]]],
