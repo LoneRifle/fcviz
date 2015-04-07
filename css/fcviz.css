@@ -1,5 +1,10 @@
+.c3-axis path, .c3-axis-x path, .c3-axis-y line, .c3-axis-y2 line, 
 .axis path,
 .axis line {fill: none;stroke: #555;}
+
+.c3-axis-x .tick line {
+  display: none;
+}
 
 .cum {
   fill: none;
@@ -133,4 +138,8 @@ span#repay_graph_link {
 .c3-tooltip  td.name, .c3-tooltip  td.value {
   font-size: 14px;
   padding: 0px 0px 0px 0px;
+}
+
+path.c3-line {
+  fill: none;
 }

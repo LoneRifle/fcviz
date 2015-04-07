@@ -206,7 +206,4 @@ window.repayGraphCallback = function (error, data) {
   };
   
   c3.generate(chartArgs);
-  repayGraph.find(".c3-axis-x").find(".tick line").attr("style", "display: none");
-  repayGraph.find("path.c3-line").attr("fill", "none");
-  repayGraph.find(".domain").parent().attr("class","axis");
 }
