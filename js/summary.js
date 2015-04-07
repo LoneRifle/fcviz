@@ -15,6 +15,18 @@ window.repayGraphContainer = $(document.createElement("tr"))
   .append(window.repayGraph);
 
 window.repayByDate = { dates: [] };
+
+df = d3.time.format("%Y-%m-%d");
+
+principal = ['principal',0], interest = ['interest',0], fee = ['fee',0], 
+  total = [+$("ul.user-nav li span.val").first().html().substring(1)];
+dates = ['date', df(new Date())];
+
+principalWeek = ['principal',0], interestWeek = ['interest',0], feeWeek = ['fee',0], 
+  totalWeek = [+$("ul.user-nav li span.val").first().html().substring(1)];
+datesWeek = ['date', df(new Date())];
+  
+repayChart = null;
   
 //Observe mutations made to table.zebra-striped, so that we can reapply window.fcViz
 var MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
@@ -55,6 +67,11 @@ window.fcVizObserver = new MutationObserver(function(mutations) {
               window.repayGraphContainer.attr("style", visible? "display: none" : null);
             }
           });
+          //Re-register the event handlers for the links that load the data since they would have been unregistered on detach
+          if (repayChart != null) {
+            $("#repay_by_day").on("click", activateAndLoad("#repay_by_week", principal, interest, fee, total, dates));
+            $("#repay_by_week").on("click", activateAndLoad("#repay_by_day", principalWeek, interestWeek, feeWeek, totalWeek, datesWeek));
+          }
         }
         break;
       default:
@@ -131,14 +148,6 @@ window.repayGraphCallback = function (error, data) {
   window.repayByDate.dates.sort(function(a,b){ return a - b });
   window.repayGraph.html("");
     
-  var df = d3.time.format("%Y-%m-%d");
-  var principal = ['principal',0], interest = ['interest',0], fee = ['fee',0], 
-    total = [+$("ul.user-nav li span.val").first().html().substring(1)];
-  var dates = ['date', df(new Date())];
-  
-  var principalWeek = ['principal',0], interestWeek = ['interest',0], feeWeek = ['fee',0], 
-    totalWeek = [+$("ul.user-nav li span.val").first().html().substring(1)];
-  var datesWeek = ['date', df(new Date())];
   var prinRunTot = 0, intRunTot = 0, feeRunTot = 0;
   var endOfWeek = new Date();
   endOfWeek.setDate(endOfWeek.getDate() - endOfWeek.getDay() + 7);
@@ -205,5 +214,32 @@ window.repayGraphCallback = function (error, data) {
     }
   };
   
-  c3.generate(chartArgs);
+  repayChart = c3.generate(chartArgs);
+  var details = buildRepayDetails();
+  $(".c3-tooltip-container").after(details);
+  $("#repay_by_day").on("click", activateAndLoad("#repay_by_week", principal, interest, fee, total, dates));
+  $("#repay_by_week").on("click", activateAndLoad("#repay_by_day", principalWeek, interestWeek, feeWeek, totalWeek, datesWeek));
+}
+
+function buildRepayDetails() {
+  var details = $(document.createElement("div"))
+    .attr("class", "repay_details").html(
+      "Data: <span id='repay_by_week'>Weekly</span> |" +
+      " <span id='repay_by_day' class='repay_change_data'>Daily</span>"
+    );
+    
+  return details;
+}
+
+function activateAndLoad(repayId, principal, interest, fee, total, dates) {
+  return function(){
+    if ($(this).attr("class") === "repay_change_data") {
+      $(this).attr("class", "");
+      $(repayId).attr("class", "repay_change_data");
+      repayChart.load({ 
+        unload: true,
+        columns: [ principal, interest, fee, total, dates ]
+      });
+    }
+  };
 }

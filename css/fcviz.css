@@ -125,7 +125,7 @@ tr.preview dl dt, dl dd {
   display: inline;
 }
 
-span#repay_graph_link {
+span#repay_graph_link, .repay_change_data {
   color: #0099FF;
   cursor: pointer;
 }
@@ -142,4 +142,19 @@ span#repay_graph_link {
 
 path.c3-line {
   fill: none;
+}
+
+.c3 {
+  position: relative;
+}
+
+.c3 svg {
+  position: absolute;
+  display: inline-block;
+  top: 0px;
+}
+
+.repay_details {
+  display: inline-block;
+  margin-left: 80%;
 }
