@@ -159,7 +159,7 @@ window.repayGraphCallback = function (error, data) {
     total.push(d3.round(total[i] + principal[i+2] + interest[i+2] + fee[i+2],2));
     dates.push(df(d));
     
-    //TODO: aggregate by week ending Sunday
+    //aggregate by week ending Sunday
     if (d - endOfWeek > 24 * 60 * 60 * 1000) {      
       interestWeek.push(d3.round(intRunTot,2));
       principalWeek.push(d3.round(prinRunTot,2));
@@ -202,7 +202,8 @@ window.repayGraphCallback = function (error, data) {
       order: 'asc',
       groups: [[principal[0],interest[0],fee[0]]],
       axes: { principal: 'y', interest: 'y', fee: 'y', total: 'y2'},
-      colors: { principal: '#772d72', interest: '#77C738', fee: '#c7eefe', total: '#0fb3ca' }
+      colors: { principal: '#772d72', interest: '#77C738', fee: '#c7eefe', total: '#0fb3ca' },
+      onclick: window.listParts
     },
     axis: {
       x: { type: 'timeseries', tick: {format: '%d %b'} },
@@ -227,7 +228,7 @@ function buildRepayDetails() {
       "Data: <span id='repay_by_week'>Weekly</span> |" +
       " <span id='repay_by_day' class='repay_change_data'>Daily</span>"
     );
-    
+  details.append($(document.createElement("div")).attr("id", "#parts_list"));
   return details;
 }
 
@@ -242,4 +243,8 @@ function activateAndLoad(repayId, principal, interest, fee, total, dates) {
       });
     }
   };
+}
+
+window.listParts = function (data, element) {
+  console.log(data);
 }
