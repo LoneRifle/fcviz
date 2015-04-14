@@ -149,8 +149,9 @@ window.repayGraphCallback = function (error, data) {
   window.repayGraph.html("");
     
   var prinRunTot = 0, intRunTot = 0, feeRunTot = 0;
-  var endOfWeek = new Date();
+  var endOfWeek = new Date(df(new Date()));
   endOfWeek.setDate(endOfWeek.getDate() - endOfWeek.getDay() + 7);
+  endOfWeek.setHours(0);
   
   window.repayByDate.dates.forEach(function (d,i) {
     interest.push(d3.round(window.repayByDate[d].interest,2));
@@ -160,7 +161,7 @@ window.repayGraphCallback = function (error, data) {
     dates.push(df(d));
     
     //aggregate by week ending Sunday
-    if (d - endOfWeek > 24 * 60 * 60 * 1000) {      
+    if (d - endOfWeek >= 24 * 60 * 60 * 1000) {    
       interestWeek.push(d3.round(intRunTot,2));
       principalWeek.push(d3.round(prinRunTot,2));
       feeWeek.push(d3.round(-feeRunTot,2));
