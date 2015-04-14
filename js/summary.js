@@ -153,6 +153,8 @@ window.repayGraphCallback = function (error, data) {
   endOfWeek.setDate(endOfWeek.getDate() - endOfWeek.getDay() + 7);
   endOfWeek.setHours(0);
   
+  var totalsByWeek = { dates: [] };
+  
   window.repayByDate.dates.forEach(function (d,i) {
     interest.push(d3.round(window.repayByDate[d].interest,2));
     principal.push(d3.round(window.repayByDate[d].principal,2));
@@ -161,30 +163,30 @@ window.repayGraphCallback = function (error, data) {
     dates.push(df(d));
     
     //aggregate by week ending Sunday
-    if (d - endOfWeek >= 24 * 60 * 60 * 1000) {    
-      interestWeek.push(d3.round(intRunTot,2));
-      principalWeek.push(d3.round(prinRunTot,2));
-      feeWeek.push(d3.round(-feeRunTot,2));
-      totalWeek.push(d3.round(totalWeek[totalWeek.length - 1] + prinRunTot + intRunTot - feeRunTot,2));
-      datesWeek.push(df(endOfWeek));
-      endOfWeek.setDate(endOfWeek.getDate() + 7);
-      intRunTot = window.repayByDate[d].interest; 
-      prinRunTot = window.repayByDate[d].principal; 
-      feeRunTot = window.repayByDate[d].fee;
-    } else {
-      intRunTot += window.repayByDate[d].interest;
-      prinRunTot += window.repayByDate[d].principal;
-      feeRunTot += window.repayByDate[d].fee;
+    var endOfWeek = new Date(d);
+    if (endOfWeek.getDay() > 0) {
+      endOfWeek.setDate(endOfWeek.getDate() - endOfWeek.getDay() + 7);
     }
+    
+      totalsByWeek.dates.push(endOfWeek);
+      totalsByWeek[endOfWeek] = {
+        principal: 0,
+        interest: 0,
+        fee: 0
+      };
+    }
+    totalsByWeek[endOfWeek].principal += window.repayByDate[d].principal;
+    totalsByWeek[endOfWeek].interest += window.repayByDate[d].interest;
+    totalsByWeek[endOfWeek].fee += window.repayByDate[d].fee;
   });  
   
-  //Clean up the remaining totals that may still be there        
-  interestWeek.push(d3.round(intRunTot,2));
-  principalWeek.push(d3.round(prinRunTot,2));
-  feeWeek.push(d3.round(-feeRunTot,2));
-  totalWeek.push(d3.round(totalWeek[totalWeek.length - 1] + prinRunTot + intRunTot - feeRunTot,2));
-  datesWeek.push(df(endOfWeek));
-  
+  //Clean up the remaining totals that may still be there  
+  totalsByWeek.dates.forEach( function(endOfWeek) {  
+    interestWeek.push(d3.round(totalsByWeek[endOfWeek].interest,2));
+    principalWeek.push(d3.round(totalsByWeek[endOfWeek].principal,2));
+    feeWeek.push(d3.round(-totalsByWeek[endOfWeek].fee,2));
+    datesWeek.push(df(endOfWeek));
+  });
   
   total = ['total'].concat(total);
   totalWeek = ['total'].concat(totalWeek);
