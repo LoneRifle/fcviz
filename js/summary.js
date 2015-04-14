@@ -225,7 +225,7 @@ window.repayGraphCallback = function (error, data) {
 function buildRepayDetails() {
   var details = $(document.createElement("div"))
     .attr("class", "repay_details").html(
-      "Data: <span id='repay_by_week'>Weekly</span> |" +
+      "Data: <span id='repay_by_week' class='repay_current_data'>Weekly</span> |" +
       " <span id='repay_by_day' class='repay_change_data'>Daily</span>"
     );
   details.append($(document.createElement("div")).attr("id", "#parts_list"));
@@ -235,7 +235,7 @@ function buildRepayDetails() {
 function activateAndLoad(repayId, principal, interest, fee, total, dates) {
   return function(){
     if ($(this).attr("class") === "repay_change_data") {
-      $(this).attr("class", "");
+      $(this).attr("class", "repay_current_data");
       $(repayId).attr("class", "repay_change_data");
       repayChart.load({ 
         unload: true,
@@ -246,5 +246,20 @@ function activateAndLoad(repayId, principal, interest, fee, total, dates) {
 }
 
 window.listParts = function (data, element) {
-  console.log(data);
+  var isWeekly = $(".repay_current_data").attr("id") === "repay_by_week";
+  var date = data.x;
+  var parts = [];
+  if (isWeekly) {
+    for (var i = 0; i < 7; ++i) {
+      var d = new Date(date);
+      d.setDate(date.getDate() - i);
+      var repayEntry = repayByDate[d];
+      if (repayEntry != null) {
+        parts = repayEntry.parts.concat(parts);
+      }
+    }
+  } else {
+    parts = repayByDate[date].parts;
+  }
+  console.log(parts);
 }
