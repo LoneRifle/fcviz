@@ -228,7 +228,7 @@ function buildRepayDetails() {
       "Data: <span id='repay_by_week' class='repay_current_data'>Weekly</span> |" +
       " <span id='repay_by_day' class='repay_change_data'>Daily</span>"
     );
-  details.append($(document.createElement("div")).attr("id", "#parts_list"));
+  details.append($(document.createElement("div")).attr("id", "parts_list"));
   return details;
 }
 
@@ -237,6 +237,7 @@ function activateAndLoad(repayId, principal, interest, fee, total, dates) {
     if ($(this).attr("class") === "repay_change_data") {
       $(this).attr("class", "repay_current_data");
       $(repayId).attr("class", "repay_change_data");
+      $("#parts_list").children().detach();
       repayChart.load({ 
         unload: true,
         columns: [ principal, interest, fee, total, dates ]
@@ -261,5 +262,25 @@ window.listParts = function (data, element) {
   } else {
     parts = repayByDate[date].parts;
   }
+  $("#parts_list").children().detach();
+  var partsTable = $(document.createElement("table"))
+    .html("<tr><th>Title</th><th>Date</th><th>Prin</th><th>Int</th><th>Fee</th></tr>");
+    
+  var df = d3.time.format("%d %b");
+  
+  parts.forEach(function(d,i){
+    var tooltip = $(document.createElement("a"))
+      .attr("data-content", d.name)
+      .html('<img src="/assets/help/help_grey.png" alt="?">')
+      
+    var tr = $(document.createElement("tr"))
+      .append($(document.createElement("td")).append(tooltip))
+      .append($(document.createElement("td")).html(df(d.date)))
+      .append($(document.createElement("td")).html(d.principal))
+      .append($(document.createElement("td")).html(d.interest))
+      .append($(document.createElement("td")).html(d.fee))
+    partsTable.append(tr);
+  });
+  $("#parts_list").append(partsTable);
   console.log(parts);
 }
