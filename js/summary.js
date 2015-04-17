@@ -168,6 +168,7 @@ window.repayGraphCallback = function (error, data) {
       endOfWeek.setDate(endOfWeek.getDate() - endOfWeek.getDay() + 7);
     }
     
+    if (!totalsByWeek[endOfWeek]) {
       totalsByWeek.dates.push(endOfWeek);
       totalsByWeek[endOfWeek] = {
         principal: 0,
@@ -185,6 +186,7 @@ window.repayGraphCallback = function (error, data) {
     interestWeek.push(d3.round(totalsByWeek[endOfWeek].interest,2));
     principalWeek.push(d3.round(totalsByWeek[endOfWeek].principal,2));
     feeWeek.push(d3.round(-totalsByWeek[endOfWeek].fee,2));
+    totalWeek.push(d3.round(totalWeek[totalWeek.length - 1] + totalsByWeek[endOfWeek].principal + totalsByWeek[endOfWeek].interest - totalsByWeek[endOfWeek].fee,2));
     datesWeek.push(df(endOfWeek));
   });
   
@@ -223,6 +225,10 @@ window.repayGraphCallback = function (error, data) {
   $(".c3-tooltip-container").after(details);
   $("#repay_by_day").on("click", activateAndLoad("#repay_by_week", principal, interest, fee, total, dates));
   $("#repay_by_week").on("click", activateAndLoad("#repay_by_day", principalWeek, interestWeek, feeWeek, totalWeek, datesWeek));
+  
+  var div = d3.select("body").append("div")   
+    .attr("class", "tooltip")               
+    .style("opacity", 0);
 }
 
 function buildRepayDetails() {
@@ -231,7 +237,7 @@ function buildRepayDetails() {
       "Data: <span id='repay_by_week' class='repay_current_data'>Weekly</span> |" +
       " <span id='repay_by_day' class='repay_change_data'>Daily</span>"
     );
-  details.append($(document.createElement("div")).attr("id", "parts_list"));
+  details.append($(document.createElement("div")).attr("id", "parts_list").attr("class", "scroll-box"));
   return details;
 }
 
@@ -271,10 +277,21 @@ window.listParts = function (data, element) {
     
   var df = d3.time.format("%d %b");
   
+  var div = $("div.tooltip");
+  
   parts.forEach(function(d,i){
-    var tooltip = $(document.createElement("a"))
-      .attr("data-content", d.name)
-      .html('<img src="/assets/help/help_grey.png" alt="?">')
+     var tooltip = $(document.createElement("a"))
+       .attr("data-content", d.name)
+       .html('<img src="/assets/help/help_grey.png" alt="?">')
+       .on("mouseover", function(e){ 
+         div.animate({ opacity: .9 }, 100);   
+        div.html($(this).attr("data-content"))  
+         .attr("style", "left:"+ (e.pageX) + "px; top:"+ (e.pageY - 28) + "px");
+       })
+       .on("mouseout", function(d){ 
+         div.animate({ opacity: 0 }, 100);    
+       });
+      
       
     var tr = $(document.createElement("tr"))
       .append($(document.createElement("td")).append(tooltip))

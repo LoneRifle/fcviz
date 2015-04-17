@@ -162,24 +162,3 @@ path.c3-line {
 #parts_list th, #parts_list td {
   padding: 1px 1px 1px 1px;
 }
-
-#parts_list a:hover {
-  position: relative;
-}
-
-#parts_list a[data-content]:hover:after {
-  content: attr(data-content);
-  padding: 4px 8px;
-  color: #333;
-  position: absolute;
-  left: 0;
-  top: 100%;
-  white-space: nowrap;
-  z-index: 20px;
-  -webkit-border-radius: 5px;
-  border-radius: 5px;
-  -webkit-box-shadow: 0px 0px 4px #222;
-  box-shadow: 0px 0px 4px #222;
-  background-image: -webkit-gradient(linear,left top,left bottom,color-stop(0, #eeeeee),color-stop(1, #cccccc));
-  background-image: -webkit-linear-gradient(top, #eeeeee, #cccccc);
-}
