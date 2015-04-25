@@ -23,6 +23,9 @@
       "js": [ "js/summaryinjector.js" ]
     }
   ],
+  "background": {
+    "scripts": ["js/background.js"]
+  },
   "web_accessible_resources": [
     "css/fcviz.css",
     "css/c3.min.css",
@@ -31,5 +34,10 @@
     "js/loanauction.js",
     "js/requests.js",
     "js/summary.js"    
+  ],
+  "permissions": [
+    "webRequest",
+    "webRequestBlocking",
+    "https://www.fundingcircle.com/lend/loan-requests/download/*"
   ]
 }
