@@ -24,3 +24,11 @@ Loan requests now have a link that reveals a summary using information from the 
 ## Hide repaid loans in summary page
 Hide loans or loan parts using a new checkbox near the top right of My Loan Parts section.
 ![Top: original site, Bottom: site with fcviz enabled](http://lonerifle.github.io/fcviz/fcviz-hiderepaid.png)
+
+## See repayment schedule as timeseries graph
+Repayment schedule now viewable as chart showing payments over time, either on a per-week or per-day basis. 
+Includes ability to zoom into particular sections of the repayment schedule.
+Show or hide chart components by clicking on the labels.
+Mousing over the chart points or bars will display a tooltip showing principal and interest paid, fees to FC, 
+and running total. 
+![Repayment chart](http://lonerifle.github.io/fcviz/fcviz-repay.png)
