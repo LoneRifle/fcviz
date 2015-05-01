@@ -32,3 +32,8 @@ Show or hide chart components by clicking on the labels.
 Mousing over the chart points or bars will display a tooltip showing principal and interest paid, fees to FC, 
 and running total. 
 ![Repayment chart](http://lonerifle.github.io/fcviz/fcviz-repay.png)
+
+## Cleaner financial summary page for property loans
+Investor report now directly embedded in the Financial Summary tab, with option to download as well. 
+All irrelevant sections also removed leaving only investor report and outstanding loans.
+![Property](http://lonerifle.github.io/fcviz/property.png)
