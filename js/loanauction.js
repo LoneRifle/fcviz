@@ -134,14 +134,21 @@ window.fcVizObserver = new MutationObserver(function(mutations) {
           //Property loans usually have one hyperlink labelled as Investor Report
           if ($("a.blueText").html().trim().startsWith("Investor Report")) {
             var reportHeading = $("#financial_summary .top_margin h2").first();
-            reportHeading.html("Investor Report");
+            reportHeading.html("Investor Report ");
             reportHeading.next().detach();
-            var href = $("a.blueText").attr("href");
+            var link = $("a.blueText");
+            var href = link.attr("href");
             var investorReport = $(document.createElement("iframe"))
               .attr("src", href + "#fcviz")
               .attr("style", "width: 100%; height: 450px")
-            reportHeading.after(investorReport);
+            link.detach().html("Download");
+            reportHeading.append(link).after(investorReport);
             investorReport.append($(document.createElement("p")).html("It appears that your browser somehow does not support iframes"));
+            //Cleanup unwanted divs
+            $("#financial_summary div.row h2").first().parent("div").detach();
+            var payPerf = $("#financial_summary .top_margin h2").last();
+            payPerf.next().detach();
+            payPerf.detach();
           }
           break;
         default:
