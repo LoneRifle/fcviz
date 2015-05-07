@@ -15,7 +15,7 @@ var prependLinkToCell = function(){
   )
 };
  
-$("#watch_form").find("a.mediumText").each(prependLinkToCell);
+$("a.mediumText").each(prependLinkToCell);
 
 $(".see_more").on("click", function(){
   var isPlus = $(this).find("img#plus").length == 1;
@@ -44,6 +44,21 @@ function createPreviewUnder(row) {
   filler.attr("style", "display: none;");
   
   var id = row.attr("id");
+  if (!id) {
+    id = /\d+/.exec(row.find("span.greyText").html())[0];
+    row.attr("id",id);
+  }
+  
+  var computeWidth = function (cell) {
+    var width = cell.width();
+    width += (+/\d+/.exec(cell.css("padding-left"))[0]) + (+/\d+/.exec(cell.css("padding-right"))[0]);
+    return width;
+  }
+  
+  var width = row.width();
+  width -= computeWidth(row.children().first());
+  width -= computeWidth(row.children().first().next());
+  width -= 7; //padding from the right pane cell
   
   var tdLeft = $(document.createElement("td"))
     .attr("colspan", 2)
@@ -53,7 +68,7 @@ function createPreviewUnder(row) {
   var tdRight = $(document.createElement("td"))
     .attr("colspan", 7)
     .attr("class", "scroll-box")
-    .attr("style", "position: absolute; width: 607px; height: 250px; padding: 0px 0px 0px 7px")
+    .attr("style", "position: absolute; width: "+width+"px; height: 250px; padding: 0px 0px 0px 7px")
     .attr("id", "preview-"+id+"-pane-right");
   
   var href = row.find("a.mediumText").attr("href");

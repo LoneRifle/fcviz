@@ -13,7 +13,7 @@
       "js": [ "js/loanauctioninjector.js" ]
     },
     {
-      "matches": ["https://www.fundingcircle.com/lend/loan-requests/*"],
+      "matches": ["https://www.fundingcircle.com/lend/loan-requests/*", "https://www.fundingcircle.com/my-account/my-watchlist/*"],
       "css": [ "css/fcviz.css" ],
       "js": [ "js/requestsinjector.js" ]
     },    
