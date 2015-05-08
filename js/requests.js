@@ -51,6 +51,7 @@ function createPreviewUnder(row) {
   
   var computeWidth = function (cell) {
     var width = cell.width();
+    cell.attr("style", "width:"+width+"px");
     width += (+/\d+/.exec(cell.css("padding-left"))[0]) + (+/\d+/.exec(cell.css("padding-right"))[0]);
     return width;
   }
@@ -59,6 +60,8 @@ function createPreviewUnder(row) {
   width -= computeWidth(row.children().first());
   width -= computeWidth(row.children().first().next());
   width -= 7; //padding from the right pane cell
+  
+  window.summaryVizDimensions.width = row.width() - width - 20;
   
   var tdLeft = $(document.createElement("td"))
     .attr("colspan", 2)
