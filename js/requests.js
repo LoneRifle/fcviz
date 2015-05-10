@@ -142,9 +142,10 @@ window.populatePreview = function (previewPaneLeft, previewPaneRight, origId, to
         $(document.createElement("span")).attr("id", id+"-credit-history-chart"),
         $(document.createElement("span")).attr("id", id+"-relative-score-chart")
       );
+      var chartWidth = 0.48 * previewPaneRight.width();
       chartGenString = chartGenString.replace("credit-history-chart",id+"-credit-history-chart");
       chartGenString = chartGenString.replace("relative-score-chart",id+"-relative-score-chart");
-      chartGenString = chartGenString.replace(/width: 440/g,"width: 275");
+      chartGenString = chartGenString.replace(/width: 440/g,"width: "+chartWidth);
       chartGenString = chartGenString.replace(/height: 320/g,"height: 160");
       var have_chart_data = true;
       eval(chartGenString);
