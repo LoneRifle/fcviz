@@ -210,7 +210,7 @@ function makeSummaryDataFrom(table) {
   
   rows.children().filter(":not(.sub-accepted, .sub-group)").each(function(){
     data.push({ 
-      name: +$(this).attr("data-annualised_rate"),
+      name: $(this).attr("data-annualised_rate"),
       value: +$(this).attr("data-amount")
     });
   });
