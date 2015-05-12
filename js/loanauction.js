@@ -182,7 +182,7 @@ function findBidGroups(table) {
   var bidGroups = {};
   
   table.find("tr.accepted[data-my-bids=1]").each(function(){
-    var key = $(this).attr("data-annualised_rate");
+    var key = +$(this).attr("data-annualised_rate");
     var bidGroup = $(this).nextUntil(":not(.sub-accepted, .sub-group)").clone();
     bidGroup.each(function(){ 
       $(this).children().last().detach();
@@ -210,7 +210,7 @@ function makeSummaryDataFrom(table) {
   
   rows.children().filter(":not(.sub-accepted, .sub-group)").each(function(){
     data.push({ 
-      name: $(this).attr("data-annualised_rate"),
+      name: +$(this).attr("data-annualised_rate"),
       value: +$(this).attr("data-amount")
     });
   });
