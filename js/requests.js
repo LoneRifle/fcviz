@@ -34,6 +34,15 @@ $(".see_more").on("click", function(){
   }
 });
 
+$("img[src='/images/auction-hammer.png']").on("click", function(){
+  var href = $(this).parent().find("a").attr("href") + "/my_bids";
+  var amt = $(this).parent().parent().find("td:nth-child(4)")
+  $.get(href, addBidToAmount.bind(amt)).fail(function(jqXHR, textStatus, errorThrown) {
+    console.log("Failed to retrieve "+href+", not showing bids: "+errorThrown);
+  });
+  $(this).off("click");
+})
+
 function createPreviewUnder(row) {
   //Create a junk element that is hidden from the user
   //so that we can somehow give the illusion of maintaining
@@ -168,4 +177,23 @@ window.populatePreview = function (previewPaneLeft, previewPaneRight, origId, to
   previewPaneRight.find(".span8").attr("style", "float: none;");
   previewPaneRight.find("h3").attr("style","text-align: left; font-size: 14px");
   previewPaneRight.find("p").attr("style","line-height: auto; font-size: 14px");
+}
+
+window.addBidToAmount = function (data) {
+  $(this).append(data);
+  $(this).find("div.scroll-box").css("display","none");
+  var totalExposure = 0, totalRejects = 0;
+  var bids = $(this).find("div.scroll-box").find("tr").each(function(){
+    var bid = +$(this).attr("data-amount");
+    if ($(this).attr("data-status") === "live") {
+      totalExposure += bid;
+    } else {
+      totalRejects += bid;
+    }
+  });
+  $(this).find("div.scroll-box").detach();
+  $(this).html($(this).html() + "<br/><span class=live-bid>£" + window.commaSeparator(totalExposure)+"</span>");
+  if (totalRejects > 0) {
+    $(this).html($(this).html() + "<br/><span class=rejected-bid>£" + window.commaSeparator(totalRejects)+"</span>");
+  }
 }

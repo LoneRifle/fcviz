@@ -162,3 +162,15 @@ path.c3-line {
 #parts_list th, #parts_list td {
   padding: 1px 1px 1px 1px;
 }
+
+.live-bid {
+  color: #0fb3ca;
+}
+
+.rejected-bid {
+  color: #dadada;
+}
+
+img[src='/images/auction-hammer.png'] {
+  cursor: pointer;
+}
