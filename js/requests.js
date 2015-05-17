@@ -5,7 +5,9 @@
  
 //We don't need this mutation observer since we are in the requests page
 window.fcVizObserver.disconnect();
- 
+
+window.myBids = {};
+
 var prependLinkToCell = function(){  
   var img = $(document.createElement("img"))
     .attr("src", "/images/icons/blue_plus.png")
@@ -34,14 +36,30 @@ $(".see_more").on("click", function(){
   }
 });
 
-$("img[src='/images/auction-hammer.png']").on("click", function(){
-  var href = $(this).parent().find("a").attr("href") + "/my_bids";
-  var amt = $(this).parent().parent().find("td:nth-child(4)")
-  $.get(href, addBidToAmount.bind(amt)).fail(function(jqXHR, textStatus, errorThrown) {
-    console.log("Failed to retrieve "+href+", not showing bids: "+errorThrown);
+var div = d3.select("body").append("div")   
+  .attr("class", "tooltip")               
+  .style("opacity", 0);
+
+$("img[src='/images/auction-hammer.png']")
+  .on("click", function(){
+    var href = $(this).parent().find("a").attr("href") + "/my_bids";
+    var id = /\d+/.exec(href)[0];
+    var amt = $(this).parent().parent().find("td:nth-child(4)");
+    $.get(href, addBidToAmount.bind(amt,id)).fail(function(jqXHR, textStatus, errorThrown) {
+      console.log("Failed to retrieve "+href+", not showing bids: "+errorThrown);
+    });
+    $(this).off("click");
+  })
+  .on("mouseover", function(e){ 
+    var href = $(this).parent().find("a").attr("href") + "/my_bids";
+    var id = /\d+/.exec(href)[0];
+    $("div.tooltip").animate({ opacity: .9 }, 100)
+      .attr("style", "left:"+ (e.pageX) + "px; top:"+ (e.pageY - 28) + "px")
+      .html(myBids[id]? myBids[id] : "Click to show my bids");
+   })
+  .on("mouseout", function(d){ 
+    $("div.tooltip").animate({ opacity: 0 }, 100);    
   });
-  $(this).off("click");
-})
 
 function createPreviewUnder(row) {
   //Create a junk element that is hidden from the user
@@ -179,11 +197,12 @@ window.populatePreview = function (previewPaneLeft, previewPaneRight, origId, to
   previewPaneRight.find("p").attr("style","line-height: auto; font-size: 14px");
 }
 
-window.addBidToAmount = function (data) {
-  $(this).append(data);
-  $(this).find("div.scroll-box").css("display","none");
+window.addBidToAmount = function (id, data) {
+  $("div.tooltip").html(data);
   var totalExposure = 0, totalRejects = 0;
-  var bids = $(this).find("div.scroll-box").find("tr").each(function(){
+  var bids = $("div.scroll-box").css("height","auto").find("tr").each(function(){
+    $(this).find("td:nth-child(2)").detach();
+    $(this).find("th:nth-child(2)").detach();
     var bid = +$(this).attr("data-amount");
     if ($(this).attr("data-status") === "live") {
       totalExposure += bid;
@@ -191,7 +210,8 @@ window.addBidToAmount = function (data) {
       totalRejects += bid;
     }
   });
-  $(this).find("div.scroll-box").detach();
+  var bidTable = $("div.scroll-box");
+  window.myBids[id] = bidTable;
   $(this).html($(this).html() + "<br/><span class=live-bid>£" + window.commaSeparator(totalExposure)+"</span>");
   if (totalRejects > 0) {
     $(this).html($(this).html() + "<br/><span class=rejected-bid>£" + window.commaSeparator(totalRejects)+"</span>");
