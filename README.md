@@ -37,3 +37,8 @@ and running total.
 Investor report now directly embedded in the Financial Summary tab, with option to download as well. 
 All irrelevant sections also removed leaving only investor report and outstanding loans.
 ![Property](http://lonerifle.github.io/fcviz/property.png)
+
+## Bid peeking
+Auction icons can now be clicked on, adding total active and rejected bids by user to the Amounts column for Watchlist and Loan Requests pages.
+Tooltips on mousing over auction icon will then show the full list of bids.
+![Bid peeking](http://lonerifle.github.io/fcviz/bidpeeking.png)
