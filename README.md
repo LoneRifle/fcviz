@@ -41,4 +41,4 @@ All irrelevant sections also removed leaving only investor report and outstandin
 ## Bid peeking
 Auction icons can now be clicked on, adding total active and rejected bids by user to the Amounts column for Watchlist and Loan Requests pages.
 Tooltips on mousing over auction icon will then show the full list of bids.
-![Bid peeking](http://lonerifle.github.io/fcviz/bidpeeking.png)
+![Bid peeking](http://lonerifle.github.io/fcviz/bidpeek.png)
