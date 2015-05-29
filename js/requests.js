@@ -43,10 +43,12 @@ var div = d3.select("body").append("div")
 var auctionOnClick = function() {
   var href = $(this).parent().find("a").attr("href") + "/my_bids";
   var id = /\d+/.exec(href)[0];
-  var amt = $(this).parent().parent().find("td:nth-child(4)");
-  $.get(href, addBidToAmount.bind(amt,id)).fail(function(jqXHR, textStatus, errorThrown) {
-    console.log("Failed to retrieve "+href+", not showing bids: "+errorThrown);
-  });
+  if (!myBids[id]) {
+    var amt = $(this).parent().parent().find("td:nth-child(4)");
+    $.get(href, addBidToAmount.bind(amt,id)).fail(function(jqXHR, textStatus, errorThrown) {
+      console.log("Failed to retrieve "+href+", not showing bids: "+errorThrown);
+    });
+  }
 };
   
 $("img[src='/images/auction-hammer.png']")
