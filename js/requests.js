@@ -128,7 +128,8 @@ function createPreviewUnder(row) {
   
   var href = row.find("a.mediumText").attr("href");
   
-  var total = +row.find("td").eq(3).html().replace("£","").replace(",","");
+  var totalStr = row.find("td").eq(3).html().replace("£","").replace(",","");  
+  var total = +/\d+/.exec(totalStr)[0];
   
   $.get(href, window.populatePreview.bind(window, tdLeft, tdRight, id, total)).fail(function(jqXHR, textStatus, errorThrown) {
     $(tdLeft).html("Failed to retrieve "+href+", chart render aborted: "+errorThrown);
