@@ -294,9 +294,12 @@ function makeBidSummaryChart(id, data, cumData, bidGroups) {
     .style("text-anchor", "end")
     .text("%");
   
-  var div = d3.select("body").append("div")   
-    .attr("class", "tooltip")               
-    .style("opacity", 0);
+  var div = $("div.tooltip").length > 0? 
+    d3.select("div.tooltip") :
+    d3.select("body").append("div")   
+      .attr("class", "tooltip")               
+      .style("opacity", 0);
+  
   
   chart.selectAll("rect")
     .data(data)
