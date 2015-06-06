@@ -20,6 +20,12 @@ div#bids_drawer {
   height: 100%;
 }
 
+div#bids_drawer .drawer-knob {
+  cursor: pointer;
+  position: relative;
+  color: #772d72;
+}
+
 div#bids_drawer table.brand tr {
   background-color: rgba(255,255,255,255);
 }

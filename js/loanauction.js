@@ -368,19 +368,38 @@ function makeBidSummaryChart(id, data, cumData, bidGroups) {
   }
 }
 
-function makeBidSummaryTableDrawer(targetUrl, table) {
+function makeBidSummaryTableDrawer(targetUrl, table) {  
   var drawer = $(document.createElement("div"))
     .attr("id","bids_drawer");
+  $(targetUrl).css("position","relative");
+  $(targetUrl).append(drawer);
   
   var tray = $(document.createElement("div"))
     .attr("id","bids_drawer_scrollbox")
-    .attr("class","scroll-box");
+    .attr("class","scroll-box")
+    .append(table);
     
-  $(targetUrl).css("position","relative");
-  $(targetUrl).append(drawer);
-  //.append(tray.append(table)));
-  //table.css("display","none");
-  //tray.css("width",(1.15*(+/\d+/.exec(table.css("width"))[0])) + "px").css("height",$(targetUrl).css("height"));
+  var drawerClosedRight = drawer.css("right");
+    
+  var drawerKnob = $(document.createElement("div"))
+    .attr("class","drawer-knob")
+    .html("◄")
+    .on("click", function(){
+      if ($(this).html() === "◄") {
+        $(this).html("►")
+        drawer.append(tray);
+        tray.width(1.15*table.width()).height($(targetUrl).height() - drawer.width());
+        var drawerOpenRight = tray.width() + (+/\d+/.exec(drawerClosedRight)[0]) - drawer.width() + 2;
+        drawer.css("right",drawerOpenRight+"px");
+      } else {
+        tray.detach();
+        drawer.css("right",drawerClosedRight);
+        $(this).html("◄")
+      }
+    });
+    
+  drawer.append(drawerKnob);
+  
 }
 
 function makeAllDataFrom(pageData, live) {
