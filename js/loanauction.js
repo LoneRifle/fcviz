@@ -293,6 +293,31 @@ function makeBidSummaryChart(id, data, cumData, bidGroups) {
     .attr("dy", ".71em")
     .style("text-anchor", "end")
     .text("%");
+    
+  chart.select("g.y").append("text")
+    .attr("class", "bid-highlight")
+    .attr("transform", "translate(" + (0.95*width) + ",-20)")
+    .attr("dy", ".71em")
+    .style("text-anchor", "end")
+    .text("Show my bids")
+    .on("click", function(){
+      if ($(this).html().indexOf("my") != -1) {
+        chart.selectAll("rect.fcviz").transition().style("opacity", 0.5);
+        $(this).html("Show all bids")
+      } else {
+        if (data[0].name === "Rej") {
+          chart.selectAll("rect.fcviz").each(function(){
+            var rect = d3.select(this);
+            if (this != d3.select("rect.fcviz")[0][0]) {
+              d3.select(this).transition().style("opacity", 1.0);
+            }
+          });
+        } else {
+          chart.selectAll("rect.fcviz").transition().style("opacity", 1.0);
+        }
+        $(this).html("Show my bids")
+      }
+    });
   
   var div = $("div.tooltip").length > 0? 
     d3.select("div.tooltip") :

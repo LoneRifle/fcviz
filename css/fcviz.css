@@ -173,6 +173,6 @@ path.c3-line {
   color: #dadada;
 }
 
-img[src='/images/auction-hammer.png'] {
+text.bid-highlight, img[src='/images/auction-hammer.png'] {
   cursor: pointer;
 }
