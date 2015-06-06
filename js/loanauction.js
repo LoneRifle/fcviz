@@ -304,7 +304,7 @@ function makeBidSummaryChart(id, data, cumData, bidGroups) {
   chart.selectAll("rect")
     .data(data)
   .enter().append("rect")
-    .attr("class", "fcviz")
+    .attr("class", function(d){ return bidGroups[d.name]? "fcviz-bid" : "fcviz"; })
     .attr("x", function(d) { return x(d.name+""); })
     .attr("y", function(d) { return y(d.value); })
     .attr("height", function(d) { return height - y(d.value); })
