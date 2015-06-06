@@ -13,6 +13,7 @@ Tooltip shows user bids where relevant
 ![Top: original site, Bottom: site with fcviz enabled](http://lonerifle.github.io/fcviz/fcviz.png)
 
 Focus only on rates where there are user bids by clicking a toggle to fade other rates into the background
+
 ![Show my bids](http://lonerifle.github.io/fcviz/showmybids.png)
 
 ## Scatter plot for all bids tab
