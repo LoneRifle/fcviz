@@ -14,6 +14,7 @@ window.renderBidSummaryCharts = function (total, targetUrl, id) {
   var bidGroups = findBidGroups(table);
   
   makeBidSummaryChart(id, data, cumData, bidGroups);  
+  makeBidSummaryTableDrawer(targetUrl, table.clone());
 }
 
 window.renderAllBidCharts = function (targetUrl, id) {
@@ -365,6 +366,21 @@ function makeBidSummaryChart(id, data, cumData, bidGroups) {
   if (data[0].name === "Rej") {
     chart.select("rect").style("opacity", 0.5);
   }
+}
+
+function makeBidSummaryTableDrawer(targetUrl, table) {
+  var drawer = $(document.createElement("div"))
+    .attr("id","bids_drawer");
+  
+  var tray = $(document.createElement("div"))
+    .attr("id","bids_drawer_scrollbox")
+    .attr("class","scroll-box");
+    
+  $(targetUrl).css("position","relative");
+  $(targetUrl).append(drawer);
+  //.append(tray.append(table)));
+  //table.css("display","none");
+  //tray.css("width",(1.15*(+/\d+/.exec(table.css("width"))[0])) + "px").css("height",$(targetUrl).css("height"));
 }
 
 function makeAllDataFrom(pageData, live) {
