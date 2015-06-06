@@ -12,8 +12,8 @@ window.renderBidSummaryCharts = function (total, targetUrl, id) {
   var data = makeSummaryDataFrom(table);
   var cumData = makeSummaryCumulative(data, total);
   var bidGroups = findBidGroups(table);
-    
-  makeBidSummaryChart(id, data, cumData, bidGroups);
+  
+  makeBidSummaryChart(id, data, cumData, bidGroups);  
 }
 
 window.renderAllBidCharts = function (targetUrl, id) {
@@ -78,22 +78,22 @@ window.completeAllBidRender = function(pageData, live, id) {
 window.fcViz = function (e) {
   var targetUrl = $(e.target).attr('href');
   var id = null;
-  var renderer = null;
+  var render = null;
   switch(targetUrl) {
     case "#bids-summary":
       id = "bids_summary_chart_control";
       var total = +document.getElementById("amount").innerHTML.replace("£","").replace(",","");
-      renderer = window.renderBidSummaryCharts.bind(window,total);
+      render = window.renderBidSummaryCharts.bind(window,total);
       break;
     case "#bids-all":
       id = "bids_all_chart_control";
-      renderer = renderAllBidCharts;
+      render = renderAllBidCharts;
       break;
     default:
       break;
   }
-  if (id != null && renderer != null) {
-    render(targetUrl, id, renderer);
+  if (id != null && render != null && $("#"+id).length == 0) {
+    render(targetUrl, id);    
   }
 } 
 
@@ -164,12 +164,6 @@ var activeId = $("div.active").filter("div.tab-pane").attr("id");
 var el = jQuery(document.createElement("a")).attr("href", "#"+activeId);
 if (activeId !== "bids-all" && activeId != undefined) {
   window.fcViz({target: el});
-}
-
-function render(targetUrl, id, renderer) {
-  if ($("#"+id).length == 0) {
-    renderer(targetUrl, id);
-  }
 }
 
 function placeChartDivBefore(el, chart) {
