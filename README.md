@@ -16,6 +16,10 @@ Focus only on rates where there are user bids by clicking a toggle to fade other
 
 ![Show my bids](http://lonerifle.github.io/fcviz/showmybids.png)
 
+Bid table now also available in a separate drawer to keep both table and chart in same view
+
+![Bid drawer](http://lonerifle.github.io/fcviz/bidtray.png)
+
 ## Scatter plot for all bids tab
 Plots bid rate against time at 30 min intervals, with bid amount expressed as size of plot point.
 Clicking on a plot point will show a pie chart showing amounts bid at that rate by each user.
