@@ -380,21 +380,24 @@ function makeBidSummaryTableDrawer(targetUrl, table) {
     .append(table);
     
   var drawerClosedRight = drawer.css("right");
-    
+  var trayClosedWidth = tray.width();
+  
   var drawerKnob = $(document.createElement("div"))
     .attr("class","drawer-knob")
     .html("◄")
     .on("click", function(){
       if ($(this).html() === "◄") {
-        $(this).html("►")
         drawer.append(tray);
-        tray.width(1.15*table.width()).height($(targetUrl).height() - drawer.width());
-        var drawerOpenRight = tray.width() + (+/\d+/.exec(drawerClosedRight)[0]) - drawer.width() + 2;
-        drawer.css("right",drawerOpenRight+"px");
+        var trayOpenWidth = 1.15*table.width();
+        tray.height($(targetUrl).height() - drawer.width());
+        var drawerOpenRight = trayOpenWidth + (+/\d+/.exec(drawerClosedRight)[0]) - drawer.width() + 2;
+        drawer.animate({right: drawerOpenRight+"px"},250);
+        tray.animate({width: trayOpenWidth},250);
+        $(this).html("►");
       } else {
-        tray.detach();
-        drawer.css("right",drawerClosedRight);
-        $(this).html("◄")
+        tray.animate({width: trayClosedWidth},250,function(){tray.detach()});
+        drawer.animate({right: drawerClosedRight},250);        
+        $(this).html("◄");
       }
     });
     
