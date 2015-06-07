@@ -177,6 +177,7 @@ window.populatePreview = function (previewPaneLeft, previewPaneRight, origId, to
     $("#"+id).find("svg").find("g.tick").attr("style", "display: none;");
     $("#"+id).find("svg").find("g").find("text").attr("style", "display: none;");
     previewPaneLeft.find("table").detach(); 
+    $("#bids_drawer").detach();
   } else {
     var propDetailsStartIndex = data.indexOf("<div class='span3'>\n<h3>");
     var propLoanDetails = $(document.createElement("span"))
