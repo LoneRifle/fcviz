@@ -388,7 +388,7 @@ function makeBidSummaryTableDrawer(targetUrl, table) {
     .on("click", function(){
       if ($(this).html() === "◄") {
         drawer.append(tray);
-        var trayOpenWidth = 1.3*table.width();
+        var trayOpenWidth = 1.35*table.width();
         tray.height($(targetUrl).height() - drawer.width());
         var drawerOpenRight = trayOpenWidth + (+/\d+/.exec(drawerClosedRight)[0]) - drawer.width() + 2;
         drawer.animate({right: drawerOpenRight+"px"},250);
