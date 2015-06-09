@@ -176,7 +176,7 @@ function placeChartDivBefore(el, chart) {
 function findBidGroups(table) {
   var bidGroups = {};
   
-  table.find("tr[data-my-bids=1]").each(function(){
+  table.find("tr[data-my-bids!=0]").each(function(){
     var key = +$(this).attr("data-annualised_rate");
     var bidGroup = $(this).nextUntil(":not(.sub-accepted, .sub-group)").clone();
     bidGroup.each(function(){ 
