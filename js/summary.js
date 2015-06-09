@@ -214,6 +214,11 @@ window.repayGraphCallback = function (error, data) {
       x: { type: 'timeseries', tick: {format: '%d %b'} },
       y2: { show: true }
     },
+    tooltip: {
+      format: {
+        title: d3.time.format('%d %b %Y')
+      }
+    },
     subchart: { show: true },
     grid: {
       y: {lines: [{value:0}]}
