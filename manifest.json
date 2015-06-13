@@ -21,6 +21,11 @@
       "matches": ["https://www.fundingcircle.com/my-account/my-lending/*"],
       "css": [ "css/fcviz.css" ],
       "js": [ "js/injector.js", "js/summaryresources.js" ]
+    },    
+    {
+      "matches": ["https://www.fundingcircle.com/my-account/sell-my-loans/*"],
+      "css": [ "css/fcviz.css" ],
+      "js": [ "js/injector.js", "js/sellresources.js" ]
     }
   ],
   "background": {
@@ -33,7 +38,8 @@
     "js/c3.min.js",
     "js/auction.js",
     "js/requests.js",
-    "js/summary.js"    
+    "js/summary.js",
+    "js/sell.js"    
   ],
   "permissions": [
     "webRequest",
