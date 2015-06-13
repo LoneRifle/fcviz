@@ -23,7 +23,8 @@
       "js": [ "js/injector.js", "js/summaryresources.js" ]
     },    
     {
-      "matches": ["https://www.fundingcircle.com/my-account/sell-my-loans/*"],
+      "matches": ["https://www.fundingcircle.com/sell_individual_loan_parts"],
+      "all_frames": true,
       "css": [ "css/fcviz.css" ],
       "js": [ "js/injector.js", "js/sellresources.js" ]
     }
