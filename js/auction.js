@@ -160,7 +160,8 @@ window.fcVizObserver = new MutationObserver(function(mutations) {
   })
 });
 
-window.fcVizObserver.observe(document, { childList: true, subtree: true });
+$(".tab-pane").each(function(){window.fcVizObserver.observe(this, { childList: true, subtree: false })});
+$("#financial_summary").each(function(){window.fcVizObserver.observe(this, { childList: true, subtree: false })});
 
 var activeId = $("div.active").filter("div.tab-pane").attr("id");
 var el = jQuery(document.createElement("a")).attr("href", "#"+activeId);
