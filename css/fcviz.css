@@ -122,7 +122,7 @@ div.bid_block_details {
   text-align: center;
 }
 
-span.see_more {
+span.see_more, span.markup_all {
   font-family: "Courier New";
   color: #097fc9;
   font-weight: 600;

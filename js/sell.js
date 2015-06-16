@@ -6,6 +6,25 @@ var app = angular.element(document.querySelector("div"));
 var $scope = app.scope();
 var SellableLoanParts = app.injector().get("SellableLoanParts");
  
+$scope.findLoanPartFrom = function (event) {
+  var loanPartId = +event.srcElement.parentElement.parentElement.children[0].innerHTML;
+  var loanPart = null;
+  $scope.loanParts.forEach(function(l){
+    if (loanPartId === l.id) {
+      loanPart = l;
+    }
+  });
+  return loanPart;
+}
+
+$scope.clearSaleInfo = function (loanPart) {  
+  loanPart.markup = "0.0";
+  loanPart.buyer_rate = loanPart.default_buyer_rate;
+  loanPart.sale_price = loanPart.default_sale_price;
+  loanPart.sellable = true;
+  $scope.totals = SellableLoanParts.toBeSoldTotals($scope.loanPartsToBeSold);
+}
+ 
 $scope.updateSaleInfoAll = function (loanPart) {  
 
   function removeFromArray(arr, e) {
@@ -56,3 +75,15 @@ $scope.updateSaleInfoAll = function (loanPart) {
     }
   });
 }
+
+var $compile = app.injector().get("$compile");
+var markups = document.querySelectorAll("select.markup");
+Array.prototype.slice.call(markups).forEach(function(markup){
+  //Grab the loan part id, coercing it into an int, and look it up.
+  var updateSaleInfoAll = "updateSaleInfoAll(findLoanPartFrom($event))";
+  var clearSaleInfo = "clearSaleInfo(findLoanPartFrom($event))";
+  angular.element(markup.parentElement)
+    .prepend($compile("<span class='markup_all' ng-click='"+clearSaleInfo+"'>○ </span> ")($scope))
+    .append($compile("<span class='markup_all' ng-click='"+updateSaleInfoAll+"'> ●</span>")($scope));
+});
+
