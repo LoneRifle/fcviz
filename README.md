@@ -50,3 +50,9 @@ All irrelevant sections also removed leaving only investor report and outstandin
 Auction icons can now be clicked on, adding total active and rejected bids by user to the Amounts column for Watchlist and Loan Requests pages.
 Tooltips on mousing over auction icon will then show the full list of bids.
 ![Bid peeking](http://lonerifle.github.io/fcviz/bidpeek.png)
+
+## Markup shortcuts
+The markup selector is now flanked by two buttons.
+The left one is an empty circle and will clear any markups made in the selector. 
+The right one is a filled circle and will apply the loan part markup to all other selected loan parts, dropping those whose rate falls below the minimum as a result of the markup.
+![Markup shortcuts](http://lonerifle.github.io/fcviz/sell-my-loans.png)
