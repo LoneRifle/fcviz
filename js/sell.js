@@ -77,13 +77,17 @@ $scope.updateSaleInfoAll = function (loanPart) {
 }
 
 var $compile = app.injector().get("$compile");
-var markups = document.querySelectorAll("select.markup");
-Array.prototype.slice.call(markups).forEach(function(markup){
-  //Grab the loan part id, coercing it into an int, and look it up.
-  var updateSaleInfoAll = "updateSaleInfoAll(findLoanPartFrom($event))";
-  var clearSaleInfo = "clearSaleInfo(findLoanPartFrom($event))";
-  angular.element(markup.parentElement)
-    .prepend($compile("<span class='markup_all' ng-click='"+clearSaleInfo+"'>○ </span> ")($scope))
-    .append($compile("<span class='markup_all' ng-click='"+updateSaleInfoAll+"'> ●</span>")($scope));
-});
 
+var addButtons = function() {
+var markups = document.querySelectorAll("select.markup");
+  Array.prototype.slice.call(markups).forEach(function(markup){
+    //Grab the loan part id, coercing it into an int, and look it up.
+    var updateSaleInfoAll = "updateSaleInfoAll(findLoanPartFrom($event))";
+    var clearSaleInfo = "clearSaleInfo(findLoanPartFrom($event))";
+    angular.element(markup.parentElement)
+      .prepend($compile("<span class='markup_all' ng-click='"+clearSaleInfo+"'>○ </span> ")($scope))
+      .append($compile("<span class='markup_all' ng-click='"+updateSaleInfoAll+"'> ●</span>")($scope));
+  });
+};
+
+addButtons();
