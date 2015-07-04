@@ -2,6 +2,25 @@
  * FCViz 
  * Payload script for the individual loan iframe within the Sell page
  */
+ 
+angular.module("SellLoanParts").directive("markup", function($compile){
+  return {
+    restrict: 'C',
+    link: function(scope, markup, attrs) {
+      //Grab the loan part id, coercing it into an int, and look it up.
+      var updateSaleInfoAll = "updateSaleInfoAll(findLoanPartFrom($event))";
+      var clearSaleInfo = "clearSaleInfo(findLoanPartFrom($event))";
+      markup.parent()
+        .prepend($compile("<span class='markup_all' ng-click='"+clearSaleInfo+"'>○ </span> ")(scope))
+        .append($compile("<span class='markup_all' ng-click='"+updateSaleInfoAll+"'> ●</span>")(scope));        
+    }
+  }
+});
+
+if (angular.resumeBootstrap) {
+  angular.resumeBootstrap();
+}
+
 var app = angular.element(document.querySelector("div"));
 var $scope = app.scope();
 var SellableLoanParts = app.injector().get("SellableLoanParts");
@@ -75,19 +94,3 @@ $scope.updateSaleInfoAll = function (loanPart) {
     }
   });
 }
-
-var $compile = app.injector().get("$compile");
-
-var addButtons = function() {
-var markups = document.querySelectorAll("select.markup");
-  Array.prototype.slice.call(markups).forEach(function(markup){
-    //Grab the loan part id, coercing it into an int, and look it up.
-    var updateSaleInfoAll = "updateSaleInfoAll(findLoanPartFrom($event))";
-    var clearSaleInfo = "clearSaleInfo(findLoanPartFrom($event))";
-    angular.element(markup.parentElement)
-      .prepend($compile("<span class='markup_all' ng-click='"+clearSaleInfo+"'>○ </span> ")($scope))
-      .append($compile("<span class='markup_all' ng-click='"+updateSaleInfoAll+"'> ●</span>")($scope));
-  });
-};
-
-addButtons();
