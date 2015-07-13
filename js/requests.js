@@ -8,9 +8,12 @@ window.fcVizObserver.disconnect();
 
 window.myBids = {};
 
+window.sections = {};
+
 enrichLoanRequests();
 
-
+window.history.pushState({ params : location.href }, document.title, location.href);
+window.sections[location.href] = $("section").clone();
 
 function enrichLoanRequests() {
   var prependLinkToCell = function(){  
@@ -90,8 +93,58 @@ function enrichLoanRequests() {
         })
     );
   }
-
-}
+  
+  $("form[id!=watch_form]").submit(function(){
+    $("button[value=Filter]").after(" <span class=pulser>Loading...</span>");    
+    var url = $(this).attr('action');
+    var params = $(this).serialize();
+    $.ajax({
+        url     : url,
+        type    : $(this).attr('method'),
+        dataType: 'html',
+        data    : params,
+        success : function( data ) {
+          var parent = $("section").parent();
+          $("section").detach();
+          parent.html(data);
+          enrichLoanRequests();
+          window.sections[params] = $("section").clone();
+          window.history.pushState({ params : params }, document.title, url);
+        },
+        error   : function( xhr, err ) {
+          console.log(xhr);
+          alert(err + ", unable to filter. Please reload the loan requests page");     
+        }
+    }); 
+    return false;
+  });
+  
+  window.onpopstate = function(e){
+    if(e.state){        
+      var parent = $("section").parent();
+      $("section").detach();
+      parent.append(window.sections[e.state.params]);
+      $(".pulser").detach();
+      if ($("select#loan_request_filter_credit_band").val() === "0") {
+        //Fire a request to FC so that if the user decides to click
+        //on the paginator the backend is correctly loaded with data.
+        var form = $("form[id!=watch_form]");
+        $.ajax({
+          url     : "https://www.fundingcircle.com/lend/loan-requests/",
+          type    : form.attr('method'),
+          dataType: 'html',
+          data    : form.serialize(),
+          success : function( data ) {
+            //Do nothing
+          },
+          error   : function( xhr, err ) {
+            //Do nothing
+          }
+        }); 
+      }
+    }
+  };
+} 
 
 function createPreviewUnder(row) {
   //Create a junk element that is hidden from the user

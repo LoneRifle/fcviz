@@ -195,3 +195,20 @@ path.c3-line {
 text.bid-highlight, img[src='/images/auction-hammer.png'] {
   cursor: pointer;
 }
+
+.pulser {
+  -webkit-animation: cc 0.5s linear 0.5s infinite alternate;
+  animation: cc 0.5s linear 0.5s infinite alternate;
+}
+
+@-webkit-keyframes cc {
+ 0%   { color: #000;}
+ 50%  { color: #888;}
+ 100% { color: #fff;}
+}
+
+@keyframes cc {
+  0%   { color: #000;}
+  50%  { color: #888;}
+  100% { color: #fff;}
+}
