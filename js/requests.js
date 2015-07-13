@@ -8,84 +8,91 @@ window.fcVizObserver.disconnect();
 
 window.myBids = {};
 
-var prependLinkToCell = function(){  
-  var img = $(document.createElement("img"))
-    .attr("src", "/images/icons/blue_plus.png")
-    .attr("id", "plus");
-  $(this).before(
-    $(document.createElement("span")).attr("class","see_more").append(img, " ")
-  )
-};
- 
-$("a.mediumText").each(prependLinkToCell);
+enrichLoanRequests();
 
-$(".see_more").on("click", function(){
-  var isPlus = $(this).find("img#plus").length == 1;
-  var sign = isPlus? "minus" : "plus";
-  var img = $(document.createElement("img"))
-    .attr("src", "/images/icons/blue_"+sign+".png")
-    .attr("id", sign );
-  $(this).children().detach();
-  $(this).append(img, " ");
-  var tr = $(this).closest("tr");
-  if (tr.next().attr("class") !== "filler") {
-    createPreviewUnder(tr);
-    tr.next().next().animate({height: "toggle"}, "fast");
-  } else {
-    tr.next().next().attr("style", "display: "+(isPlus? "table-row" : "none"));
-  }
-});
 
-var div = d3.select("body").append("div")   
-  .attr("class", "tooltip")               
-  .style("opacity", 0);
 
-var auctionOnClick = function() {
-  var href = $(this).parent().find("a").attr("href") + "/my_bids";
-  var id = /\d+/.exec(href)[0];
-  if (!myBids[id]) {
-    var amt = $(this).parent().parent().find("td:nth-child(4)");
-    $.get(href, addBidToAmount.bind(amt,id)).fail(function(jqXHR, textStatus, errorThrown) {
-      console.log("Failed to retrieve "+href+", not showing bids: "+errorThrown);
-    });
-  }
-};
-  
-$("img[src='/images/auction-hammer.png']")
-  .on("click", function(){
-    auctionOnClick.call(this);
-    $(this).off("click");
-  })
-  .on("mouseover", function(e){ 
-    var href = $(this).parent().find("a").attr("href") + "/my_bids";
-    var id = /\d+/.exec(href)[0];
-    $("div.tooltip").animate({ opacity: .9 }, 100)
-      .attr("style", "left:"+ (e.pageX) + "px; top:"+ (e.pageY - 28) + "px")
-      .html(myBids[id]? myBids[id] : "Click to show my bids");
-   })
-  .on("mouseout", function(d){ 
-    $("div.tooltip").animate({ opacity: 0 }, 100);    
+function enrichLoanRequests() {
+  var prependLinkToCell = function(){  
+    var img = $(document.createElement("img"))
+      .attr("src", "/images/icons/blue_plus.png")
+      .attr("id", "plus");
+    $(this).before(
+      $(document.createElement("span")).attr("class","see_more").append(img, " ")
+    )
+  };
+   
+  $("a.mediumText").each(prependLinkToCell);
+
+  $(".see_more").on("click", function(){
+    var isPlus = $(this).find("img#plus").length == 1;
+    var sign = isPlus? "minus" : "plus";
+    var img = $(document.createElement("img"))
+      .attr("src", "/images/icons/blue_"+sign+".png")
+      .attr("id", sign );
+    $(this).children().detach();
+    $(this).append(img, " ");
+    var tr = $(this).closest("tr");
+    if (tr.next().attr("class") !== "filler") {
+      createPreviewUnder(tr);
+      tr.next().next().animate({height: "toggle"}, "fast");
+    } else {
+      tr.next().next().attr("style", "display: "+(isPlus? "table-row" : "none"));
+    }
   });
 
-if ($("img[src='/images/auction-hammer.png']").length > 0) {
-  $("a:contains('Loan Title')").after(" ",
-    $(document.createElement("img"))
-      .attr("src","/images/auction-hammer.png")
-      .on("click", function(){
-        $("td img[src='/images/auction-hammer.png']").each(auctionOnClick);
-        $(this).off("click");
-      })
-      .on("mouseover", function(e){ 
-        $("div.tooltip").animate({ opacity: .9 }, 100)
-          .attr("style", "left:"+ (e.pageX) + "px; top:"+ (e.pageY - 28) + "px")
-          .html("Click to show all my bids");
-      })
-      .on("mouseout", function(d){ 
-        $("div.tooltip").animate({ opacity: 0 }, 100);    
-      })
-  );
+  var div = d3.select("body").append("div")   
+    .attr("class", "tooltip")               
+    .style("opacity", 0);
+
+  var auctionOnClick = function() {
+    var href = $(this).parent().find("a").attr("href") + "/my_bids";
+    var id = /\d+/.exec(href)[0];
+    if (!myBids[id]) {
+      var amt = $(this).parent().parent().find("td:nth-child(4)");
+      $.get(href, addBidToAmount.bind(amt,id)).fail(function(jqXHR, textStatus, errorThrown) {
+        console.log("Failed to retrieve "+href+", not showing bids: "+errorThrown);
+      });
+    }
+  };
+    
+  $("img[src='/images/auction-hammer.png']")
+    .on("click", function(){
+      auctionOnClick.call(this);
+      $(this).off("click");
+    })
+    .on("mouseover", function(e){ 
+      var href = $(this).parent().find("a").attr("href") + "/my_bids";
+      var id = /\d+/.exec(href)[0];
+      $("div.tooltip").animate({ opacity: .9 }, 100)
+        .attr("style", "left:"+ (e.pageX) + "px; top:"+ (e.pageY - 28) + "px")
+        .html(myBids[id]? myBids[id] : "Click to show my bids");
+     })
+    .on("mouseout", function(d){ 
+      $("div.tooltip").animate({ opacity: 0 }, 100);    
+    });
+
+  if ($("img[src='/images/auction-hammer.png']").length > 0) {
+    $("a:contains('Loan Title')").after(" ",
+      $(document.createElement("img"))
+        .attr("src","/images/auction-hammer.png")
+        .on("click", function(){
+          $("td img[src='/images/auction-hammer.png']").each(auctionOnClick);
+          $(this).off("click");
+        })
+        .on("mouseover", function(e){ 
+          $("div.tooltip").animate({ opacity: .9 }, 100)
+            .attr("style", "left:"+ (e.pageX) + "px; top:"+ (e.pageY - 28) + "px")
+            .html("Click to show all my bids");
+        })
+        .on("mouseout", function(d){ 
+          $("div.tooltip").animate({ opacity: 0 }, 100);    
+        })
+    );
+  }
+
 }
-  
+
 function createPreviewUnder(row) {
   //Create a junk element that is hidden from the user
   //so that we can somehow give the illusion of maintaining
