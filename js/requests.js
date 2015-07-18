@@ -12,7 +12,7 @@ window.sections = {};
 
 enrichLoanRequests();
 
-window.history.pushState({ params : location.href }, document.title, location.href);
+window.history.replaceState({ params : location.href }, document.title, location.href);
 window.sections[location.href] = $("section").clone();
 
 function enrichLoanRequests() {
