@@ -94,28 +94,88 @@ function enrichLoanRequests() {
     );
   }
   
+  var creditBandFilter = $("select#loan_request_filter_credit_band");
+  var creditOptions = creditBandFilter.find("option");
+  creditBandFilter.attr("multiple","multiple").chosen()
+    .on("change", function(e, params){
+      //Hint - 0 is the number code for All
+      var values = $(this).val();
+      if (params.deselected && values == null) {
+        $(this).val("0");
+        $(this).trigger("chosen:updated");        
+      } else if (params.selected && (
+        +params.selected == 0 || values.length == creditOptions.length - 1
+      )) {          
+        $(this).val("0");
+        $(this).trigger("chosen:updated");
+      } else if (params.selected) {
+        var val = +params.selected;
+        var zeroPos = values.indexOf("0");
+        if (zeroPos != -1) {
+          values.splice(zeroPos,1);
+        }
+        $(this).val(values);
+        $(this).trigger("chosen:updated");
+      }
+    });
+  $("#loan_request_filter_credit_band_chosen").css(
+    "width",$("#loan_request_filter_region").css("width")
+  );
+  
   $("form[id!=watch_form]").submit(function(){
     $("button[value=Filter]").after(" <span class=pulser>Loading...</span>");    
     var url = $(this).attr('action');
-    var params = $(this).serialize();
-    $.ajax({
+    var origParams = $(this).serialize();
+    
+    var bands = creditBandFilter.val().slice();
+    var bandResponses = { keySet: [] };
+    var form = $(this);
+    $(bands).each(function (i, band) {
+      creditBandFilter.val(band);
+      var params = form.serialize();
+      $.ajax({
         url     : url,
-        type    : $(this).attr('method'),
+        type    : form.attr('method'),
         dataType: 'html',
         data    : params,
         success : function( data ) {
-          var parent = $("section").parent();
-          $("section").detach();
-          parent.html(data);
-          enrichLoanRequests();
-          window.sections[params] = $("section").clone();
-          window.history.pushState({ params : params }, document.title, url);
+          bandResponses.keySet.push(band);
+          bandResponses[band] = data;
+          if (bandResponses.keySet.length == bands.length) {
+            var sectionRaw = bandResponses[bands[0]];
+            var tempSpan = $(document.createElement("span"));
+            tempSpan.html(sectionRaw);
+            var section = tempSpan.find("section").detach();
+            var otherBands = bands.slice();
+            otherBands.splice(0,1);
+            $(otherBands).each(function (i, b){
+              tempSpan.html(bandResponses[b]);
+              var tr = tempSpan.find("section tbody tr").detach();
+              section.find("tbody").append(tr);
+            });
+            
+            section.find("tfoot strong").html(section.find("tbody tr").length);
+            
+            var parent = $("section").parent();
+            $("section").detach();
+            parent.append(section);
+            enrichLoanRequests();
+            window.sections[origParams] = $("section").clone();
+            window.history.pushState({ params : origParams }, document.title, url);
+            //select the creditBandFilter again, and populate with the correct values
+            $("select#loan_request_filter_credit_band").val(bands).trigger("chosen:updated")
+            var isFxOff = $.fx.off;
+            $.fx.off = true;
+            showhidefilters();
+            $.fx.off = isFxOff;
+          }
         },
         error   : function( xhr, err ) {
           console.log(xhr);
           alert(err + ", unable to filter. Please reload the loan requests page");     
         }
-    }); 
+      }); 
+    });
     return false;
   });
   

@@ -14,7 +14,7 @@
     },
     {
       "matches": ["https://www.fundingcircle.com/lend/loan-requests/*", "https://www.fundingcircle.com/my-account/my-watchlist/*"],
-      "css": [ "css/fcviz.css" ],
+      "css": [ "css/chosen.min.css", "css/fcviz.css" ],
       "js": [ "js/injector.js", "js/requestsresources.js" ]
     },    
     {
@@ -35,6 +35,10 @@
   "web_accessible_resources": [
     "css/fcviz.css",
     "css/c3.min.css",
+    "css/chosen.min.css",
+    "js/chosen/chosen.jquery.min.js",
+    "js/chosen/chosen-sprite.png",
+    "js/chosen/chosen-sprite@2x.png",
     "js/d3.min.js",
     "js/c3.min.js",
     "js/auction.js",
