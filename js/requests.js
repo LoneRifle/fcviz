@@ -12,6 +12,8 @@ window.sections = {};
 
 enrichLoanRequests();
 
+window.currentParams = location.href;
+
 window.history.replaceState({ params : location.href }, document.title, location.href);
 window.sections[location.href] = {section: $("section"), bands: $("select#loan_request_filter_credit_band").val()};
 
@@ -147,6 +149,7 @@ function enrichLoanRequests() {
       enrichLoanRequests();
       window.sections[origParams] = {section: $("section"), bands: bands};
       window.history.pushState({ params : origParams }, document.title, url);
+      window.currentParams = origParams;
       //select the creditBandFilter again, and populate with the correct values
       $("select#loan_request_filter_credit_band").val(bands).trigger("chosen:updated")
       var isFxOff = $.fx.off;
@@ -235,6 +238,14 @@ function enrichLoanRequests() {
       }
     }
   };
+  
+  $(window).on("beforeunload", function (e) {
+    var message = window.sections[window.currentParams].bands.length <= 1? null :
+      "You are reloading a page that has results across more than one risk band, " +
+      "and will hence only get back only results for one of the risk bands.\n" +
+      "If you want to reload the results for the risk bands, use the Filter button.";
+    return message;             
+  });  
 } 
 
 function createPreviewUnder(row) {
