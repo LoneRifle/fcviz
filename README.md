@@ -25,9 +25,16 @@ Plots bid rate against time at 30 min intervals, with bid amount expressed as si
 Clicking on a plot point will show a pie chart showing amounts bid at that rate by each user.
 ![Top: original site, Bottom: site with fcviz enabled](http://lonerifle.github.io/fcviz/fcviz-all.png)
 
-## Summary info box for loan requests page
+## Loan requests page improvements
 Loan requests now have a link that reveals a summary using information from the auction page, including bid summary chart.
 ![Top: original site, Bottom: site with fcviz enabled](http://lonerifle.github.io/fcviz/fcviz-requests.png)
+
+Loan requests filter can now filter on multiple risk bands
+![Multiple risk bands](http://lonerifle.github.io/fcviz/multiband.png)
+
+Auction icons can now be clicked on, adding total active and rejected bids by user to the Amounts column for Watchlist and Loan Requests pages.
+Tooltips on mousing over auction icon will then show the full list of bids.
+![Bid peeking](http://lonerifle.github.io/fcviz/bidpeek.png)
 
 ## Hide repaid loans in summary page
 Hide loans or loan parts using a new checkbox near the top right of My Loan Parts section.
@@ -45,11 +52,6 @@ and running total.
 Investor report now directly embedded in the Financial Summary tab, with option to download as well. 
 All irrelevant sections also removed leaving only investor report and outstanding loans.
 ![Property](http://lonerifle.github.io/fcviz/property.png)
-
-## Bid peeking
-Auction icons can now be clicked on, adding total active and rejected bids by user to the Amounts column for Watchlist and Loan Requests pages.
-Tooltips on mousing over auction icon will then show the full list of bids.
-![Bid peeking](http://lonerifle.github.io/fcviz/bidpeek.png)
 
 ## Premium shortcuts
 The premium selector is now flanked by two buttons.
