@@ -212,3 +212,41 @@ text.bid-highlight, img[src='/images/auction-hammer.png'] {
   50%  { color: #888;}
   100% { color: #fff;}
 }
+
+
+#customrepay div#customrepayrow section{
+  width: 99.8%;
+}
+
+#customrepay div#customrepayrow li {
+  display: inline; 
+  float: left;
+  text-align: center;
+  width: 19%;
+  padding: 2.30em 2.5%;
+}
+
+#customrepay div#customrepayrow li h4 {
+  font-size: 44px;
+  height: 60px;
+}
+
+#customrepay div#customrepayrow li h4.next-payment span {
+  font-size: 25px;
+}
+
+#customrepay div#customrepayrow li h4.final-payment {
+  font-size: 25px;
+}
+
+#customrepay div#customrepayrow li p {
+  font-size: 16px;
+}
+
+#customrepay div#customrepayrow .notice-card {
+  margin: 0.5em 1em 1em;
+  padding: 1.5em 1em;
+}
+
+        
+        

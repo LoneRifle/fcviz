@@ -163,6 +163,26 @@ window.fcVizObserver = new MutationObserver(function(mutations) {
 $(".tab-pane").each(function(){window.fcVizObserver.observe(this, { childList: true, subtree: false })});
 $("#financial_summary").each(function(){window.fcVizObserver.observe(this, { childList: true, subtree: false })});
 
+//Modify the repayments tab, changing it to a term sheet. Add our own custom repayments tab.
+var customRepay = $(document.createElement("a")).attr("href", "#customrepay").html("Repayments");
+var customRepayTab = $(document.createElement("li")).append(customRepay);
+$("a[href='#repayments']").html("Term Sheet").parent().before(customRepayTab);
+var customRepayDiv = $(document.createElement("div")).attr("id","customrepay")
+  .append($(document.createElement("div")).addClass("text_center loading_div").html("Loading..."));
+customRepayTab.click(function(){
+  if ($("#customrepay div").hasClass("loading_div")) {
+    $.ajax({
+      url: "/auctions/"+/\d+/.exec(location.pathname)+"?section=repayments",
+      success: function (data) {
+        $("#customrepay").html(data);
+        $("#customrepay div#repayments").attr("id", "customrepayrow");
+      }
+    });
+  }
+});
+$("#repayments").before(customRepayDiv);
+
+
 var activeId = $("div.active").filter("div.tab-pane").attr("id");
 var el = jQuery(document.createElement("a")).attr("href", "#"+activeId);
 if (activeId !== "bids-all" && activeId != undefined) {
