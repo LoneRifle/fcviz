@@ -140,8 +140,9 @@ function enrichLoanRequests() {
         var tr = tempSpan.find("section tbody tr").detach();
         section.find("tbody").append(tr);
       });
-      
-      section.find("tfoot strong").html(section.find("tbody tr").length);
+      if ($("select#loan_request_filter_credit_band").val()[0] === "0") {
+        section.find("tfoot strong").first().html(section.find("tbody tr").length);
+      }
       
       var parent = $("section").parent();
       $("section").detach();
