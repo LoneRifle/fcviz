@@ -77,7 +77,7 @@ window.completeAllBidRender = function(pageData, live, id) {
 }
 
 window.fcViz = function (e) {
-  var targetUrl = $(e.target).attr('href');
+  var targetUrl = e.target? $(e.target).attr('href') : e;
   var id = null;
   var render = null;
   switch(targetUrl) {
@@ -98,12 +98,7 @@ window.fcViz = function (e) {
   }
 } 
 
-$('.tabs').tabs().bind('change', function (e) {  
-  var targetUrl = $(e.target).attr('href');
-  if (targetUrl !== "#bids-all") {
-    window.fcViz(e);
-  }
-});
+$('.tabs').tabs().bind('change', window.fcViz);
 
 window.summaryVizDimensions = {
   height: 250,
@@ -111,57 +106,59 @@ window.summaryVizDimensions = {
   margin: {top: 20, right: 30, bottom: 30, left: 35}
 }
 
+window.triggerFCViz = function (id) {
+  var idToHref = { 
+    bids_summary: "#bids-summary",
+    loan_offers: "#bids-all"
+  };
+  if (idToHref[id]) {
+    window.fcViz(idToHref[id]); 
+  }
+}
+
+window.triggerPropertyLayout = function (id) {
+  var investorReportLink = $("a.blueText:contains(Investor Report)");
+  var termsConditionsLink = $("a.blueText:contains(Terms)");
+  //Property loans usually have one hyperlink labelled as Investor Report
+  if (investorReportLink.length > 0) {
+    var reportHeading = $("#financial_summary .top_margin h2").first();
+    reportHeading.html("Investor Report ");
+    reportHeading.next().detach();
+    var href = investorReportLink.attr("href");
+    var investorReport = $(document.createElement("iframe"))
+      .attr("src", href + "#fcviz")
+      .attr("style", "width: 100%; height: 450px")
+    investorReportLink.detach().html("Download");
+    reportHeading.append(investorReportLink," ",termsConditionsLink).after(investorReport);
+    investorReport.append($(document.createElement("p")).html("It appears that your browser somehow does not support iframes"));
+    //Cleanup unwanted divs
+    $("#financial_summary div.row h2").first().parent("div").detach();
+    var payPerf = $("#financial_summary .top_margin h2").last();
+    payPerf.next().detach();
+    payPerf.detach();
+  }
+}
+
+window.triggerRepayLayout = function(id) {
+  var table = $("#repayments table.brand").detach();
+  $("h2:contains(Repayments)").after(table);
+}
+
 //Observe mutations made to #bids-summary, so that we can reapply window.fcViz
 var MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
-window.fcVizObserver = new MutationObserver(function(mutations) {
-  mutations.forEach(function(mutation) {
-    if(mutation.addedNodes.length > 0) {
-      switch (mutation.target.id) {
-        case "bids-summary":
-        case "bids-all":
-          var el = jQuery(document.createElement("a"));
-          switch(mutation.addedNodes[0].id) {
-            case "bids_summary":
-              window.fcViz({ target: el.attr("href", "#bids-summary") });
-              break;
-            case "loan_offers":
-              window.fcViz({ target: el.attr("href", "#bids-all") });
-              break;
-            default:
-              break;
-          }
-          break;
-        case "financial_summary":
-          var investorReportLink = $("a.blueText:contains(Investor Report)");
-          var termsConditionsLink = $("a.blueText:contains(Terms and Conditions)");
-          //Property loans usually have one hyperlink labelled as Investor Report
-          if (investorReportLink.length > 0) {
-            var reportHeading = $("#financial_summary .top_margin h2").first();
-            reportHeading.html("Investor Report ");
-            reportHeading.next().detach();
-            var href = investorReportLink.attr("href");
-            var investorReport = $(document.createElement("iframe"))
-              .attr("src", href + "#fcviz")
-              .attr("style", "width: 100%; height: 450px")
-            investorReportLink.detach().html("Download");
-            reportHeading.append(investorReportLink," ",termsConditionsLink).after(investorReport);
-            investorReport.append($(document.createElement("p")).html("It appears that your browser somehow does not support iframes"));
-            //Cleanup unwanted divs
-            $("#financial_summary div.row h2").first().parent("div").detach();
-            var payPerf = $("#financial_summary .top_margin h2").last();
-            payPerf.next().detach();
-            payPerf.detach();
-          }
-          break;
-        default:
-          break;
+window.fcVizObserver = function(callback) {
+  return new MutationObserver(function(mutations) {
+    mutations.forEach(function(mutation) {
+      if(mutation.addedNodes.length > 0) {
+        callback(mutation.addedNodes[0].id);
       }
-    }
-  })
-});
+    })
+  });
+}
 
-$(".tab-pane").each(function(){window.fcVizObserver.observe(this, { childList: true, subtree: false })});
-$("#financial_summary").each(function(){window.fcVizObserver.observe(this, { childList: true, subtree: false })});
+$(".tab-pane").each(function(){window.fcVizObserver(triggerFCViz).observe(this, { childList: true, subtree: false })});
+$("#financial_summary").each(function(){window.fcVizObserver(triggerPropertyLayout).observe(this, { childList: true, subtree: false })});
+$("#repayments").each(function(){window.fcVizObserver(triggerRepayLayout).observe(this, { childList: true, subtree: false })});
 
 //Modify the repayments tab, changing it to a term sheet. Add our own custom repayments tab.
 var customRepay = $(document.createElement("a")).attr("href", "#customrepay").html("Repayments");

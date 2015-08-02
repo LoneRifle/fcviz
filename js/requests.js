@@ -2,9 +2,6 @@
  * FCViz 
  * Payload script for loan requests page
  */
- 
-//We don't need this mutation observer since we are in the requests page
-window.fcVizObserver.disconnect();
 
 window.myBids = {};
 
