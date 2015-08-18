@@ -53,6 +53,12 @@ Investor report now directly embedded in the Financial Summary tab, with option 
 All irrelevant sections also removed leaving only investor report and outstanding loans.
 ![Property](http://lonerifle.github.io/fcviz/property.png)
 
+## Repayment info and Term Sheet
+Information in the repayments tab is now populated using the page usually found in the secondary market.
+The repayment schedule for the loan is now under a new tab - Term Sheet.
+![New repayments tab](http://lonerifle.github.io/fcviz/newrepayments.png)
+![Term sheet](http://lonerifle.github.io/fcviz/termsheet.png)
+
 ## Premium shortcuts
 The premium selector is now flanked by two buttons.
 The left one is an empty circle and will clear any premiums made in the selector. 
