@@ -566,7 +566,7 @@ function makeAllBidsChart(id, dataBlob) {
     addEventHandlers(dataPoints, dataBlob);
     
     var cumY = d3.scale.linear()
-      .range([0, height]).domain([0, 100]);
+      .range([height, 0]).domain([0, 100]);
     
     var cumYAxis = d3.svg.axis()
       .scale(cumY)
@@ -588,7 +588,7 @@ function makeAllBidsChart(id, dataBlob) {
       .y(function(d) { 
         cum += dataBlob[d].total/total * 100;
         console.log(d[0]+" "+cum)
-        return cumY(cum); 
+        return cumY(100 - cum); 
       });
   
     main.append("path")
