@@ -564,6 +564,42 @@ function makeAllBidsChart(id, dataBlob) {
         .attr("height", function(d) { return height - y(dataBlob[d].total/1000); })
         .attr("width", width * 30 * 60 * 1000 / (domain[1] - domain[0]) )
     addEventHandlers(dataPoints, dataBlob);
+    
+    var cumY = d3.scale.linear()
+      .range([0, height]).domain([0, 100]);
+    
+    var cumYAxis = d3.svg.axis()
+      .scale(cumY)
+      .orient("right");
+        
+    main.append("g")
+      .attr("class", "y axis")
+      .attr("transform", "translate(" + width + ",0)")
+      .call(cumYAxis)
+    .append("text")
+      .attr("transform", "translate(15,-20)")
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .text("%");
+      
+    var cum = 0;
+    var line = d3.svg.line()
+      .x(function(d) { return x(d[0]); })
+      .y(function(d) { 
+        cum += dataBlob[d].total/total * 100;
+        console.log(d[0]+" "+cum)
+        return cumY(cum); 
+      });
+  
+    main.append("path")
+      .datum(data.sort(function(a,b){ return b[0] - a[0]; }))
+      .attr("class", "cum")
+      .attr("transform", "translate(0,0)")
+      .attr("d", line)
+      .attr("opacity", 0.5)
+      .on("mouseover", function(d){ $(this).attr("opacity", 1.0); })
+      .on("mouseout", function(d){ $(this).attr("opacity", 0.5); });
+    
   } else {
     var dataPoints = g.selectAll("scatter-dots")
       .data(data)
