@@ -492,6 +492,8 @@ function pushBidTo(data, d) {
 }
 
 function makeAllBidsChart(id, dataBlob) {
+  var isFixedRate = /fixed rate/i.test($("#rate").html());  
+  
   var margin = window.summaryVizDimensions.margin,
     width = window.summaryVizDimensions.width * 0.95 - margin.left - margin.right,
     height = window.summaryVizDimensions.height - margin.top - margin.bottom;
@@ -500,17 +502,20 @@ function makeAllBidsChart(id, dataBlob) {
   data.sort(function(a,b){ return dataBlob[b].total - dataBlob[a].total; })
   var total = +document.getElementById("amount").innerHTML.replace("£","").replace(",","");
   
-  //Take x-domain (bid time) to be 6 hours either side of the real domain.
+  //Take x-domain (bid time) to be 1 or 6 hours either side of the real domain.
+  var domainPad = isFixedRate? 1 : 6;
   var x = d3.scale.linear()
     .domain([
-      d3.min(data, function(d) { return d[0]; }) - 6 * 60 * 60 * 1000, 
-      d3.max(data, function(d) { return d[0]; }) + 6 * 60 * 60 * 1000
+      d3.min(data, function(d) { return d[0]; }) - domainPad * 60 * 60 * 1000, 
+      d3.max(data, function(d) { return d[0]; }) + domainPad * 60 * 60 * 1000
     ]).range([ 0, width ]);
   
   //Take y-domain (rate) to be 0.1 either side of the real domain.
   var y = d3.scale.linear()
-    .domain([d3.min(data, function(d) { return d[1]; }) - 0.5, d3.max(data, function(d) { return d[1]; }) + 0.1])
-    .range([ height, 0 ]);
+    .domain(isFixedRate?
+      [0, d3.max(dataBlob.keys, function(d) { return dataBlob[d].total; }) * 1.1 / 1000] :
+      [d3.min(data, function(d) { return d[1]; }) - 0.5, d3.max(data, function(d) { return d[1]; }) + 0.1]
+    ).range([ height, 0 ]);
     
   var chart = d3.select("#"+id)
     .append('svg')
@@ -549,41 +554,57 @@ function makeAllBidsChart(id, dataBlob) {
 
   var g = main.append("g"); 
   
-  g.selectAll("scatter-dots")
-    .data(data)
-    .enter().append("circle")
-      .attr("cx", function (d,i) { return x(d[0]); } )
-      .attr("cy", function (d) { return y(d[1]); } )
-      .attr("r", function(d){ return Math.log(1 + dataBlob[d].total/total) * 1000; })
-      .attr("style", function(d,i){ return "z-index: "+i; })
-      .attr("class", "inactive")
-      .on("mouseover", function(d){ 
-        if ($(this).attr("class") !== "clicked"){ 
-          $(this).attr("class", "active"); 
-          window.clickedKeyInfoBox = $("#bid_block_infobox").children();
-          populateBidBox(d, dataBlob, 0.8);
+  if (isFixedRate) {
+    var domain = x.domain();
+    var dataPoints = g.selectAll("rect")
+      .data(data)
+      .enter().append("rect")
+        .attr("x", function(d) { return x(d[0]); })
+        .attr("y", function(d) { return y(dataBlob[d].total/1000); })
+        .attr("height", function(d) { return height - y(dataBlob[d].total/1000); })
+        .attr("width", width * 30 * 60 * 1000 / (domain[1] - domain[0]) )
+    addEventHandlers(dataPoints, dataBlob);
+  } else {
+    var dataPoints = g.selectAll("scatter-dots")
+      .data(data)
+      .enter().append("circle")
+        .attr("cx", function (d,i) { return x(d[0]); } )
+        .attr("cy", function (d) { return y(d[1]); } )
+        .attr("r", function(d){ return Math.log(1 + dataBlob[d].total/total) * 1000; })
+        .attr("style", function(d,i){ return "z-index: "+i; });
+    addEventHandlers(dataPoints, dataBlob);
+  }
+}
+
+function addEventHandlers(dataPoints, dataBlob) {
+  dataPoints.attr("class", "inactive")
+    .on("mouseover", function(d){ 
+      if ($(this).attr("class") !== "clicked"){ 
+        $(this).attr("class", "active"); 
+        window.clickedKeyInfoBox = $("#bid_block_infobox").children();
+        populateBidBox(d, dataBlob, 0.8);
+      }
+    })
+    .on("click", function(d){ 
+      $(".clicked").attr("class", "inactive");
+      $(this).attr("class", "clicked"); 
+      window.clickedKey = d;      
+      window.infoBoxActiveSlice = null;
+      window.infoBoxActiveData = null;
+      populateBidBox(d, dataBlob, 1.0);
+    })
+    .on("mouseout", function(d){ 
+      if ($(this).attr("class") !== "clicked"){ 
+        $(this).attr("class", "inactive"); 
+        if (window.clickedKey) {
+          $("#bid_block_infobox").children().detach();
+          $("#bid_block_infobox").append(clickedKeyInfoBox);
+          $("#bid_block_infobox").attr("style", "background: rgba(255, 255, 255, 1.0)");
+        } else {
+          $("#bid_block_infobox").html("");
         }
-      })
-      .on("click", function(d){ 
-        $("circle.clicked").attr("class", "inactive");
-        $(this).attr("class", "clicked"); 
-        window.clickedKey = d;      
-        window.infoBoxActiveSlice = null;
-        window.infoBoxActiveData = null;
-        populateBidBox(d, dataBlob, 1.0);
-      })
-      .on("mouseout", function(d){ 
-        if ($(this).attr("class") !== "clicked"){ 
-          $(this).attr("class", "inactive"); 
-          if (window.clickedKey) {
-            $("#bid_block_infobox").children().detach();
-            $("#bid_block_infobox").append(clickedKeyInfoBox);
-            $("#bid_block_infobox").attr("style", "background: rgba(255, 255, 255, 1.0)");
-          } else {
-            $("#bid_block_infobox").html("");
-          }
-        } 
-      });
+      } 
+    });
 }
 
 function populateBidBox(key, dataBlob, opacity) {

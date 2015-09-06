@@ -39,7 +39,11 @@ table.tooltip  td, td:first-child {
   padding: 2px 2px 2px 2px;
 }
 
-rect.fcviz, rect.int { fill: #772d72; }
+rect.fcviz, rect.int, rect.inactive { fill: #772d72; }
+
+rect.active { fill: #c7eefe; }
+
+rect.clicked { fill: #0fb3ca; }
 
 rect.fcviz-bid{ fill: #CA4FCA; }
 
