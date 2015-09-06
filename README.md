@@ -25,6 +25,9 @@ Plots bid rate against time at 30 min intervals, with bid amount expressed as si
 Clicking on a plot point will show a pie chart showing amounts bid at that rate by each user.
 ![Top: original site, Bottom: site with fcviz enabled](http://lonerifle.github.io/fcviz/fcviz-all.png)
 
+Fixed rate bids are represented as a bar chart with cumulative line
+![Fixed rate all bids](http://lonerifle.github.io/fcviz/fixedrate-all.png)
+
 ## Loan requests page improvements
 Loan requests now have a link that reveals a summary using information from the auction page, including bid summary chart.
 ![Top: original site, Bottom: site with fcviz enabled](http://lonerifle.github.io/fcviz/fcviz-requests.png)
