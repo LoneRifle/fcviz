@@ -582,13 +582,13 @@ function makeAllBidsChart(id, dataBlob) {
       .style("text-anchor", "end")
       .text("%");
       
-    var cum = 0;
+    var cum = +/(\d+).*/.exec($("#progress-label-value").html())[1];
     var line = d3.svg.line()
       .x(function(d) { return x(d[0]); })
       .y(function(d) { 
-        cum += dataBlob[d].total/total * 100;
+        cum -= dataBlob[d].total/total * 100;
         console.log(d[0]+" "+cum)
-        return cumY(100 - cum); 
+        return cumY(cum); 
       });
   
     main.append("path")
