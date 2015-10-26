@@ -492,7 +492,7 @@ function pushBidTo(data, d) {
 }
 
 function makeAllBidsChart(id, dataBlob) {
-  var isFixedRate = /fixed rate/i.test($("#rate").html());  
+  var isFixedRate = true;  
   
   var margin = window.summaryVizDimensions.margin,
     width = window.summaryVizDimensions.width * 0.95 - margin.left - margin.right,
@@ -694,7 +694,7 @@ function populateBidBox(key, dataBlob, opacity) {
     .attr("style", "cursor: pointer; text-decoration: none;")
     .on("click", function(){ 
       window.clickedKey = null;
-      $("circle.clicked").attr("class", "inactive");
+      $(".clicked").attr("class", "inactive");
       $("#bid_block_infobox").children().detach(); 
       $("#bid_block_infobox").attr("style", null);
       document.body.style.cursor = "default";
