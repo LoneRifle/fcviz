@@ -32,11 +32,13 @@ window.renderAllBidCharts = function (targetUrl, id) {
   
   var live = $("#bid_form").length > 0;
   
-  var details = document.createElement("div");
-  details.id = "bid_block_infobox";
-  $(details).attr("class", live? "bid_block_details_live" : "bid_block_details");
-  $(".bids").parent().attr("style", "position: relative");
-  $(".bids").after(details);
+  if ($("#bid_block_infobox").length == 0) {
+    var details = document.createElement("div");
+    details.id = "bid_block_infobox";
+    $(details).attr("class", live? "bid_block_details_live" : "bid_block_details");
+    $(".bids").parent().attr("style", "position: relative");
+    $(".bids").after(details);
+  }
   
   var page = 1;
   var pageData = [];
