@@ -113,8 +113,10 @@ function createRepayGraph(href) {
 }
 
 window.parseRepayRows = function (d) {
+  var dueDate = new Date(d["due_date"]);
+  dueDate.setHours(0);
   var data = {
-    date: new Date(d["due_date"]),
+    date: new Date(dueDate),
     rate: +d["annualised_rate"],
     interest: +d["pay_interest"],
     fee: +d["lender_fee"],
