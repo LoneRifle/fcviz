@@ -58,7 +58,7 @@ function enrichLoanRequests() {
     }
   };
     
-  $("img[src='/images/auction-hammer.png']")
+  $("img[src*='/images/auction-hammer.png']")
     .on("click", function(){
       auctionOnClick.call(this);
       $(this).off("click");
