@@ -114,15 +114,15 @@ function createRepayGraph(href) {
 
 window.parseRepayRows = function (d) {
   var data = {
-    date: new Date(d[" Due Date"]),
-    rate: +d[" Annualised Rate"],
-    interest: +d[" Interest due"],
-    fee: +d[" Lender Fee"],
-    principal: +d[" Principal due"],
-    risk: d[" Risk"].trim(),
-    status: d[" Status"].trim(),
-    id: +d["Loan Part ID"],
-    name: d[" Borrower"].trim()
+    date: new Date(d["due_date"]),
+    rate: +d["annualised_rate"],
+    interest: +d["pay_interest"],
+    fee: +d["lender_fee"],
+    principal: +d["pay_principal"],
+    risk: d["credit_band"].trim(),
+    status: d["status"].trim(),
+    id: +d["loan_part_id"],
+    name: d["borrower"].trim()
   };  
   
   if (!repayByDate[data.date]) {
