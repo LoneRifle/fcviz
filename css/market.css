@@ -13,3 +13,44 @@
   color: black;
   background-color: inherit;
 }
+
+.loan-part-filters .m1-m3 {
+  padding-left: 18px;
+}
+
+.loan-part-filters .m1-m3 li {
+  display: block;
+  float: left;
+  padding-left: 1px;
+  padding-right: 1px;
+}
+
+.loan-part-filters .m1-m3 .keywords {
+  width: 50%;
+}
+
+.loan-part-filters .m1-m3 .price {
+  width: 25%;
+}
+
+.loan-part-filters .m1-m3 .price input {
+  width: 100% ! important;
+}
+
+.loan-part-filters .m1-m3 .premium {
+  width: 25%;
+}
+
+.loan-part-filters .m1-m3 .premium label {
+  width: 125%;
+}
+
+.loan-part-filters .m1-m3 .premium .js-select > span {
+  padding: 0.307692308em 2em 0.307692308em 0.692307692em;
+  width: 100%;
+  height: 31.5938px;
+}
+
+.premium:before {
+  display: none ! important;
+}
