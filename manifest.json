@@ -27,12 +27,18 @@
       "all_frames": true,
       "css": [ "css/fcviz.css" ],
       "js": [ "js/injector.js", "js/sellresources.js" ]
+    },    
+    {
+      "matches": ["https://www.fundingcircle.com/secondary-market"],
+      "css": [ "css/market.css" ],
+      "js": [ "js/injector.js", "js/marketresources.js" ]
     }
   ],
   "background": {
     "scripts": ["js/background.js"]
   },
   "web_accessible_resources": [
+    "css/market.css",
     "css/fcviz.css",
     "css/c3.min.css",
     "css/chosen.min.css",
@@ -44,7 +50,8 @@
     "js/auction.js",
     "js/requests.js",
     "js/summary.js",
-    "js/sell.js"    
+    "js/sell.js",
+    "js/market.js"
   ],
   "permissions": [
     "webRequest",

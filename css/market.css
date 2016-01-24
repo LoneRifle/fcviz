@@ -1,0 +1,15 @@
+.risk-bands input[type=checkbox] {
+  display: none ! important;
+}
+
+.risk-bands li {
+  width: 12.5% ! important;
+  text-align: center;
+  color: white;
+  background-color: #772d72;
+}
+
+.risk-bands li[active=false] {
+  color: black;
+  background-color: inherit;
+}
