@@ -26,6 +26,8 @@ makeExposureSelector();
 
 rearrangeCheckboxes();
 
+recreateShowHideAdvancedLinks();
+
 function rearrangeKeywordPriceControls() {
   var keywordPriceContainer = $(document.createElement("li"));
   keywordPriceContainer.addClass("m1-m3");
@@ -54,7 +56,8 @@ function rearrangeCheckboxes() {
   var excludeFunded = $("#exclude-funded-filter").children().detach();
   $("#exclude-funded-filter").append(document.createElement("p"));
   $("#exclude-funded-filter p").append(excludeFunded);
-  $("#exclude-funded-filter").append($("#loan_part_paginator_show_watched_loans").parent().detach());
+  $("#exclude-funded-filter").append(
+    $("#loan_part_paginator_show_watched_loans").parent().attr("advanced",true).detach());
 }
 
 function makeExposureSelector() {
@@ -98,3 +101,21 @@ function makeExposureSelector() {
   
 }
 
+function recreateShowHideAdvancedLinks() {
+  var displayStateHref = $(".hidden").attr("href");
+  if (displayStateHref === "#show-advanced-filters") {
+    $("[advanced=true]").show();
+  } else {
+    $("[advanced=true]").hide();
+  }
+
+  $("[href=#show-advanced-filters]").removeClass("icon").click(function() {
+    $("[advanced=true]").show();
+  });
+
+  $("[href=#hide-advanced-filters]").removeClass("down-icon").click(function() {
+    $("[advanced=true]").hide();
+  });
+
+  $(".advanced-filters").detach();
+}
