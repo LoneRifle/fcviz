@@ -1,5 +1,8 @@
-
-
+/**
+ * FCViz 
+ * Payload script for loan part pages
+ */
+ 
 //Tag all advanced controls
 $(".advanced-filters li").attr("advanced", true);
 
@@ -14,6 +17,13 @@ $(".risk-bands li label").click(function() {
 //Rework the layout of the first form
 rearrangeKeywordPriceControls();
 
+//Move sector and region filters
+$(".loan-part-filters .form").append($("[class*=filter-business-]").detach());
+$(".filter-business-sector").removeClass("m1-m3").addClass("m1-m2");
+$(".filter-business-region").removeClass("m4-m5").addClass("m3");
+
+//Move advanced checkboxes
+rearrangeCheckboxes();
 
 function rearrangeKeywordPriceControls() {
   var keywordPriceContainer = $(document.createElement("li"));
@@ -33,8 +43,16 @@ function rearrangeKeywordPriceControls() {
   });  
 }
 
-function convertToSpan(e) {
-  var advanced = e.attr("advanced");
-  var span = e.replaceWith("<span>"+e.html()+"</span>").attr("advanced", advanced);
-  return span;
+function rearrangeCheckboxes() {
+  var guarantees = $(".advanced-filters .m4-m5").detach().removeClass("m4-m5").addClass("m5-m6");
+  guarantees.find("label.group").html("Guarantees/Security")
+  $(".loan-part-filters .form").append(guarantees);
+  
+  $("#loan_part_paginator_asset_secured").before($("#loan_part_paginator_personal_guarantee").parent().detach());
+  
+  var excludeFunded = $("#exclude-funded-filter").children().detach();
+  $("#exclude-funded-filter").append(document.createElement("p"));
+  $("#exclude-funded-filter p").append(excludeFunded);
+  $("#exclude-funded-filter").append($("#loan_part_paginator_show_watched_loans").parent().detach());
+  
 }

@@ -15,7 +15,7 @@
 }
 
 .loan-part-filters .m1-m3 {
-  padding-left: 18px;
+  padding-left: 10px;
 }
 
 .loan-part-filters .m1-m3 li {
@@ -51,6 +51,26 @@
   height: 31.5938px;
 }
 
+.loan-part-filters .m7-m8 {
+  padding-top: 12px ! important;
+}
+
 .premium:before {
   display: none ! important;
+}
+
+.form label {
+  margin-top: 0px ! important;
+}
+
+.form li {
+  margin-bottom: 0.5rem ! important;
+}
+
+.form p {
+  font-size: 14px;
+}
+
+#loan_part_paginator_show_watched_loans {
+  margin-left: -20px;
 }
