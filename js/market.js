@@ -22,7 +22,8 @@ $(".loan-part-filters .form").append($("[class*=filter-business-]").detach());
 $(".filter-business-sector").removeClass("m1-m3").addClass("m1-m2");
 $(".filter-business-region").removeClass("m4-m5").addClass("m3");
 
-//Move advanced checkboxes
+makeExposureSelector();
+
 rearrangeCheckboxes();
 
 function rearrangeKeywordPriceControls() {
@@ -45,7 +46,7 @@ function rearrangeKeywordPriceControls() {
 
 function rearrangeCheckboxes() {
   var guarantees = $(".advanced-filters .m4-m5").detach().removeClass("m4-m5").addClass("m5-m6");
-  guarantees.find("label.group").html("Guarantees/Security")
+  guarantees.find("label.group").html("Guarantees/Security");
   $(".loan-part-filters .form").append(guarantees);
   
   $("#loan_part_paginator_asset_secured").before($("#loan_part_paginator_personal_guarantee").parent().detach());
@@ -54,5 +55,46 @@ function rearrangeCheckboxes() {
   $("#exclude-funded-filter").append(document.createElement("p"));
   $("#exclude-funded-filter p").append(excludeFunded);
   $("#exclude-funded-filter").append($("#loan_part_paginator_show_watched_loans").parent().detach());
+}
+
+function makeExposureSelector() {
+  var exposure = $(".advanced-filters .m1-m3").detach().removeClass("m1-m3")
+    .addClass("m4 my-exposure");
+  exposure.find("label.group").html("My Exposure");
+  $(".loan-part-filters .form").append(exposure);
+  $("label[for*=show_loans_funded]").html("Yes");
+  $("label[for*=exclude_loans_funded]").html("No");
+  
+  var bothContainer = $(document.createElement("p"));
+  var bothInput = $(document.createElement("input")).attr("type","checkbox");
+  var bothLabel = $(document.createElement("label"))
+    .addClass("check-radio").attr("for","both_loans_funded").html("Both");
+  bothContainer.append(bothInput).append(bothLabel);
+  
+  exposure.append(bothContainer);
+  
+  //Set label conditions based on state of checkboxes
+  var bothCondition = true;
+  $("label[for*=show_loans_funded], label[for*=exclude_loans_funded]").each(function() { 
+    var isChecked = $(this).prev("input[type=checkbox]").is(":checked");
+    $(this).attr("active", isChecked);
+    bothCondition = bothCondition && !isChecked;
+  });
+  
+  bothLabel.attr("active", bothCondition);
+  bothInput.prop("checked", bothCondition);
+  
+  //Wire the click handlers for the labels to change cosmetic state
+  $("label[for*=loans_funded]").click(function() {
+    $("label[for*=loans_funded]").each(function() { 
+      $(this).attr("active", false);
+      $(this).prev("input[type=checkbox]").prop("checked", false);
+    });
+    $(this).attr("active", $(this).attr("active") === "false");
+    if ($(this).attr("for") === bothLabel.attr("for")) {
+      fc.secondaryMarket.submitFilters();
+    }
+  });
   
 }
+

@@ -1,15 +1,23 @@
+.my-exposure input[type=checkbox] {
+  display: none ! important;
+}
+
+.my-exposure p {
+  display: inline;
+}
+
 .risk-bands input[type=checkbox] {
   display: none ! important;
 }
 
-.risk-bands li {
+.risk-bands li, label[for*=loans_funded] {
   width: 12.5% ! important;
   text-align: center;
   color: white;
   background-color: #772d72;
 }
 
-.risk-bands li[active=false] {
+.risk-bands li[active=false], label[for*=loans_funded][active=false] {
   color: black;
   background-color: inherit;
 }
@@ -73,4 +81,8 @@
 
 #loan_part_paginator_show_watched_loans {
   margin-left: -20px;
+}
+
+.filter-business-region .js-select {
+  width: 112px ! important;
 }

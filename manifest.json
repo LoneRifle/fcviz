@@ -29,7 +29,7 @@
       "js": [ "js/injector.js", "js/sellresources.js" ]
     },    
     {
-      "matches": ["https://www.fundingcircle.com/secondary-market"],
+      "matches": ["https://www.fundingcircle.com/secondary-market*"],
       "css": [ "css/market.css" ],
       "js": [ "js/injector.js", "js/marketresources.js" ]
     }
