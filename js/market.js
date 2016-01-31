@@ -28,6 +28,25 @@ rearrangeCheckboxes();
 
 recreateShowHideAdvancedLinks();
 
+var MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
+window.fcVizObserver = function(callback) {
+  return new MutationObserver(function(mutations) {
+    mutations.forEach(function(mutation) {
+      if (mutation.addedNodes.length > 0) {
+        switch(mutation.addedNodes[0].id) {
+        case "financial-summary":
+          if(mutation.addedNodes.length > 0) {
+            callback(mutation.addedNodes[0].id);
+          }
+        }
+      }
+    })
+  });
+}
+
+window.fcVizObserver(triggerPropertyLayoutForSecondaryMarket).observe(document, { childList: true, subtree: true });
+
+
 function rearrangeKeywordPriceControls() {
   var keywordPriceContainer = $(document.createElement("li"));
   keywordPriceContainer.addClass("m1-m3");
