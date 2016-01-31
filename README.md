@@ -55,6 +55,7 @@ and running total.
 Investor report now directly embedded in the Financial Summary tab, with option to download as well. 
 All irrelevant sections also removed leaving only investor report and outstanding loans.
 ![Property](http://lonerifle.github.io/fcviz/property.png)
+![Property](http://lonerifle.github.io/fcviz/property-secondary.png)
 
 ## Repayment info and Term Sheet
 Information in the repayments tab is now populated using the page usually found in the secondary market.
@@ -67,3 +68,8 @@ The premium selector is now flanked by two buttons.
 The left one is an empty circle and will clear any premiums made in the selector. 
 The right one is a filled circle and will apply the loan part premium to all other selected loan parts, dropping those whose rate falls below the minimum as a result of the premium.
 ![Premium shortcuts](http://lonerifle.github.io/fcviz/sell-my-loans.png)
+
+## Improved loan parts filter controls
+Both regular and advanced loan part filters are now presented in the same section.
+Advanced filters are still hidden by default, but occupy less of the page.
+![Loan parts before and after](http://lonerifle.github.io/fcviz/markets.png)
