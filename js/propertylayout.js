@@ -1,6 +1,6 @@
 window.triggerPropertyLayout = function (id) {
-  var investorReportLink = $("a.blueText:contains(Investor Report)");
-  var otherLinks = $("a.blueText:not(:contains(Investor Report))");
+  var investorReportLink = $("a.blueText:contains(Investor )");
+  var otherLinks = $("a.blueText:not(:contains(Investor ))");
   //Property loans usually have one hyperlink labelled as Investor Report
   if (investorReportLink.length > 0) {
     var reportHeading = $("#financial_summary .top_margin h2").first();
@@ -22,7 +22,7 @@ window.triggerPropertyLayout = function (id) {
 }
 
 window.triggerPropertyLayoutForSecondaryMarket = function (id) {
-  var investorReportLink = $("a.filed_accountsi:contains(Investor Report)");
+  var investorReportLink = $("a.filed_accountsi:contains(Investor )");
   //Property loans usually have one hyperlink labelled as Investor Report
   if (investorReportLink.length > 0) {
     var reportHeading = $("#financial-summary h3:contains(Key financials)").first();
