@@ -30,12 +30,11 @@ window.renderAllBidCharts = function (targetUrl, id) {
   progress.id = id+"_progress";
   $("#"+id).append(progress);
   
-  var live = $("#bid_form").length > 0;
   
   if ($("#bid_block_infobox").length == 0) {
     var details = document.createElement("div");
     details.id = "bid_block_infobox";
-    $(details).attr("class", live? "bid_block_details_live" : "bid_block_details");
+    $(details).attr("class", $("#bid_form").length > 0? "bid_block_details_live" : "bid_block_details");
     $(".bids").parent().attr("style", "position: relative");
     $(".bids").after(details);
   }
@@ -44,35 +43,31 @@ window.renderAllBidCharts = function (targetUrl, id) {
   var pageData = [];
   var href = $("li.last").first().find("a").attr("href");
   var last = href? +href.substring(href.indexOf("=")+1) : 1;
-  var urlPrefix = live? "auction/" : "";
   $(progress).html("Retrieving and parsing page "+page+"/"+last);
-  $.get( urlPrefix + "bids?page=" + page, window.getAllBidPage.bind(window, pageData, id, page, live, last)).fail(function(jqXHR, textStatus, errorThrown) {
+  $.get("auction/bids?page=" + page, window.getAllBidPage.bind(window, pageData, id, page, last)).fail(function(jqXHR, textStatus, errorThrown) {
     $(progress).html("Failed to retrieve page "+page+", chart render aborted: "+errorThrown);
   });
 }
 
-window.getAllBidPage = function(pageData, id, page, live, last, d) {  
+window.getAllBidPage = function(pageData, id, page, last, d) {  
   
-  var data = d;
-  if (live) {
-    data = $(document.createElement("table")).html(d).find("tr.live");
-  }
+  var data = $(document.createElement("table")).html(d).find("tr.live");
+  
   pageData = jQuery.merge(pageData, data);
   if (page === last) {
-    window.completeAllBidRender(pageData, live, id);
+    window.completeAllBidRender(pageData, id);
     return;
   }
   var nextPage = page + 1;
-  var urlPrefix = live? "auction/" : "";
   $("#"+id+"_progress").html("Retrieving and parsing page "+nextPage+"/"+last);
-  $.get( urlPrefix + "bids?page=" + nextPage, window.getAllBidPage.bind(window, pageData, id, nextPage, live, last)).fail(function(jqXHR, textStatus, errorThrown) {
+  $.get("auction/bids?page=" + nextPage, window.getAllBidPage.bind(window, pageData, id, nextPage, last)).fail(function(jqXHR, textStatus, errorThrown) {
     $("#"+id+"_progress").html("Failed to retrieve page "+nextPage+", chart render aborted: "+errorThrown);
   });
 }
 
-window.completeAllBidRender = function(pageData, live, id) {
+window.completeAllBidRender = function(pageData, id) {
   var table = $("#"+id).parent().find("table");
-  var data = makeAllDataFrom(pageData, live);
+  var data = makeAllDataFrom(pageData);
   $("#"+id+"_progress").html("Place pointer over each point for more details. Click to keep on screen");
   makeAllBidsChart(id, data);
   window.renderBusy = false;
@@ -403,11 +398,11 @@ function makeBidSummaryTableDrawer(targetUrl, table) {
   
 }
 
-function makeAllDataFrom(pageData, live) {
+function makeAllDataFrom(pageData) {
   var data = { keys:[] };
   
   var gmtOffset = 0;  
-  var parseHTML = function (i,d) {
+  jQuery(pageData).each( function (i,d) {
     if (gmtOffset == 0) {
       var roughTime = new Date(+$(this).attr("data-created_at"));
       roughTime.setMilliseconds(0);
@@ -423,17 +418,8 @@ function makeAllDataFrom(pageData, live) {
       rank: +$(this).children().filter(".text").first().html()
     }
     pushBidTo(data, bid);
-  }
+  });
   
-  var parseJSON = function(i,d) {
-    var status = d.status;
-    if (status !== "rejected") {
-      d.rank = i+1;
-      d.bid_time = Date.parse(d.bid_time);
-      pushBidTo(data, d);
-    }
-  }
-  jQuery(pageData).each(live? parseHTML : parseJSON);
   return data;
 }
 
