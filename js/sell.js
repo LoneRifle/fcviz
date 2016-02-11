@@ -102,3 +102,32 @@ $scope.updateSaleInfoAll = function (loanPart) {
     }
   });
 }
+
+//Wrap the Sell Loan Parts click handler with our own, inspecting
+//the loan parts to ensure that everything is either at a premium, or 
+var confirmSell = $scope.open;
+
+$scope.open = function () {
+  var hasPremium = false;
+  var atParOrDiscount = [];
+  angular.forEach($scope.loanPartsToBeSold, function(thisPart){
+    if (+thisPart.markup > 0) {
+      hasPremium = true;
+    } else {
+      atParOrDiscount.push(thisPart);
+    }
+  });
+  
+  var makeMessageFor = function (atParOrDiscount) {
+    var msg = "You are selling some parts at a premium, and some at par or discount.\nDo you want to sell these without premium?\n";
+    angular.forEach(atParOrDiscount, function(d){
+      msg += d.id + " " + d.loan_title + ": " + d.markup + "%\n";
+    });
+    return msg;
+  }
+  
+  var hasDifferentMarkups = hasPremium && atParOrDiscount.length > 0;
+  if (!hasDifferentMarkups || (hasDifferentMarkups && confirm(makeMessageFor(atParOrDiscount)))) {
+    confirmSell();
+  }
+}
