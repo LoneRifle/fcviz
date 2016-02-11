@@ -69,6 +69,10 @@ The left one is an empty circle and will clear any premiums made in the selector
 The right one is a filled circle and will apply the loan part premium to all other selected loan parts, dropping those whose rate falls below the minimum as a result of the premium.
 ![Premium shortcuts](http://lonerifle.github.io/fcviz/sell-my-loans.png)
 
+##Premium Safety Catch
+When the user is selling individual parts, FCViz will check the loan parts to be sold if all or none of them have a premium applied. If there are some with premium and others at par or discount, FCViz will prompt the user for confirmation that this is what he or she really wants to do.
+![Premium safety catch](http://lonerifle.github.io/fcviz/safetycatch.png)
+
 ## Improved loan parts filter controls
 Both regular and advanced loan part filters are now presented in the same section.
 Advanced filters are still hidden by default, but occupy less of the page.
