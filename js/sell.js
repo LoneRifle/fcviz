@@ -131,3 +131,22 @@ $scope.open = function () {
     confirmSell();
   }
 }
+
+//Wrap the event handler for the checkboxes, tracking the last clicked one,
+//so that we can check/uncheck all loan parts in between the currently clicked and last clicked one
+
+$scope.addToBeSold = $scope.toggleSell;
+var lastClickedPart = null;
+
+$scope.toggleSell = function (loanPart) {
+  if (lastClickedPart != null && lastClickedPart !== loanPart) {
+    var fromIndex = $scope.loanParts.indexOf(lastClickedPart);
+    var toIndex = $scope.loanParts.indexOf(loanPart);
+    var sell = loanPart.sell === true;
+    console.log("Sell: "+sell+" from: "+fromIndex+" to: "+toIndex);
+    var step = fromIndex < toIndex? 1 : -1;
+    
+  }
+  lastClickedPart = loanPart;
+  $scope.addToBeSold(loanPart);
+}
