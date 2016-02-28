@@ -2,20 +2,48 @@
  * FCViz 
  * Payload script for the individual loan iframe within the Sell page
  */
+
+window.chkboxes = [];
  
-angular.module("SellLoanParts").directive("markup", function($compile){
-  return {
-    restrict: 'C',
-    link: function(scope, markup, attrs) {
-      //Grab the loan part id, coercing it into an int, and look it up.
-      var updateSaleInfoAll = "updateSaleInfoAll(findLoanPartFrom($event))";
-      var clearSaleInfo = "clearSaleInfo(findLoanPartFrom($event))";
-      markup.parent()
-        .prepend($compile("<span class='markup_all' ng-click='"+clearSaleInfo+"'>○ </span> ")(scope))
-        .append($compile("<span class='markup_all' ng-click='"+updateSaleInfoAll+"'> ●</span>")(scope));        
+angular.module("SellLoanParts")
+  .directive("markup", function($compile){
+    return {
+      restrict: 'C',
+      link: function(scope, markup, attrs) {
+        //Grab the loan part id, coercing it into an int, and look it up.
+        var updateSaleInfoAll = "updateSaleInfoAll(findLoanPartFrom($event))";
+        var clearSaleInfo = "clearSaleInfo(findLoanPartFrom($event))";
+        markup.parent()
+          .prepend($compile("<span class='markup_all' ng-click='"+clearSaleInfo+"'>○ </span> ")(scope))
+          .append($compile("<span class='markup_all' ng-click='"+updateSaleInfoAll+"'> ●</span>")(scope));        
+      }
     }
-  }
-});
+  })
+  .directive("input", function($compile){
+    return {
+      restrict: 'E',
+      link: function(scope, el, attrs, controllers) {
+        if (el.hasClass("sell-individual-loan-part")) {
+          chkboxes.push(el[0]);
+          el.bind('click', function(event) {
+            var last = chkboxes.lastChecked;
+            if (last && event.shiftKey) {
+                var start = chkboxes.indexOf(event.target),
+                    end = chkboxes.indexOf(last),
+                    checked = last.checked;
+
+                angular.forEach(chkboxes.slice(Math.min(start, end), Math.max(start, end) + 1), function(box) {
+                    var model = angular.element(box).data('$ngModelController');
+                    model.$setViewValue(checked);
+                    model.$render();
+                });
+            }
+            chkboxes.lastChecked = event.target;
+          });
+        }
+      }
+    }
+  });
 
 if (angular.resumeBootstrap) {
   angular.resumeBootstrap();
@@ -130,23 +158,4 @@ $scope.open = function () {
   if (!hasDifferentMarkups || (hasDifferentMarkups && confirm(makeMessageFor(atParOrDiscount)))) {
     confirmSell();
   }
-}
-
-//Wrap the event handler for the checkboxes, tracking the last clicked one,
-//so that we can check/uncheck all loan parts in between the currently clicked and last clicked one
-
-$scope.addToBeSold = $scope.toggleSell;
-var lastClickedPart = null;
-
-$scope.toggleSell = function (loanPart) {
-  if (lastClickedPart != null && lastClickedPart !== loanPart) {
-    var fromIndex = $scope.loanParts.indexOf(lastClickedPart);
-    var toIndex = $scope.loanParts.indexOf(loanPart);
-    var sell = loanPart.sell === true;
-    console.log("Sell: "+sell+" from: "+fromIndex+" to: "+toIndex);
-    var step = fromIndex < toIndex? 1 : -1;
-    
-  }
-  lastClickedPart = loanPart;
-  $scope.addToBeSold(loanPart);
 }
