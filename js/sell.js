@@ -3,8 +3,6 @@
  * Payload script for the individual loan iframe within the Sell page
  */
 
-window.chkboxes = [];
- 
 angular.module("SellLoanParts")
   .directive("markup", function($compile){
     return {
@@ -24,8 +22,8 @@ angular.module("SellLoanParts")
       restrict: 'E',
       link: function(scope, el, attrs, controllers) {
         if (el.hasClass("sell-individual-loan-part")) {
-          chkboxes.push(el[0]);
           el.bind('click', function(event) {
+            var chkboxes = document.querySelectorAll(".sell-individual-loan-part");
             var last = chkboxes.lastChecked;
             if (last && event.shiftKey) {
                 var start = chkboxes.indexOf(event.target),
