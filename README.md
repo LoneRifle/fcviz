@@ -76,4 +76,4 @@ When the user is selling individual parts, FCViz will check the loan parts to be
 ## Improved loan parts filter controls
 Both regular and advanced loan part filters are now presented in the same section.
 Advanced filters are still hidden by default, but occupy less of the page.
-![Loan parts before and after](http://lonerifle.github.io/fcviz/markets.png)
+![Loan parts before and after](http://lonerifle.github.io/fcviz/markets.jpg)
