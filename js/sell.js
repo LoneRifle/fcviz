@@ -3,6 +3,8 @@
  * Payload script for the individual loan iframe within the Sell page
  */
 
+window.lastChecked = null;
+ 
 angular.module("SellLoanParts")
   .directive("markup", function($compile){
     return {
@@ -20,11 +22,11 @@ angular.module("SellLoanParts")
   .directive("input", function($compile){
     return {
       restrict: 'E',
-      link: function(scope, el, attrs, controllers) {
+      link: function(scope, el, attrs) {
         if (el.hasClass("sell-individual-loan-part")) {
           el.bind('click', function(event) {
-            var chkboxes = document.querySelectorAll(".sell-individual-loan-part");
-            var last = chkboxes.lastChecked;
+            var chkboxes = Array.prototype.slice.call(document.querySelectorAll(".sell-individual-loan-part"));
+            var last = window.lastChecked;
             if (last && event.shiftKey) {
                 var start = chkboxes.indexOf(event.target),
                     end = chkboxes.indexOf(last),
@@ -36,7 +38,7 @@ angular.module("SellLoanParts")
                     model.$render();
                 });
             }
-            chkboxes.lastChecked = event.target;
+            window.lastChecked = event.target;
           });
         }
       }
