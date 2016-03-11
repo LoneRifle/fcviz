@@ -34,6 +34,12 @@
       "js": [ "js/injector.js", "js/sellresources.js" ]
     },    
     {
+      "matches": ["https://www.fundingcircle.com/loan_parts_for_sale"],
+      "all_frames": true,
+      "css": [ "css/fcviz.css" ],
+      "js": [ "js/injector.js", "js/forsaleresources.js" ]
+    },
+    {
       "matches": ["https://www.fundingcircle.com/secondary-market*"],
       "css": [ "css/market.css" ],
       "js": [ "js/injector.js", "js/marketresources.js" ]
@@ -61,6 +67,7 @@
     "js/requests.js",
     "js/summary.js",
     "js/sell.js",
+    "js/forsale.js",
     "js/market.js"
   ],
   "permissions": [
