@@ -5,7 +5,7 @@
 
 window.lastChecked = null;
  
-angular.module("SellLoanParts")
+var sellLoanParts = angular.module("SellLoanParts")
   .directive("markup", function($compile){
     return {
       restrict: 'C',
@@ -18,44 +18,11 @@ angular.module("SellLoanParts")
           .append($compile("<span class='markup_all' ng-click='"+updateSaleInfoAll+"'> ●</span>")(scope));        
       }
     }
-  })
-  .directive("input", function($compile){
-    return {
-      restrict: 'E',
-      link: function(scope, el, attrs) {
-        if (el.hasClass("sell-individual-loan-part")) {
-          el.bind('click', function(event) {
-            var chkboxes = Array.prototype.slice.call(document.querySelectorAll(".sell-individual-loan-part"));
-            var last = window.lastChecked;
-            if (last && event.shiftKey) {
-                var start = chkboxes.indexOf(event.target),
-                    end = chkboxes.indexOf(last),
-                    checked = last.checked;
-
-                angular.forEach(chkboxes.slice(Math.min(start, end), Math.max(start, end) + 1), function(box) {
-                    var model = angular.element(box).data('$ngModelController');
-                    model.$setViewValue(checked);
-                    model.$render();
-                });
-            }
-            window.lastChecked = event.target;
-          });
-        }
-      }
-    }
   });
 
-if (angular.resumeBootstrap) {
-  angular.resumeBootstrap();
-}
-
-//Add a link that reloads the page, so that we can pick up the buttons
-var reload = angular.element(document.createElement("span"));
-reload.attr("class","repay_change_data")
-  .html("Enable Shortcuts")
-  .on("click", function(){location.reload();});
-angular.element(document.querySelector("p"))
-  .append("&nbsp;").append(reload);
+addMultiCheckToAngularModule(sellLoanParts);
+  
+resumeBootstrapAndInjectEnableShortcuts();
 
 var app = angular.element(document.querySelector("div"));
 var $scope = app.scope();

@@ -3,7 +3,7 @@
 
   "name": "FCViz",
   "description": "Provides extra visualisations for Funding Circle pages",
-  "version": "2.2.2",
+  "version": "2.2.5",
   "icons": {"48": "png/favicon48.png"},
   
   "content_scripts": [
@@ -54,7 +54,9 @@
     "js/d3.min.js",
     "js/c3.min.js",
     "js/propertylayout.js",
+    "js/addmultichecktoangularmodule.js",
     "js/loanfinancesummary.js",
+    "js/deferbootstrap.js",
     "js/auction.js",
     "js/requests.js",
     "js/summary.js",
