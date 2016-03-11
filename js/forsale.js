@@ -8,3 +8,5 @@ window.lastChecked = null;
 addMultiCheckToAngularModule(angular.module("SellLoanParts"));
 
 resumeBootstrapAndInjectEnableShortcuts();
+
+addMultiCheckHint();

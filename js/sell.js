@@ -24,6 +24,8 @@ addMultiCheckToAngularModule(sellLoanParts);
   
 resumeBootstrapAndInjectEnableShortcuts();
 
+addMultiCheckHint();
+
 var app = angular.element(document.querySelector("div"));
 var $scope = app.scope();
 var SellableLoanParts = app.injector().get("SellableLoanParts");

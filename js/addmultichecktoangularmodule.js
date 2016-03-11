@@ -25,4 +25,12 @@ function addMultiCheckToAngularModule(module) {
       }
     }
   });
+
+}
+
+function addMultiCheckHint() {
+  var hint = angular.element(document.createElement("div"));
+  hint.html("When shortcuts enabled, hold shift and check two checkboxes to check everything between them.");
+  angular.element(document.querySelector("p"))
+    .append(hint);
 }
