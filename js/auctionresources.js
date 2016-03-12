@@ -1,1 +1,1 @@
-load({css:["css/fcviz.css"], js:["js/d3.min.js", "js/propertylayout.js", "js/auction.js"]})
+load({css:["css/fcviz.css"], js:["js/d3.min.js", "js/consolidateaccounts.js", "js/propertylayout.js", "js/auction.js"]})

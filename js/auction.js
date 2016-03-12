@@ -132,6 +132,7 @@ window.fcVizObserver = function(callback) {
 
 $(".tab-pane").each(function(){window.fcVizObserver(triggerFCViz).observe(this, { childList: true, subtree: false })});
 $("#financial_summary").each(function(){window.fcVizObserver(triggerPropertyLayout).observe(this, { childList: true, subtree: false })});
+$("#financial_summary").each(function(){window.fcVizObserver(triggerConsolidateAccountsWidgets).observe(this, { childList: true, subtree: false })});
 $("#repayments").each(function(){window.fcVizObserver(triggerRepayLayout).observe(this, { childList: true, subtree: false })});
 
 //Modify the repayments tab, changing it to a term sheet. Add our own custom repayments tab.
