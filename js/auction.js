@@ -51,7 +51,7 @@ window.renderAllBidCharts = function (targetUrl, id) {
 
 window.getAllBidPage = function(pageData, id, page, last, d) {  
   
-  var data = $(document.createElement("table")).html(d).find("tr.live");
+  var data = $(document.createElement("table")).html(d).find("tr[data-status][data-status!=rejected]");
   
   pageData = jQuery.merge(pageData, data);
   if (page === last) {
