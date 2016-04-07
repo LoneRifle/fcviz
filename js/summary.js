@@ -18,12 +18,12 @@ window.repayByDate = { dates: [] };
 
 df = d3.time.format("%Y-%m-%d");
 
-principal = ['principal',0], interest = ['interest',0], fee = ['fee',0], 
-  total = [+$("ul.user-nav li span.val").first().html().substring(1)];
+window.initialFunds = +$(".header__user-funds").text().split("£")[1];
+
+principal = ['principal',0], interest = ['interest',0], fee = ['fee',0], total = [initialFunds];
 dates = ['date', df(new Date())];
 
-principalWeek = ['principal',0], interestWeek = ['interest',0], feeWeek = ['fee',0], 
-  totalWeek = [+$("ul.user-nav li span.val").first().html().substring(1)];
+principalWeek = ['principal',0], interestWeek = ['interest',0], feeWeek = ['fee',0], totalWeek = [initialFunds];
 datesWeek = ['date', df(new Date())];
   
 repayChart = null;
@@ -107,7 +107,6 @@ function changeRepaidRowsAndReformat() {
 
 function createRepayGraph(href) {
   window.repayGraph.html("Loading...<br/><br/><br/><br/><br/><br/>");
-  window.initialFunds = +$("#account-menu li:not([class]) span.val").html().substring(1);
   window.finalFunds = initialFunds;    
   d3.csv(href, parseRepayRows, repayGraphCallback);
 }
