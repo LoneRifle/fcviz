@@ -51,7 +51,7 @@ window.renderAllBidCharts = function (targetUrl, id) {
 
 window.getAllBidPage = function(pageData, id, page, last, d) {  
   
-  var data = $(document.createElement("table")).html(d).find("tr.live");
+  var data = $(document.createElement("table")).html(d).find("tr[data-status][data-status!=rejected]");
   
   pageData = jQuery.merge(pageData, data);
   if (page === last) {
@@ -132,6 +132,7 @@ window.fcVizObserver = function(callback) {
 
 $(".tab-pane").each(function(){window.fcVizObserver(triggerFCViz).observe(this, { childList: true, subtree: false })});
 $("#financial_summary").each(function(){window.fcVizObserver(triggerPropertyLayout).observe(this, { childList: true, subtree: false })});
+$("#financial_summary").each(function(){window.fcVizObserver(triggerConsolidateAccountsWidgets).observe(this, { childList: true, subtree: false })});
 $("#repayments").each(function(){window.fcVizObserver(triggerRepayLayout).observe(this, { childList: true, subtree: false })});
 
 //Modify the repayments tab, changing it to a term sheet. Add our own custom repayments tab.
