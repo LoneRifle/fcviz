@@ -59,6 +59,7 @@
     "js/pathseg.js",
     "js/d3.min.js",
     "js/c3.min.js",
+    "js/consolidateaccounts.js",
     "js/propertylayout.js",
     "js/addmultichecktoangularmodule.js",
     "js/loanfinancesummary.js",
