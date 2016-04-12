@@ -328,7 +328,7 @@ window.populatePreview = function (previewPaneLeft, previewPaneRight, origId, to
     .append(title[1] + ", " + indicateMoreThan + (/\d+/.exec(title[2])[0]) + " years");
   previewPaneLeft.append(previewDetails);
   
-  if ($("#"+origId).html().indexOf("Fixed Rate") == -1) {
+  if (data.indexOf("Loan to value ratio") == -1) {
     var dataTableStartIndex = data.indexOf("<table class='brand'>");
     previewPaneLeft.append(data.substring(dataTableStartIndex, data.indexOf("</table>", dataTableStartIndex)) + "</table>");
     previewPaneLeft.find("table").attr("style", "display: none");
