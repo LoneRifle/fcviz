@@ -5,25 +5,26 @@ window.triggerConsolidateAccountsWidgets = function (id) {
     return;
   }
   
-  var originalLoanAccounts = $("table.brand:nth-child(2) tr td:not(:first-child)");
-  var originalLoanDates = $("table.brand:nth-child(2) tr th:not(:first-child)");
-  window.originalLoanData = makeLoanData(originalLoanAccounts, originalLoanDates);
+  window.accountsByLoanId = { ids:[] };  
+  window.thisLoanId = getLoanIdFromUrl(window.location.href);
   
+  addAccounts(thisLoanId, $("#financial_summary").parent());
+  
+  console.log(window.accountsByLoanId);
+}
 
-  
-  console.log(originalLoanData);
+function addAccounts(loanId, financials) {
+  var loanAccounts = financials.find("#financial_summary table.brand:nth-child(2) tr td:not(:first-child)");
+  var loanDates = financials.find("#financial_summary table.brand:nth-child(2) tr th:not(:first-child)");
+  window.accountsByLoanId[loanId] = $(makeLoanData(loanAccounts, loanDates)).attr("loanid", loanId);
+  window.accountsByLoanId.ids.push(loanId);
+  return window.accountsByLoanId[loanId];
 }
 
 function makeLoanData(accounts, dates) {
-  var loanData = { dates:[] };
-  
-  var loanRawData = $.merge($.merge(accounts.slice(0,3), dates), accounts.slice(3));
-  console.log(loanRawData);
-  
-  dates.each(function(i, d){
-    var dateStr = $(d).html().trim();
-    loanData.dates.unshift(dateStr);
-    
-  });
-  return loanData;
+  return $.merge($.merge(accounts.slice(0,3), dates), accounts.slice(3));
+}
+
+function getLoanIdFromUrl(url) {
+  return url.match("\\d+")[0];
 }
