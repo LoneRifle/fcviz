@@ -161,6 +161,15 @@ if (activeId !== "bids-all" && activeId != undefined) {
   window.fcViz({target: el});
 }
 
+if ($("#business-type").html() === "Limited Company") {
+  $("#borrower-name").append(
+    $(document.createElement("a"))
+      .attr("href", "https://beta.companieshouse.gov.uk/search/companies?q=" + $("#borrower-name").html().replace(/ /g, "+"))
+      .attr("target", "new")
+      .append($(document.createElement("img")).attr("src", "https://d2ondqc76inyu3.cloudfront.net/images/help/help_grey.png"))
+  );
+}
+
 function placeChartDivBefore(el, chart) {
   var chartControlDiv = document.createElement("div");
   chartControlDiv.id = chart;
