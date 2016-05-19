@@ -29,24 +29,70 @@ rearrangeCheckboxes();
 recreateShowHideAdvancedLinks();
 
 var MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
-window.fcVizObserver = function(callback) {
-  return new MutationObserver(function(mutations) {
+window.fcVizObserver = (predicate, callback) =>
+  new MutationObserver(function(mutations) {
     mutations.forEach(function(mutation) {
-      if (mutation.addedNodes.length > 0) {
-        switch(mutation.addedNodes[0].id) {
-        case "financial-summary":
-          if(mutation.addedNodes.length > 0) {
-            callback(mutation.addedNodes[0].id);
-          }
-        }
+      if (mutation.addedNodes.length > 0 && predicate(mutation)) {
+        callback(mutation.addedNodes[0]);
       }
     })
   });
-}
-
-window.fcVizObserver(triggerPropertyLayoutForSecondaryMarket).observe(document, { childList: true, subtree: true });
 
 
+var isFinancialSummaryPage = mutation => mutation.addedNodes[0].id === "financial-summary";
+window.fcVizObserver(isFinancialSummaryPage, triggerPropertyLayoutForSecondaryMarket)
+  .observe(document, { childList: true, subtree: true });
+
+  
+var tooltip = $(document.createElement("div"))
+    .attr("class", "tooltip")      
+    .css("background-color", "#F2F2F2")
+    .css("position", "absolute")    
+    .css("opacity", 0);
+
+$("body").append(tooltip);
+  
+var isLoanPartTable = mutation => $(mutation.addedNodes[0]).hasClass("loan-parts") ||
+  $(mutation.addedNodes[0]).find("table").hasClass("loan-parts");
+var addRepaymentInfoToLoanPartEntries = loanPartTable => {
+  var loanPartRepayEntries = $(loanPartTable).find("td.repayments");
+  loanPartRepayEntries.each((i, el) => {
+    var url = $(el).parent().find("a").attr("href") + "?section=repayments";
+    var icon = $(document.createElement("img"))
+      .attr("src", "https://d2ondqc76inyu3.cloudfront.net/images/help/help_grey.png")
+      .on("mouseover", e => {
+        tooltip.html("Loading from " + url + "...")
+          .css("left", (e.pageX + 28) + "px")     
+          .css("top", (e.pageY) + "px")
+          .animate({"opacity": 0.9}, {"duration": 200});
+        $.get(url, function(response){
+          var section = $(response).find("section")
+            .css("width", "100%")
+            .css("height", "100%")
+            .css("margin-right", 0).detach();
+          section
+            .find("li").each((i, el) => {
+              $(el).css("margin-left", "36px");
+            })
+            .find("p").each((i, el) =>{
+              $(el).html(" " + $(el).prev("h4").html() + " " + $(el).html())
+                .css("margin-left", "18px");
+              $(el).prev("h4").detach();
+            });
+          tooltip.html(section);
+          tooltip.find("img").detach();
+        });
+      })      
+      .on("mouseout", e => tooltip.animate({"opacity": 0}, {"duration": 500}));    
+    $(el).append(icon);
+  });
+};
+window.fcVizObserver(isLoanPartTable, addRepaymentInfoToLoanPartEntries)
+  .observe(document, { childList: true, subtree: true });
+
+addRepaymentInfoToLoanPartEntries($("table.loan-parts"));
+  
+  
 function rearrangeKeywordPriceControls() {
   var keywordPriceContainer = $(document.createElement("li"));
   keywordPriceContainer.addClass("m1-m3");

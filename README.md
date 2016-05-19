@@ -77,3 +77,7 @@ When the user is selling individual parts, FCViz will check the loan parts to be
 Both regular and advanced loan part filters are now presented in the same section.
 Advanced filters are still hidden by default, but occupy less of the page.
 ![Loan parts before and after](http://lonerifle.github.io/fcviz/markets.jpg)
+
+## Repayment peeking in Secondary Markets
+Loan part entries now have an icon which will display repayment information on mouseover
+![Repayment peeking](http://lonerifle.github.io/fcviz/repaymentpeek.jpg)
