@@ -80,4 +80,4 @@ Advanced filters are still hidden by default, but occupy less of the page.
 
 ## Repayment peeking in Secondary Markets
 Loan part entries now have an icon which will display repayment information on mouseover
-![Repayment peeking](http://lonerifle.github.io/fcviz/repaymentpeek.jpg)
+![Repayment peeking](http://lonerifle.github.io/fcviz/repaymentpeek.png)
