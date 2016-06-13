@@ -18,10 +18,6 @@ window.renderBidSummaryCharts = function (total, targetUrl, id) {
 }
 
 window.renderAllBidCharts = function (targetUrl, id) {
-  if (window.renderBusy) {
-    return;
-  }
-  window.renderBusy = true;
   var paginatorTop = $(targetUrl).find("#paginator_top");
   placeChartDivBefore(paginatorTop, id);
   $("#"+id).attr("style", "position: relative");
@@ -29,7 +25,11 @@ window.renderAllBidCharts = function (targetUrl, id) {
   var progress = document.createElement("div");
   progress.id = id+"_progress";
   $("#"+id).append(progress);
-  
+
+  if (window.renderBusy) {
+    return;
+  }
+  window.renderBusy = true;
   
   if ($("#bid_block_infobox").length == 0) {
     var details = document.createElement("div");
