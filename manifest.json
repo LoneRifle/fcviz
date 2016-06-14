@@ -3,7 +3,7 @@
 
   "name": "FCViz",
   "description": "Provides extra visualisations for Funding Circle pages",
-  "version": "2.4.1",
+  "version": "2.4.2",
   "icons": {"48": "png/favicon48.png"},
   
   "content_scripts": [
@@ -56,7 +56,6 @@
     "js/chosen/chosen.jquery.min.js",
     "js/chosen/chosen-sprite.png",
     "js/chosen/chosen-sprite@2x.png",
-    "js/pathseg.js",
     "js/d3.min.js",
     "js/c3.min.js",
     "js/consolidateaccounts.js",
