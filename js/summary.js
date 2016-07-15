@@ -29,8 +29,7 @@ datesWeek = ['date', df(new Date())];
 repayChart = null;
   
 //Observe mutations made to table.zebra-striped, so that we can reapply window.fcViz
-var MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
-window.fcVizObserver = new MutationObserver(function(mutations) {
+var addRepayGraph = function(mutations) {
   mutations.forEach(function(mutation) {
     switch(mutation.target.id) {
       case "all_lends":
@@ -78,8 +77,14 @@ window.fcVizObserver = new MutationObserver(function(mutations) {
         break;
     }
   })
-});
+};
 
+if ($("#all_lends").length > 0) {
+  addRepayGraph([{ target: $("#all_lends")[0] }]);
+}
+
+var MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
+window.fcVizObserver = new MutationObserver(addRepayGraph);
 window.fcVizObserver.observe(document, { childList: true, subtree: true });
 
 function changeRepaidRowsAndReformat() {
