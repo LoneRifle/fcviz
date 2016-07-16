@@ -95,8 +95,6 @@ window.fcViz = function (e) {
   }
 } 
 
-$('.tabs').tabs().bind('change', window.fcViz);
-
 window.summaryVizDimensions = {
   height: 250,
   width: $("div.active").filter(".tab-pane").width(),
@@ -433,7 +431,7 @@ function makeAllDataFrom(pageData) {
   return data;
 }
 
-window.largeInvestors = ["British Business Bank", "Business Finance Partnership"];
+window.largeInvestors = ["British Business Bank", "Business Finance Partnership", "British Business Bank Investments Limited"];
 
 function pushBidTo(data, d) {  
   if (window.largeInvestors.indexOf(d.lender_display_name) !== -1) {
