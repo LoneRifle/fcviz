@@ -41,8 +41,13 @@ var addRepayGraph = function(mutations) {
             .attr("id", "hide_repaid")
             .attr("type", "checkbox");
           hideRepaid[0].checked = window.repaidHidden;
-          var partsControls = $("div#all_lends table.zebra-striped tbody td").last();
-          partsControls.children().before(hideRepaid, "Hide Repaid ");          
+          var enhancedGridLink = $(document.createElement("a"))
+            .attr("href", "#")
+            .attr("onClick", "return false")
+            .on('click', () => console.log("hello"))
+            .html("Enhance");
+            
+          $("#mlpfilter").before(hideRepaid, "Hide Repaid ", enhancedGridLink, " ");
           $("#hide_repaid").on("change", function(){
             window.repaidHidden = this.checked;
             changeRepaidRowsAndReformat();
