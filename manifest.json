@@ -68,7 +68,8 @@
     "js/summary.js",
     "js/sell.js",
     "js/forsale.js",
-    "js/market.js"
+    "js/market.js",
+    "js/myloanparts.js"
   ],
   "permissions": [
     "webRequest",
