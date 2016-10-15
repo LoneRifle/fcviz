@@ -44,7 +44,7 @@ var addRepayGraph = function(mutations) {
           var enhancedGridLink = $(document.createElement("a"))
             .attr("href", "#")
             .attr("onClick", "return false")
-            .on('click', () => console.log("hello"))
+            .on('click', loadAllLoanParts)
             .html("Enhance");
             
           $("#mlpfilter").before(hideRepaid, "Hide Repaid ", enhancedGridLink, " ");
