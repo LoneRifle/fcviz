@@ -9,7 +9,7 @@ function loadAllLoanParts() {
     $("#wrapper").before($(document.createElement("div")).attr("id", "mlprender").attr("class", "fade"));
   }
   var filterValueOnFail = $("#mlpfilter option[selected]").attr("value");
-  loadLoanPartsStartingFromPage(1, [], filterValueOnFail, console.log);
+  loadLoanPartsStartingFromPage(1, undefined, filterValueOnFail, replaceTable);
 }
 
 function loadLoanPartsStartingFromPage(page, myLoanParts, filterValueOnFail, onLoad) {
@@ -21,8 +21,13 @@ function loadLoanPartsStartingFromPage(page, myLoanParts, filterValueOnFail, onL
     })
     .done(payload => {
       $("#mlprender").html(payload);
-      myLoanParts = myLoanParts.concat(extractLoanPartData());
       var isLast = $("#mlprender .pagination li").eq(-3).children("span").length == 1;
+      if (myLoanParts == undefined) {
+        myLoanParts = extractLoanPartTable();
+      } else {
+        var rows = extractLoanPartRows();
+        myLoanParts.find("tbody").append(rows);
+      }
       $("#mlprender").html("");
       if (isLast) {
         $("#mlprender").detach();
@@ -32,22 +37,24 @@ function loadLoanPartsStartingFromPage(page, myLoanParts, filterValueOnFail, onL
       }
     });
  }
+
+function extractLoanPartTable() {
+  var dataTable = $("#mlprender .brand");
+  dataTable.find("tbody tr").last().detach();
+  return dataTable;
+} 
  
-function extractLoanPartData() {
+function extractLoanPartRows() {
   var dataRows = $("#mlprender .brand tbody tr");
-  dataRows = dataRows.slice(0, dataRows.length - 1);
-  return dataRows.map((i, cell) => { 
-    return { 
-      id: parseInt($(cell).children("td").eq(0).html()),
-      title: $(cell).children("td").eq(1).children(),
-      risk: $(cell).children("td").eq(2).html().replace("--","").trim(),
-      repaymentsLeft: parseInt($(cell).children("td").eq(3).html()),
-      principal: $(cell).children("td").eq(4).html(),
-      rate: $(cell).children("td").eq(5).html(),
-      date: $(cell).children("td").eq(6).html(),
-      seller: $(cell).children("td").eq(7).html().trim(),
-      status: $(cell).children("td").eq(8).children(),
-    }; 
-  }).get();
+  dataRows.detach();
+  return dataRows.slice(0, dataRows.length - 1);
 }
- 
+
+function replaceTable(myLoanParts) {
+  $("#all_lends table.brand").detach();
+  $("#all_lends").append(myLoanParts);
+  $("#all_lends table.brand tbody td:nth-child(3)").each((i,d) => $(d).html($(d).html().replace("--","").trim()));
+  $("#all_lends table.brand th").each((i,d) => $(d).html($(d).find("a").html()));
+  $("#all_lends table.brand").DataTable();
+}
+
