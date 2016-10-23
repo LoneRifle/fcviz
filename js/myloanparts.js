@@ -53,6 +53,9 @@ function loadLoanPartsStartingFromPage(page, myLoanParts, filterValueOnFail, onL
 function extractLoanPartTable() {
   var dataTable = $("#mlprender .brand");
   dataTable.find("tbody tr").last().detach();
+  dataTable.find("tbody tr td:last-child").each((i,cell) => {
+    $(cell).html($(cell).find("span").text().trim())
+  });  
   return enhanceAndEmbedDataTable(dataTable);
 } 
 
@@ -76,7 +79,7 @@ function extractLoanPartData() {
       $(cell).children("td").eq(5).html(),
       $(cell).children("td").eq(6).html(),
       $(cell).children("td").eq(7).html().trim(),
-      $(cell).children("td").eq(8).html(),
+      $(cell).children("td").eq(8).find("span").text().trim(),
     ]; 
   });
 }
