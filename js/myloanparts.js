@@ -9,7 +9,7 @@ function loadAllLoanParts() {
     $("#wrapper").before($(document.createElement("div")).attr("id", "mlprender").attr("class", "fade"));
   }
   var filterValueOnFail = $("#mlpfilter option[selected]").attr("value");
-  loadLoanPartsStartingFromPage(1, undefined, filterValueOnFail, replaceTable);
+  loadLoanPartsStartingFromPage(1, undefined, filterValueOnFail, d => console.log("Done"));
 }
 
 function loadLoanPartsStartingFromPage(page, myLoanParts, filterValueOnFail, onLoad) {
@@ -25,8 +25,11 @@ function loadLoanPartsStartingFromPage(page, myLoanParts, filterValueOnFail, onL
       if (myLoanParts == undefined) {
         myLoanParts = extractLoanPartTable();
       } else {
-        var rows = extractLoanPartRows();
-        myLoanParts.find("tbody").append(rows);
+        var rows = extractLoanPartData();
+        rows.forEach((d,i) => { 
+          myLoanParts.row.add(d)
+        });
+        myLoanParts.draw();
       }
       $("#mlprender").html("");
       if (isLast) {
@@ -41,20 +44,30 @@ function loadLoanPartsStartingFromPage(page, myLoanParts, filterValueOnFail, onL
 function extractLoanPartTable() {
   var dataTable = $("#mlprender .brand");
   dataTable.find("tbody tr").last().detach();
-  return dataTable;
+  return enhanceAndEmbedDataTable(dataTable);
 } 
- 
-function extractLoanPartRows() {
-  var dataRows = $("#mlprender .brand tbody tr");
-  dataRows.detach();
-  return dataRows.slice(0, dataRows.length - 1);
-}
 
-function replaceTable(myLoanParts) {
+function enhanceAndEmbedDataTable(myLoanParts) {
   $("#all_lends table.brand").detach();
   $("#all_lends").append(myLoanParts);
   $("#all_lends table.brand tbody td:nth-child(3)").each((i,d) => $(d).html($(d).html().replace("--","").trim()));
   $("#all_lends table.brand th").each((i,d) => $(d).html($(d).find("a").html()));
-  $("#all_lends table.brand").DataTable();
+  return $("#all_lends table.brand").DataTable();
 }
 
+function extractLoanPartData() {
+  var dataRows = $("#mlprender .brand tbody tr");
+  return dataRows.slice(0, dataRows.length - 1).get().map((cell, i) => { 
+    return [
+      $(cell).children("td").eq(0).html().trim(),
+      $(cell).children("td").eq(1).html(),
+      $(cell).children("td").eq(2).html().replace("--","").trim(),
+      $(cell).children("td").eq(3).html().trim(),
+      $(cell).children("td").eq(4).html(),
+      $(cell).children("td").eq(5).html(),
+      $(cell).children("td").eq(6).html(),
+      $(cell).children("td").eq(7).html().trim(),
+      $(cell).children("td").eq(8).html(),
+    ]; 
+  });
+}
