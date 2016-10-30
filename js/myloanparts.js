@@ -31,15 +31,14 @@ function loadLoanPartsStartingFromPage(page, myLoanParts, filterValueOnFail, onL
     .done(payload => {
       $("#mlprender").html(payload);
       var isLast = $("#mlprender .pagination li").eq(-3).children("span").length == 1;
+      var rows = extractLoanPartData();
       if (myLoanParts == undefined) {
-        myLoanParts = extractLoanPartTable();
-      } else {
-        var rows = extractLoanPartData();
-        rows.forEach((d,i) => { 
-          myLoanParts.row.add(d)
-        });
-        myLoanParts.draw(false);
+        myLoanParts = extractAndEmbedLoanPartTable();
       }
+      rows.forEach((d,i) => { 
+        myLoanParts.row.add(d)
+      });
+      myLoanParts.draw(false);
       $("#mlprender").html("");
       if (isLast) {
         $("#mlprender").detach();
@@ -50,25 +49,16 @@ function loadLoanPartsStartingFromPage(page, myLoanParts, filterValueOnFail, onL
     });
  }
 
-function extractLoanPartTable() {
-  var dataTable = $("#mlprender .brand");
-  dataTable.find("tbody tr").last().detach();
-  dataTable.find("tbody tr td:last-child").each((i,cell) => {
-    $(cell).html($(cell).find("span").text().trim())
-  });  
-  return enhanceAndEmbedDataTable(dataTable);
-} 
-
-function enhanceAndEmbedDataTable(myLoanParts) {
+function extractAndEmbedLoanPartTable() {
+  var myLoanParts = $("#mlprender .brand");
+  myLoanParts.find("th").each((i,d) => $(d).html($(d).find("a").html()));
   $("#all_lends table.brand").detach();
   $("#all_lends").append(myLoanParts);
-  $("#all_lends table.brand tbody td:nth-child(3)").each((i,d) => $(d).html($(d).html().replace("--","").trim()));
-  $("#all_lends table.brand th").each((i,d) => $(d).html($(d).find("a").html()));
-  return $("#all_lends table.brand").DataTable({ order: [ [8,'asc'], [6,'asc'] ] });
+  return myLoanParts.DataTable({ order: [ [8,'asc'], [6,'asc'] ] });
 }
 
 function extractLoanPartData() {
-  var dataRows = $("#mlprender .brand tbody tr");
+  var dataRows = $("#mlprender .brand tbody tr").detach();
   return dataRows.slice(0, dataRows.length - 1).get().map((cell, i) => { 
     return [
       $(cell).children("td").eq(0).html().trim(),
