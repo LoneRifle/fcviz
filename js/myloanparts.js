@@ -35,7 +35,7 @@ function loadLoanPartsStartingFromPage(page, myLoanParts, filterValueOnFail, onL
       if (myLoanParts == undefined) {
         var myLoanPartsBase = extractLoanPartTable();
         embedLoanPartTable(myLoanPartsBase);
-        myLoanParts = myLoanPartsBase.DataTable({ order: [ [8,'asc'], [6,'asc'] ] });
+        myLoanParts = configure(myLoanPartsBase);
         window.myLoanPartsTable = $(".dataTables_wrapper");
       }
       rows.forEach((d,i) => { 
@@ -66,16 +66,33 @@ function embedLoanPartTable(myLoanParts) {
 function extractLoanPartData() {
   var dataRows = $("#mlprender .brand tbody tr").detach();
   return dataRows.slice(0, dataRows.length - 1).get().map((cell, i) => { 
-    return [
-      $(cell).children("td").eq(0).html().trim(),
-      $(cell).children("td").eq(1).html(),
-      $(cell).children("td").eq(2).html().replace("--","").trim(),
-      $(cell).children("td").eq(3).html().trim(),
-      $(cell).children("td").eq(4).html(),
-      $(cell).children("td").eq(5).html(),
-      $(cell).children("td").eq(6).html(),
-      $(cell).children("td").eq(7).html().trim(),
-      $(cell).children("td").eq(8).find("span").text().trim(),
-    ]; 
+    return {
+      id: $(cell).children("td").eq(0).html().trim(),
+      title: $(cell).children("td").eq(1).html(),
+      risk: $(cell).children("td").eq(2).html().replace("--","").trim(),
+      repayments: $(cell).children("td").eq(3).html().trim(),
+      principal: $(cell).children("td").eq(4).html(),
+      rate: $(cell).children("td").eq(5).html(),
+      date: $(cell).children("td").eq(6).html(),
+      seller: $(cell).children("td").eq(7).html().trim(),
+      status: $(cell).children("td").eq(8).find("span").text().trim(),
+    }; 
+  });
+}
+
+function configure(myLoanPartsBase) {
+  return myLoanPartsBase.DataTable({ 
+    order: [ [8,'asc'], [6,'asc'] ],
+    columns:[
+      { "data": "id" },
+      { "data": "title" },
+      { "data": "risk" },
+      { "data": "repayments" },
+      { "data": "principal" },
+      { "data": "rate" },
+      { "data": "date" },
+      { "data": "seller" },
+      { "data": "status" },
+    ]
   });
 }
