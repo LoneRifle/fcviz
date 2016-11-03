@@ -5,9 +5,9 @@
  */
  
 function loadAllLoanParts() {
-  if ($("#mlprender").length == 0) {
-    $("#wrapper").before($(document.createElement("div")).attr("id", "mlprender").attr("class", "fade"));
-  }
+  if (window.myLoanPartsTable == undefined) {
+    $("#wrapper").before($(document.createElement("div")).attr("id", "mlprender").attr("class", "fade"));  
+  }    
   var filterValueOnFail = $("#mlpfilter option[selected]").attr("value");
    $.ajax("/my-account/myloanpager?mlpfilter_value=all&mlp_order_by=id")
     .fail(payload => { 
@@ -33,7 +33,10 @@ function loadLoanPartsStartingFromPage(page, myLoanParts, filterValueOnFail, onL
       var isLast = $("#mlprender .pagination li").eq(-3).children("span").length == 1;
       var rows = extractLoanPartData();
       if (myLoanParts == undefined) {
-        myLoanParts = extractAndEmbedLoanPartTable();
+        var myLoanPartsBase = extractLoanPartTable();
+        embedLoanPartTable(myLoanPartsBase);
+        myLoanParts = myLoanPartsBase.DataTable({ order: [ [8,'asc'], [6,'asc'] ] });
+        window.myLoanPartsTable = $(".dataTables_wrapper");
       }
       rows.forEach((d,i) => { 
         myLoanParts.row.add(d)
@@ -49,12 +52,15 @@ function loadLoanPartsStartingFromPage(page, myLoanParts, filterValueOnFail, onL
     });
  }
 
-function extractAndEmbedLoanPartTable() {
+function extractLoanPartTable() {
   var myLoanParts = $("#mlprender .brand");
   myLoanParts.find("th").each((i,d) => $(d).html($(d).find("a").html()));
+  return myLoanParts;
+}
+
+function embedLoanPartTable(myLoanParts) {
   $("#all_lends table.brand").detach();
   $("#all_lends").append(myLoanParts);
-  return myLoanParts.DataTable({ order: [ [8,'asc'], [6,'asc'] ] });
 }
 
 function extractLoanPartData() {
