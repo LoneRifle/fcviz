@@ -54,6 +54,7 @@ function initLoanPartsTable() {
   embedLoanPartTable(myLoanPartsBase);
   window.myLoanPartsTable = $(".dataTables_wrapper");
   myLoanParts = configure(myLoanPartsBase);
+  window.myLoanParts = myLoanParts;
   return myLoanParts;
 }
  
@@ -96,6 +97,7 @@ function extractLoanPartData() {
 function configure(myLoanPartsBase) {
   var dataTable = myLoanPartsBase.DataTable({ 
     order: [ [8,'asc'], [7,'asc'] ],
+    rowId: "id",
     columns:[
       {
           "className":      'details-control',
