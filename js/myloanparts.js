@@ -5,7 +5,7 @@
  */
  
 function loadAllLoanParts() {
-  if (window.myLoanPartsTable == undefined) {
+  if ($("#mlprender").length == 0) {
     $("#wrapper").before($(document.createElement("div")).attr("id", "mlprender").attr("class", "fade"));  
   }    
   var filterValueOnFail = $("#mlpfilter option[selected]").attr("value");
@@ -33,10 +33,7 @@ function loadLoanPartsStartingFromPage(page, myLoanParts, filterValueOnFail, onL
       var isLast = $("#mlprender .pagination li").eq(-3).children("span").length == 1;
       var rows = extractLoanPartData();
       if (myLoanParts == undefined) {
-        var myLoanPartsBase = extractLoanPartTable();
-        embedLoanPartTable(myLoanPartsBase);
-        myLoanParts = configure(myLoanPartsBase);
-        window.myLoanPartsTable = $(".dataTables_wrapper");
+        myLoanParts = initLoanPartsTable();
       }
       rows.forEach((d,i) => { 
         myLoanParts.row.add(d)
@@ -52,9 +49,19 @@ function loadLoanPartsStartingFromPage(page, myLoanParts, filterValueOnFail, onL
     });
  }
 
+function initLoanPartsTable() {
+  var myLoanPartsBase = extractLoanPartTable();
+  embedLoanPartTable(myLoanPartsBase);
+  window.myLoanPartsTable = $(".dataTables_wrapper");
+  myLoanParts = configure(myLoanPartsBase);
+  return myLoanParts;
+}
+ 
 function extractLoanPartTable() {
   var myLoanParts = $("#mlprender .brand");
   myLoanParts.find("th").each((i,d) => $(d).html($(d).find("a").html()));
+  myLoanParts.find("th:contains(Seller)").detach();
+  myLoanParts.find("tr").prepend($(document.createElement("th")));
   return myLoanParts;
 }
 
@@ -66,24 +73,36 @@ function embedLoanPartTable(myLoanParts) {
 function extractLoanPartData() {
   var dataRows = $("#mlprender .brand tbody tr").detach();
   return dataRows.slice(0, dataRows.length - 1).get().map((cell, i) => { 
+    var title = $(cell).children("td").eq(1).html();
     return {
-      id: $(cell).children("td").eq(0).html().trim(),
-      title: $(cell).children("td").eq(1).html(),
+      id: / - (\d+)/.exec(title)[1],
+      title: title,
       risk: $(cell).children("td").eq(2).html().replace("--","").trim(),
       repayments: $(cell).children("td").eq(3).html().trim(),
       principal: $(cell).children("td").eq(4).html(),
       rate: $(cell).children("td").eq(5).html(),
       date: $(cell).children("td").eq(6).html(),
-      seller: $(cell).children("td").eq(7).html().trim(),
       status: $(cell).children("td").eq(8).find("span").text().trim(),
+      parts: [{
+        id: $(cell).children("td").eq(0).html().trim(),
+        principal: $(cell).children("td").eq(4).html(),
+        rate: $(cell).children("td").eq(5).html(),
+        seller: $(cell).children("td").eq(7).html().trim(),
+      }]
     }; 
   });
 }
 
 function configure(myLoanPartsBase) {
-  return myLoanPartsBase.DataTable({ 
-    order: [ [8,'asc'], [6,'asc'] ],
+  var dataTable = myLoanPartsBase.DataTable({ 
+    order: [ [8,'asc'], [7,'asc'] ],
     columns:[
+      {
+          "className":      'details-control',
+          "orderable":      false,
+          "data":           null,
+          "defaultContent": 'M'
+      },
       { "data": "id" },
       { "data": "title" },
       { "data": "risk" },
@@ -91,8 +110,44 @@ function configure(myLoanPartsBase) {
       { "data": "principal" },
       { "data": "rate" },
       { "data": "date" },
-      { "data": "seller" },
       { "data": "status" },
     ]
   });
+  // Add event listener for opening and closing details
+  $("#all_lends table.brand tbody").on('click', 'td.details-control', function () {
+        var tr = $(this).closest('tr');
+        var row = dataTable.row( tr );
+ 
+        if ( row.child.isShown() ) {
+            // This row is already open - close it
+            row.child.hide();
+            tr.removeClass('shown');
+        }
+        else {
+            // Open this row
+            row.child( renderPartsForLoan(row.data().parts) ).show();
+            tr.addClass('shown');
+        }
+    } );
+  return dataTable;
+}
+
+function renderPartsForLoan(parts) {
+    var table = '<table cellpadding="5" cellspacing="0" border="0" style="padding-left:50px;">'+
+        '<tr>'+
+            '<th>Part ID</th>'+
+            '<th>Rate</th>'+
+            '<th>Part Principal</th>'+
+            '<th>Seller</th>'+
+        '</tr>';
+    parts.forEach(part => table += ''+
+        '<tr>'+
+            '<td>'+part.id+'</td>'+
+            '<td>'+part.rate+'</td>'+
+            '<td>'+part.principal+'</td>'+
+            '<td>'+part.seller+'</td>'+
+        '</tr>');
+        
+    table += '</table>';
+    return table;
 }
