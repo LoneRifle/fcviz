@@ -35,9 +35,7 @@ function loadLoanPartsStartingFromPage(page, myLoanParts, filterValueOnFail, onL
       if (myLoanParts == undefined) {
         myLoanParts = initLoanPartsTable();
       }
-      rows.forEach((d,i) => { 
-        myLoanParts.row.add(d)
-      });
+      rows.forEach(merge(myLoanParts));
       myLoanParts.draw(false);
       $("#mlprender").html("");
       if (isLast) {
@@ -92,6 +90,23 @@ function extractLoanPartData() {
       }]
     }; 
   });
+}
+
+function merge(myLoanParts) {
+  return d => {
+    var row = myLoanParts.row("#" + d.id);
+    if (row.data() == undefined) {
+      myLoanParts.row.add(d);
+    } else {
+      var data = row.data();
+      data.rate = "" + (data.repayments == 0 ?
+        ((+data.rate) * data.parts.length + (+d.rate))/(data.parts.length + 1) :
+        ((+data.rate) * (+data.principal) + (+d.rate) * (+d.principal))/((+data.principal) + (+d.principal))
+      );  
+      data.parts = data.parts.concat(d.parts);
+      data.principal = "" + ((+data.principal) + (+d.principal));
+    }
+  }
 }
 
 function configure(myLoanPartsBase) {
