@@ -103,7 +103,7 @@ function configure(myLoanPartsBase) {
           "className":      'details-control',
           "orderable":      false,
           "data":           null,
-          "defaultContent": 'M'
+          "defaultContent": ''
       },
       { "data": "id" },
       { "data": "title" },

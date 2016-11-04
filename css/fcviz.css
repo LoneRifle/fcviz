@@ -253,5 +253,25 @@ text.bid-highlight, img[src='/images/auction-hammer.png'] {
   padding: 1.5em 1em;
 }
 
-        
-        
+
+.odd td {
+    background-color: #f9f9f9 ! important;
+}
+
+.even td {
+    background-color: inherit ! important;
+}
+
+td.details-control {
+    background-image: url(/images/icons/blue_plus.png) ! important;
+    background-position-x: center ! important;
+    background-position-y: center ! important;
+    background-repeat: no-repeat ! important;
+    cursor: pointer;
+}
+tr.shown td.details-control {
+    background-image: url(/images/icons/blue_minus.png) ! important;
+    background-position-x: center ! important;
+    background-position-y: center ! important;
+    background-repeat: no-repeat ! important;
+}
