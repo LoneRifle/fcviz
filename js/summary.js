@@ -41,13 +41,21 @@ var addRepayGraph = function(mutations) {
             .attr("id", "hide_repaid")
             .attr("type", "checkbox");
           hideRepaid[0].checked = window.repaidHidden;
-          var enhancedGridLink = $(document.createElement("a"))
-            .attr("href", "#")
-            .attr("onClick", "return false")
-            .on('click', loadAllLoanParts)
-            .html("Enhance");
             
-          $("#mlpfilter").before(hideRepaid, "Hide Repaid ", enhancedGridLink, " ");
+          $("#mlpfilter").before(hideRepaid, " Hide Repaid ");
+          $("#mlpfilter").append(
+            $(document.createElement("option"))
+              .attr("value", "advanced")
+              .html("Advanced")
+          );
+          appendEventHandler("#mlpfilter", "change", o => () => {
+            var optionValue = $("#mlpfilter").val();
+            if (optionValue === "advanced") {
+              loadAllLoanParts();
+            } else {
+              o();
+            }
+          });
           $("#hide_repaid").on("change", function(){
             window.repaidHidden = this.checked;
             changeRepaidRowsAndReformat();
@@ -269,6 +277,15 @@ function activateAndLoad(repayId, principal, interest, fee, total, dates) {
       });
     }
   };
+}
+
+function appendEventHandler(elementSelector, elementType, eventHandlerFactory) {
+  var elem = $(elementSelector)[0];
+  if (elem) {
+    var data = jQuery.hasData( elem ) && jQuery._data( elem );
+    var origEventHandler = data.events[elementType][0].handler;
+    data.events[elementType][0].handler = eventHandlerFactory(origEventHandler);
+  }
 }
 
 window.listParts = function (data, element) {
