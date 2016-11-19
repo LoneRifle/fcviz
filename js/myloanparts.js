@@ -3,6 +3,28 @@
  * Payload script for my loan parts grid. 
  * Provides a callback to programmatically load up all loan parts
  */
+
+ // This will help DataTables magic detect the "yyyy-mm-dd" format; Unshift
+// so that it's the first data type (so it takes priority over existing)
+jQuery.fn.dataTableExt.aTypes.unshift(
+    function (sData) {
+        "use strict"; //let's avoid tom-foolery in this function
+        if (/^\d{4}-\d{2}-\d{2}/i.test(sData)) {
+            return 'date-yyyy-mm-dd';
+        }
+        return null;
+    }
+);
+
+var compareDateStrings = (a, b) => {
+  var dateA = Date.parse(a.trim() || "9999-12-31");
+  var dateB = Date.parse(b.trim() || "9999-12-31");
+  return (dateA < dateB) ? -1 : ((dateA > dateB) ? 1 : 0);
+}
+
+// define the sorts
+jQuery.fn.dataTableExt.oSort['date-yyyy-mm-dd-asc'] = compareDateStrings; 
+jQuery.fn.dataTableExt.oSort['date-yyyy-mm-dd-desc'] = (a, b) => compareDateStrings(b, a);
  
 function loadAllLoanParts() {
   if ($("#mlprender").length == 0) {
@@ -114,7 +136,7 @@ function merge(myLoanParts) {
 
 function configure(myLoanPartsBase) {
   var dataTable = myLoanPartsBase.DataTable({ 
-    order: [ [8,'asc'], [7,'asc'] ],
+    order: [ [7,'asc'] ],
     rowId: "id",
     columns:[
       {
@@ -129,7 +151,7 @@ function configure(myLoanPartsBase) {
       { "data": "repayments" },
       { "data": "principal" },
       { "data": "rate" },
-      { "data": "date" },
+      { "data": "date", "type": "date-yyyy-mm-dd" },
       { "data": "status" },
     ],
     initComplete: function() {

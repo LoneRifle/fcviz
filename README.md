@@ -51,6 +51,10 @@ Mousing over the chart points or bars will display a tooltip showing principal a
 and running total. 
 ![Repayment chart](http://lonerifle.github.io/fcviz/fcviz-repay.png)
 
+## Advanced loan parts grid
+New loan parts grid that combines both loan and loan parts views, and provides sorting capabilities
+![Advanced loan parts grid](http://lonerifle.github.io/fcviz/advanced-loan-parts.png)
+
 ## Cleaner financial summary page for property loans
 Investor report now directly embedded in the Financial Summary tab, with option to download as well. 
 All irrelevant sections also removed leaving only investor report and outstanding loans.
