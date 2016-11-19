@@ -48,17 +48,22 @@ var addRepayGraph = function(mutations) {
               .attr("value", "advanced")
               .html("Advanced")
           );
-          appendEventHandler("#mlpfilter", "change", o => () => {
-            var optionValue = $("#mlpfilter").val();
-            if (optionValue === "advanced") {
-              loadAllLoanParts();
-            } else {
-              o();
-            }
-          });
           $("#hide_repaid").on("change", function(){
             window.repaidHidden = this.checked;
             changeRepaidRowsAndReformat();
+          });
+          appendEventHandler("#mlpfilter", "change", o => () => {
+            var optionValue = $("#mlpfilter").val();
+            if (optionValue === "advanced") {
+              window.repaidHidden = false;
+              hideRepaid[0].checked = false;
+              changeRepaidRowsAndReformat();
+              $("#hide_repaid").prop('disabled', true);
+              loadAllLoanParts();
+            } else {
+              $("#hide_repaid").prop('disabled', false);
+              o();
+            }
           });
           //After installing the checkbox, apply its change method on the table rows.
           changeRepaidRowsAndReformat();        
@@ -103,15 +108,15 @@ window.fcVizObserver.observe(document, { childList: true, subtree: true });
 function changeRepaidRowsAndReformat() {
   if (window.repaidHidden) {
     $("#all_lends table.brand tbody tr:has(td:contains(Repaid))")
-      .attr("style", "display: none");
+      .css("display", "none");
     $("#all_lends table.brand tbody tr:visible td:first-child")
-      .attr("style", "background: white");
+      .css("background", "white");
     $("#all_lends table.brand tbody tr:visible:even td:first-child")
-      .attr("style", "background: #f9f9f9");
+      .css("background", "#f9f9f9");
     $("#all_lends table.brand tbody tr:visible td:not(:first-child)")
-      .attr("style", "text-align:center; background: white");
+      .css("background", "white");
     $("#all_lends table.brand tbody tr:visible:even td:not(:first-child)")
-      .attr("style", "text-align:center; background: #f9f9f9");
+      .css("background", "#f9f9f9");
   } else {
     $("#all_lends table.brand tbody tr").attr("style", null);
     $("#all_lends table.brand tbody tr td:first-child").attr("style", null);
