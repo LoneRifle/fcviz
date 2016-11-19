@@ -58,6 +58,9 @@ function initLoanPartsTable() {
  
 function extractLoanPartTable() {
   var myLoanParts = $("#mlprender .brand");
+  var thead = myLoanParts.find("thead");
+  var tfoot = thead.clone().replaceWith("<tfoot>" + thead.html() + "</tfoot>");
+  thead.after(tfoot);
   myLoanParts.find("th").each((i,d) => $(d).html($(d).find("a").html()));
   myLoanParts.find("th:contains(Seller)").detach();
   myLoanParts.find("tr").prepend($(document.createElement("th")));
@@ -128,7 +131,10 @@ function configure(myLoanPartsBase) {
       { "data": "rate" },
       { "data": "date" },
       { "data": "status" },
-    ]
+    ],
+    initComplete: function() {
+      addSearchBox(this.api(), [2,3,7,8]);
+    }
   });
   // Add event listener for opening and closing details
   $("#all_lends table.brand tbody").on('click', 'td.details-control', function () {
@@ -147,6 +153,20 @@ function configure(myLoanPartsBase) {
         }
     } );
   return dataTable;
+}
+
+function addSearchBox(dataTable, ids) {
+  dataTable.columns(ids).every(function() {
+    var column = this;
+    $('<input type="text" placeholder="" />')
+      .css("width", "100%")
+      .appendTo( $(column.footer()).empty() )
+      .on( 'keyup change', function () {
+        if ( column.search() !== this.value ) {
+          column.search( this.value ).draw();
+        }
+      });
+  });
 }
 
 function renderPartsForLoan(parts) {
