@@ -349,3 +349,21 @@ tr.shown td.details-control {
 .dataTables_wrapper .dataTables_paginate .ellipsis {
     padding: 0 1em !important;
 }
+
+table.dataTable thead .sorting,
+table.dataTable thead .sorting_asc,
+table.dataTable thead .sorting_desc {
+    cursor: pointer ! important;
+    *cursor: hand ! important;
+}
+table.dataTable thead .sorting_asc {
+  background-image: url(/images/table_list_th_order_asc.png) ! important;
+  background-repeat: no-repeat ! important;
+  background-position: center right ! important;
+}
+
+table.dataTable thead .sorting_desc {
+  background-image: url(/images/table_list_th_order_desc.png) ! important;
+  background-repeat: no-repeat ! important;
+  background-position: center right ! important;
+}
