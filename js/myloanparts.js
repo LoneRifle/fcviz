@@ -124,12 +124,16 @@ function merge(myLoanParts) {
       myLoanParts.row.add(d);
     } else {
       var data = row.data();
-      data.rate = "" + (data.repayments == 0 ?
-        ((+data.rate) * data.parts.length + (+d.rate))/(data.parts.length + 1) :
-        ((+data.rate) * (+data.principal) + (+d.rate) * (+d.principal))/((+data.principal) + (+d.principal))
-      );  
+      var dataRate = +(data.rate.substring(0, data.rate.length - 1));
+      var dRate = +(d.rate.substring(0, d.rate.length - 1));      
+      var aggRate = (data.repayments == 0 ?
+        (dataRate * data.parts.length + dRate)/(data.parts.length + 1) :
+        (dataRate * (+data.principal) + dRate * (+d.principal))/((+data.principal) + (+d.principal))
+      ); 
+      data.rate = aggRate.toFixed(1) + "%";  
       data.parts = data.parts.concat(d.parts);
-      data.principal = "" + ((+data.principal) + (+d.principal));
+      data.principal = ((+data.principal) + (+d.principal)).toFixed(2);
+      row.invalidate();
     }
   }
 }
