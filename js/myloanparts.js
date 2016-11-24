@@ -86,6 +86,11 @@ function extractLoanPartTable() {
   myLoanParts.find("th").each((i,d) => $(d).html($(d).find("a").html()));
   myLoanParts.find("th:contains(Seller)").detach();
   myLoanParts.find("tr").prepend($(document.createElement("th")));
+  var loanPartHeader = $(document.createElement("th")).html("Loan parts")
+                                                      .css("width", "36px");
+  myLoanParts.find("th:contains(Loan title)")
+             .css("width", "288px")
+             .after(loanPartHeader);
   return myLoanParts;
 }
 
@@ -101,6 +106,7 @@ function extractLoanPartData() {
     return {
       id: / - (\d+)/.exec(title)[1],
       title: title,
+      partCount: 1,
       risk: $(cell).children("td").eq(2).html().replace("--","").trim(),
       repayments: $(cell).children("td").eq(3).html().trim(),
       principal: $(cell).children("td").eq(4).html(),
@@ -131,6 +137,7 @@ function merge(myLoanParts) {
         (dataRate * (+data.principal) + dRate * (+d.principal))/((+data.principal) + (+d.principal))
       ); 
       data.rate = aggRate.toFixed(1) + "%";  
+      data.partCount += d.partCount;
       data.parts = data.parts.concat(d.parts);
       data.principal = ((+data.principal) + (+d.principal)).toFixed(2);
       row.invalidate();
@@ -140,7 +147,7 @@ function merge(myLoanParts) {
 
 function configure(myLoanPartsBase) {
   var dataTable = myLoanPartsBase.DataTable({ 
-    order: [ [7,'asc'] ],
+    order: [ [8,'asc'] ],
     rowId: "id",
     columns:[
       {
@@ -151,6 +158,7 @@ function configure(myLoanPartsBase) {
       },
       { "data": "id" },
       { "data": "title" },
+      { "data": "partCount" },
       { "data": "risk" },
       { "data": "repayments" },
       { "data": "principal" },
@@ -159,7 +167,7 @@ function configure(myLoanPartsBase) {
       { "data": "status" },
     ],
     initComplete: function() {
-      addSearchBox(this.api(), [2,3,7,8]);
+      addSearchBox(this.api(), [2,4,8,9]);
     }
   });
   // Add event listener for opening and closing details
