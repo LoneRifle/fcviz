@@ -43,7 +43,7 @@ function loadAllLoanParts() {
 }
 
 function loadLoanPartsStartingFromPage(page, myLoanParts, filterValueOnFail, onLoad) {
-   var orderClause = myLoanParts == undefined? "&mlp_order_by=status" : "";
+   var orderClause = myLoanParts == undefined? "&mlp_order_by=started" : "";
    $.ajax("/my-account/myloanpager?mlpfilter_value=all" + orderClause + "&page="+page)
     .fail(payload => { 
       //Set the value back to the original on failure
@@ -118,7 +118,8 @@ function extractLoanPartData() {
         principal: $(cell).children("td").eq(4).html(),
         rate: $(cell).children("td").eq(5).html(),
         seller: $(cell).children("td").eq(7).html().trim(),
-      }]
+      }],
+      partIds: [+$(cell).children("td").eq(0).html().trim()]
     }; 
   });
 }
@@ -140,6 +141,7 @@ function merge(myLoanParts) {
       data.partCount += d.partCount;
       data.parts = data.parts.concat(d.parts);
       data.principal = ((+data.principal) + (+d.principal)).toFixed(2);
+      data.partIds = data.partIds.concat(d.partIds);
       row.invalidate();
     }
   }
@@ -149,6 +151,13 @@ function configure(myLoanPartsBase) {
   var dataTable = myLoanPartsBase.DataTable({ 
     order: [ [8,'asc'] ],
     rowId: "id",
+    columnDefs:[
+      {
+        "targets": [ 10 ],
+        "visible": false,
+        "searchable": true
+      },
+    ],
     columns:[
       {
           "className":      'details-control',
@@ -165,6 +174,7 @@ function configure(myLoanPartsBase) {
       { "data": "rate" },
       { "data": "date", "type": "date-yyyy-mm-dd" },
       { "data": "status" },
+      { "data": "partIds" },
     ],
     initComplete: function() {
       addSearchBox(this.api(), [2,4,8,9]);
