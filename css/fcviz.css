@@ -367,3 +367,22 @@ table.dataTable thead .sorting_desc {
   background-repeat: no-repeat ! important;
   background-position: center right ! important;
 }
+
+.throbber {
+	display: inline-flex;
+ 	width: 13px;
+ 	height: 13px;
+	margin:-10px;
+	padding:0;
+ 	border: 3px solid;
+ 	border-top-color: transparent;
+ 	border-left-color: transparent;
+ 	border-radius: 50%;
+	color:#397CE9;
+	background-color: transparent;
+	animation: load 0.9s linear infinite;
+ }
+
+@keyframes load {
+  100% { transform: rotate(360deg); }
+}

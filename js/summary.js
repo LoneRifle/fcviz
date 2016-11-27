@@ -41,9 +41,12 @@ var addRepayGraph = function(mutations) {
             .attr("id", "hide_repaid")
             .attr("type", "checkbox");
           
+          var throbber = $(document.createElement("i")).attr("class", "throbber");
+          
           var lpBusy = $(document.createElement("span"))
             .attr("id", "lpBusy")
-            .html("Busy.. ")
+            .append(throbber)
+            .css("margin-right", "20px")
             .css("visibility", "hidden");
           
           hideRepaid[0].checked = window.repaidHidden;
