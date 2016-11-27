@@ -40,9 +40,15 @@ var addRepayGraph = function(mutations) {
           var hideRepaid = $(document.createElement("input"))
             .attr("id", "hide_repaid")
             .attr("type", "checkbox");
+          
+          var lpBusy = $(document.createElement("span"))
+            .attr("id", "lpBusy")
+            .html("Busy.. ")
+            .css("visibility", "hidden");
+          
           hideRepaid[0].checked = window.repaidHidden;
             
-          $("#mlpfilter").before(hideRepaid, " Hide Repaid ");
+          $("#mlpfilter").before(lpBusy, hideRepaid, " Hide Repaid ");
           $("#mlpfilter").append(
             $(document.createElement("option"))
               .attr("value", "advanced")
@@ -53,6 +59,7 @@ var addRepayGraph = function(mutations) {
             changeRepaidRowsAndReformat();
           });
           appendEventHandler("#mlpfilter", "change", o => () => {
+            $("#lpBusy").css("visibility", "visible");
             var optionValue = $("#mlpfilter").val();
             if (optionValue === "advanced") {
               window.repaidHidden = false;

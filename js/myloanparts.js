@@ -38,7 +38,7 @@ function loadAllLoanParts() {
       $.ajax("/my-account/myloanpager?mlpfilter_value="+filterValueOnFail); 
     })
     .done(payload => {
-      loadLoanPartsStartingFromPage(1, undefined, filterValueOnFail, d => console.log("Done"));
+      loadLoanPartsStartingFromPage(1, undefined, filterValueOnFail, d => $("#lpBusy").css("visibility", "hidden"));
     });
 }
 
