@@ -130,11 +130,17 @@ function enrichLoanRequests() {
       var tempSpan = $(document.createElement("span"));
       tempSpan.html(sectionRaw);
       var section = tempSpan.find("section").detach();
+      if (bands.length > 1) {
+        $(section).find("tr").last().detach();
+      }
       var otherBands = bands.slice();
       otherBands.splice(0,1);
       $(otherBands).each(function (i, b){
         tempSpan.html(bandResponses[b]);
         var tr = tempSpan.find("section tbody tr").detach();
+        if (i < otherBands.length - 1) {
+          tr.splice(-1);
+        }
         section.find("tbody").append(tr);
       });
       if ($("select#loan_request_filter_credit_band").val()[0] === "0") {
@@ -238,7 +244,7 @@ function enrichLoanRequests() {
   };
   
   $(window).on("beforeunload", function (e) {
-    var message = window.sections[window.currentParams].bands.length <= 1? null :
+    var message = window.sections[window.currentParams].bands.length <= 1? undefined :
       "You are reloading a page that has results across more than one risk band, " +
       "and will hence only get back only results for one of the risk bands.\n" +
       "If you want to reload the results for the risk bands, use the Filter button.";
