@@ -85,3 +85,7 @@ Advanced filters are still hidden by default, but occupy less of the page.
 ## Repayment peeking in Secondary Markets
 Loan part entries now have an icon which will display repayment information on mouseover
 ![Repayment peeking](http://lonerifle.github.io/fcviz/repaymentpeek.png)
+
+## Advanced grid view for My Loan Parts
+My Loan Parts section now includes a grid view that allows for search-filtering
+![Advanced Loan Parts Grid](http://lonerifle.github.io/fcviz/advanced-loan-parts.png)
