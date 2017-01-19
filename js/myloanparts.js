@@ -81,7 +81,7 @@ function initLoanPartsTable() {
 function extractLoanPartTable() {
   var myLoanParts = $("#mlprender .brand");
   var thead = myLoanParts.find("thead");
-  var tfoot = thead.clone().replaceWith("<tfoot>" + thead.html() + "</tfoot>");
+  var tfoot = $(document.createElement("tfoot")).html(thead.html());
   thead.after(tfoot);
   myLoanParts.find("th").each((i,d) => $(d).html($(d).find("a").html()));
   myLoanParts.find("th:contains(Seller)").detach();
