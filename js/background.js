@@ -19,6 +19,6 @@ chrome.webRequest.onHeadersReceived.addListener(
       responseHeaders: details.responseHeaders
     };
   },
-  { urls: ["https://www.fundingcircle.com/lend/loan-requests/download/*"] },
+  { urls: ["https://www.fundingcircle.com/loans/*/documents/*"] },
   ["blocking", "responseHeaders"]
 );
