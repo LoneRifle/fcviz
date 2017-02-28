@@ -42,7 +42,6 @@ window.fcVizObserver = (predicate, callback) =>
 var isFinancialSummaryPage = mutation => mutation.addedNodes[0].id === "financial-summary";
 window.fcVizObserver(isFinancialSummaryPage, triggerPropertyLayoutForSecondaryMarket)
   .observe(document, { childList: true, subtree: true });
-
   
 var tooltip = $(document.createElement("div"))
     .attr("class", "tooltip")      
@@ -89,8 +88,21 @@ var addRepaymentInfoToLoanPartEntries = loanPartTable => {
 };
 window.fcVizObserver(isLoanPartTable, addRepaymentInfoToLoanPartEntries)
   .observe(document, { childList: true, subtree: true });
+  
+var markAuctionAsVisitedOnClick = loanPartTable => {
+  $(loanPartTable).find("a")
+                  .on("click", e => {
+                    var currentUrl = window.location.href;
+                    window.history.replaceState({}, "", $(e.target).attr("href"));
+                    window.history.replaceState({}, "", currentUrl);
+                  });
+};
+window.fcVizObserver(isLoanPartTable, markAuctionAsVisitedOnClick)
+  .observe(document, { childList: true, subtree: true });
 
+  
 addRepaymentInfoToLoanPartEntries($("table.loan-parts"));
+markAuctionAsVisitedOnClick($("table.loan-parts"));
   
   
 function rearrangeKeywordPriceControls() {

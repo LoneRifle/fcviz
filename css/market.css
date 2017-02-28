@@ -1,3 +1,7 @@
+.loan-details a:visited {
+  color: #772d72 ! important;
+}
+
 .my-exposure input[type=checkbox] {
   display: none ! important;
 }
