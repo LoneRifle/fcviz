@@ -24,7 +24,7 @@ function enrichLoanRequests() {
     )
   };
    
-  $("a.mediumText").each(prependLinkToCell);
+  $("a[href*='/loans']:not(:has(img))").each(prependLinkToCell);
 
   $(".see_more").on("click", function(){
     var isPlus = $(this).find("img#plus").length == 1;
@@ -261,7 +261,7 @@ function createPreviewUnder(row) {
     .attr("id", "filler-"+row.attr("id"));
   filler.attr("style", "display: none;");
   
-  var id = row.attr("id");
+  var id = row.attr("id") || row.children().first().attr("id");
   if (!id) {
     id = /\d+/.exec(row.find("span.greyText").html())[0];
     row.attr("id",id);
@@ -292,7 +292,7 @@ function createPreviewUnder(row) {
     .attr("style", "position: absolute; width: "+width+"px; height: 250px; padding: 0px 0px 0px 7px")
     .attr("id", "preview-"+id+"-pane-right");
   
-  var href = row.find("a.mediumText").attr("href");
+  var href = row.find("a").first().attr("href");
   
   var totalStr = row.find("td").eq(3).html().replace("£","").replace(",","");  
   var total = +/\d+/.exec(totalStr)[0];
@@ -334,25 +334,15 @@ window.populatePreview = function (previewPaneLeft, previewPaneRight, origId, to
     .append(title[1] + ", " + indicateMoreThan + (/\d+/.exec(title[2])[0]) + " years");
   previewPaneLeft.append(previewDetails);
   
-  if (data.indexOf("Loan to value ratio") == -1) {
-    var dataTableStartIndex = data.indexOf("<table class='brand'>");
-    previewPaneLeft.append(data.substring(dataTableStartIndex, data.indexOf("</table>", dataTableStartIndex)) + "</table>");
-    previewPaneLeft.find("table").attr("style", "display: none");
-  
-    window.renderBidSummaryCharts(total, "#"+previewPaneLeft.attr("id"), id+"-bids");
-    $("#"+id).find("svg").find("g.tick").attr("style", "display: none;");
-    $("#"+id).find("svg").find("g").find("text").attr("style", "display: none;");
-    previewPaneLeft.find("table").detach(); 
-    $("#bids_drawer").detach();
-  } else {
-    var propDetailsStartIndex = data.indexOf("<div class='span3'>\n<h3>");
-    var propLoanDetails = $(document.createElement("span"))
-      .html(data.substring(propDetailsStartIndex, data.indexOf("</div>", propDetailsStartIndex)))
-      .find("dl");
-    propLoanDetails.children().slice(0,8).detach();
-    propLoanDetails.find("sup").detach();
-    previewPaneLeft.append(propLoanDetails);
+  var propDetailsStartIndex = data.indexOf("<div class='span3'>\n<h3>");
+  var propLoanDetails = $(document.createElement("span"))
+    .html(data.substring(propDetailsStartIndex, data.indexOf("</div>", propDetailsStartIndex)))
+    .find("dl");
+  if (data.indexOf("Loan to value ratio") != -1) {
+    propLoanDetails.children().slice(0,6).detach();
   }
+  propLoanDetails.find("sup").detach();
+  previewPaneLeft.append(propLoanDetails);
   
   if ($("#"+origId).html().indexOf("Property Development") == -1) {
     if (title[1] === "Limited Company") {
