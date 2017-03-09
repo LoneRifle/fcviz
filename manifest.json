@@ -3,7 +3,7 @@
 
   "name": "FCViz",
   "description": "Provides extra visualisations for Funding Circle pages",
-  "version": "2.6.3",
+  "version": "2.6.4",
   "icons": {"48": "png/favicon48.png"},
   
   "content_scripts": [
@@ -34,7 +34,7 @@
       "js": [ "js/injector.js", "js/sellresources.js" ]
     },    
     {
-      "matches": ["https://www.fundingcircle.com/loan_parts_for_sale"],
+      "matches": ["https://www.fundingcircle.com/loan_parts_for_sale*"],
       "all_frames": true,
       "css": [ "css/fcviz.css" ],
       "js": [ "js/injector.js", "js/forsaleresources.js" ]
