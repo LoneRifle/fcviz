@@ -28,7 +28,7 @@ jQuery.fn.dataTableExt.oSort['date-yyyy-mm-dd-desc'] = (a, b) => compareDateStri
  
 function loadAllLoanParts() {
   if ($("#mlprender").length == 0) {
-    $("#wrapper").before($(document.createElement("div")).attr("id", "mlprender").attr("class", "fade"));  
+    $("#my_lending").before($(document.createElement("div")).attr("id", "mlprender").attr("class", "fade"));  
   }    
   var filterValueOnFail = $("#mlpfilter option[selected]").attr("value");
    $.ajax("/my-account/myloanpager?mlpfilter_value=all&mlp_order_by=id")
