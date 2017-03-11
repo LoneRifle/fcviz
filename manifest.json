@@ -3,7 +3,7 @@
 
   "name": "FCViz",
   "description": "Provides extra visualisations for Funding Circle pages",
-  "version": "2.6.5",
+  "version": "2.6.6",
   "icons": {"48": "png/favicon48.png"},
   
   "content_scripts": [
@@ -23,7 +23,7 @@
       "js": [ "js/injector.js", "js/requestsresources.js" ]
     },    
     {
-      "matches": ["https://www.fundingcircle.com/investors/summary"],
+      "matches": ["https://www.fundingcircle.com/investors/summary*"],
       "css": [ "css/fcviz.css" ],
       "js": [ "js/injector.js", "js/summaryresources.js" ]
     },    
