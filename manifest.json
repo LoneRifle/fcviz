@@ -3,7 +3,7 @@
 
   "name": "FCViz",
   "description": "Provides extra visualisations for Funding Circle pages",
-  "version": "2.6.6",
+  "version": "2.6.7",
   "icons": {"48": "png/favicon48.png"},
   
   "content_scripts": [
@@ -18,7 +18,7 @@
       "js": [ "js/injector.js", "js/loanfinancesummaryresources.js" ]
     },
     {
-      "matches": ["https://www.fundingcircle.com/loan-requests*", "https://www.fundingcircle.com/my-account/my-watchlist/*"],
+      "matches": ["https://www.fundingcircle.com/lend/loan-requests*", "https://www.fundingcircle.com/my-account/my-watchlist/*"],
       "css": [ "css/chosen.min.css", "css/fcviz.css" ],
       "js": [ "js/injector.js", "js/requestsresources.js" ]
     },    
