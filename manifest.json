@@ -3,7 +3,7 @@
 
   "name": "FCViz",
   "description": "Provides extra visualisations for Funding Circle pages",
-  "version": "2.6.7",
+  "version": "2.6.8",
   "icons": {"48": "png/favicon48.png"},
   
   "content_scripts": [

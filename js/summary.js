@@ -30,85 +30,45 @@ repayChart = null;
   
 //Observe mutations made to table.zebra-striped, so that we can reapply window.fcViz
 var addRepayGraph = function(mutations) {
-  mutations.forEach(function(mutation) {
-    switch(mutation.target.id) {
-      case "all_lends":
-        //Get rid of the pesky popover divs that get injected into place,
-        //but are not needed since one is generated already.
-        $("div.popover").detach();
-        if ($("#hide_repaid").length == 0) {
-          var hideRepaid = $(document.createElement("input"))
-            .attr("id", "hide_repaid")
-            .attr("type", "checkbox");
-          
-          var throbber = $(document.createElement("i")).attr("class", "throbber");
-          
-          var lpBusy = $(document.createElement("span"))
-            .attr("id", "lpBusy")
-            .append(throbber)
-            .css("margin-right", "20px")
-            .css("visibility", "hidden");
-          
-          hideRepaid[0].checked = window.repaidHidden;
-            
-          $("#mlpfilter").before(lpBusy, hideRepaid, " Hide Repaid ");
-          $("#mlpfilter").append(
-            $(document.createElement("option"))
-              .attr("value", "advanced")
-              .html("Advanced")
-          );
-          $("#hide_repaid").on("change", function(){
-            window.repaidHidden = this.checked;
-            changeRepaidRowsAndReformat();
-          });
-          appendEventHandler("#mlpfilter", "change", o => () => {
-            $("#lpBusy").css("visibility", "visible");
-            var optionValue = $("#mlpfilter").val();
-            if (optionValue === "advanced") {
-              window.repaidHidden = false;
-              hideRepaid[0].checked = false;
-              changeRepaidRowsAndReformat();
-              $("#hide_repaid").prop('disabled', true);
-              loadAllLoanParts();
-            } else {
-              $("#hide_repaid").prop('disabled', false);
-              o();
+  mutations.forEach(mutation => {
+    mutation.target.classList.forEach(clazz => {
+      switch (clazz) {
+        case "all_lends_wrapper":
+          //Get rid of the pesky popover divs that get injected into place,
+          //but are not needed since one is generated already.
+          $("div.popover").detach();
+          if ($("#repay_graph_link").length == 0) {
+            var repayGraphLink = $(document.createElement("span")).html("(graph)")
+              .attr("id", "repay_graph_link")
+              .attr("class", "leftblue");
+            var repayCsvLink = $("a:contains('Download repayment schedule')");
+            repayCsvLink.after(" ",repayGraphLink);
+            $(".all_lends_wrapper table.brand tbody").append(window.repayGraphContainer);
+            repayGraphLink.on("click", function(){            
+              if (window.repayGraphContainer.find("svg").length == 0) {
+                createRepayGraph(repayCsvLink.attr("href"));
+                window.repayGraphContainer.animate({height: "toggle"}, "fast");
+              } else {
+                var visible = window.repayGraphContainer.is(":visible");
+                window.repayGraphContainer.attr("style", visible? "display: none" : null);
+              }
+            });
+            //Re-register the event handlers for the links that load the data since they would have been unregistered on detach
+            if (repayChart != null) {
+              $("#repay_by_day").on("click", activateAndLoad("#repay_by_week", principal, interest, fee, total, dates));
+              $("#repay_by_week").on("click", activateAndLoad("#repay_by_day", principalWeek, interestWeek, feeWeek, totalWeek, datesWeek));
             }
-          });
-          //After installing the checkbox, apply its change method on the table rows.
-          changeRepaidRowsAndReformat();        
-        }
-        if ($("#repay_graph_link").length == 0) {
-          var repayGraphLink = $(document.createElement("span")).html("(graph)")
-            .attr("id", "repay_graph_link")
-            .attr("class", "leftblue");
-          var repayCsvLink = $("div#all_lends table.zebra-striped tbody td:first-child a:first-child");
-          repayCsvLink.after(" ",repayGraphLink);
-          $("div#all_lends table.zebra-striped tbody").append(window.repayGraphContainer);
-          repayGraphLink.on("click", function(){            
-            if (window.repayGraphContainer.find("svg").length == 0) {
-              createRepayGraph(repayCsvLink.attr("href"));
-              window.repayGraphContainer.animate({height: "toggle"}, "fast");
-            } else {
-              var visible = window.repayGraphContainer.is(":visible");
-              window.repayGraphContainer.attr("style", visible? "display: none" : null);
-            }
-          });
-          //Re-register the event handlers for the links that load the data since they would have been unregistered on detach
-          if (repayChart != null) {
-            $("#repay_by_day").on("click", activateAndLoad("#repay_by_week", principal, interest, fee, total, dates));
-            $("#repay_by_week").on("click", activateAndLoad("#repay_by_day", principalWeek, interestWeek, feeWeek, totalWeek, datesWeek));
           }
-        }
-        break;
-      default:
-        break;
-    }
+          break;
+        default:
+          break;
+      }
+    });
   })
 };
 
-if ($("#all_lends").length > 0) {
-  addRepayGraph([{ target: $("#all_lends")[0] }]);
+if ($(".all_lends_wrapper").length > 0) {
+  addRepayGraph([{ target: $(".all_lends_wrapper")[0] }]);
 }
 
 var MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
@@ -292,15 +252,6 @@ function activateAndLoad(repayId, principal, interest, fee, total, dates) {
       });
     }
   };
-}
-
-function appendEventHandler(elementSelector, elementType, eventHandlerFactory) {
-  var elem = $(elementSelector)[0];
-  if (elem) {
-    var data = jQuery.hasData( elem ) && jQuery._data( elem );
-    var origEventHandler = data.events[elementType][0].handler;
-    data.events[elementType][0].handler = eventHandlerFactory(origEventHandler);
-  }
 }
 
 window.listParts = function (data, element) {
