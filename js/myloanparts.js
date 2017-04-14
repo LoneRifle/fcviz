@@ -25,106 +25,125 @@ var compareDateStrings = (a, b) => {
 // define the sorts
 jQuery.fn.dataTableExt.oSort['date-yyyy-mm-dd-asc'] = compareDateStrings; 
 jQuery.fn.dataTableExt.oSort['date-yyyy-mm-dd-desc'] = (a, b) => compareDateStrings(b, a);
- 
-function loadAllLoanParts() {
-  if ($("#mlprender").length == 0) {
-    $("#my_lending").before($(document.createElement("div")).attr("id", "mlprender").attr("class", "fade"));  
-  }    
-  var filterValueOnFail = $("#mlpfilter option[selected]").attr("value");
-   $.ajax("/my-account/myloanpager?mlpfilter_value=all&mlp_order_by=id")
-    .fail(payload => { 
-      //Set the value back to the original on failure
-      console.log(payload); 
-      $.ajax("/my-account/myloanpager?mlpfilter_value="+filterValueOnFail); 
-    })
-    .done(payload => {
-      loadLoanPartsStartingFromPage(1, undefined, filterValueOnFail, d => $("#lpBusy").css("visibility", "hidden"));
-    });
-}
 
-function loadLoanPartsStartingFromPage(page, myLoanParts, filterValueOnFail, onLoad) {
-   var orderClause = myLoanParts == undefined? "&mlp_order_by=started" : "";
-   $.ajax("/my-account/myloanpager?mlpfilter_value=all" + orderClause + "&page="+page)
-    .fail(payload => { 
-      //Set the value back to the original on failure
-      console.log(payload); 
-      $.ajax("/my-account/myloanpager?mlpfilter_value="+filterValueOnFail); 
-    })
-    .done(payload => {
-      $("#mlprender").html(payload);
-      var isLast = $("#mlprender .pagination li").eq(-3).children("span").length == 1;
-      var rows = extractLoanPartData();
-      if (myLoanParts == undefined) {
-        myLoanParts = initLoanPartsTable();
-      }
-      rows.forEach(merge(myLoanParts));
-      myLoanParts.draw(false);
-      $("#mlprender").html("");
-      if (isLast) {
-        $("#mlprender").detach();
-        onLoad(myLoanParts);
-      } else {
-        loadLoanPartsStartingFromPage(page + 1, myLoanParts, filterValueOnFail, onLoad);
-      }
-    });
- }
+$('#loan-parts-tab').after(createAdvancedLoanPartsButton());
+$('#loan-part-list').after(createAdvancedLoanPartsPanel());
 
-function initLoanPartsTable() {
-  var myLoanPartsBase = extractLoanPartTable();
-  embedLoanPartTable(myLoanPartsBase);
-  window.myLoanPartsTable = $(".dataTables_wrapper");
-  myLoanParts = configure(myLoanPartsBase);
-  window.myLoanParts = myLoanParts;
-  return myLoanParts;
-}
- 
-function extractLoanPartTable() {
-  var myLoanParts = $("#mlprender .brand");
-  var thead = myLoanParts.find("thead");
-  var tfoot = $(document.createElement("tfoot")).html(thead.html());
-  thead.after(tfoot);
-  myLoanParts.find("th").each((i,d) => $(d).html($(d).find("a").html()));
-  myLoanParts.find("th:contains(Seller)").detach();
-  myLoanParts.find("tr").prepend($(document.createElement("th")));
-  var loanPartHeader = $(document.createElement("th")).html("Loan parts")
-                                                      .css("width", "36px");
-  myLoanParts.find("th:contains(Loan title)")
-             .css("width", "288px")
-             .after(loanPartHeader);
-  return myLoanParts;
-}
+function createAdvancedLoanPartsButton() {
+  var btn = $(document.createElement('button'))
+    .attr('id', 'loan-parts-advanced-tab')
+    .attr('data-toggleable', true)
+    .attr('class', 'btn')
+    .text('Advanced');
+  btn.click(e =>{
+    $('button.active').removeClass('active');
+    $('div.active').removeClass('active');
 
-function embedLoanPartTable(myLoanParts) {
-  $("#all_lends table.brand").detach();
-  $("#all_lends").append(myLoanParts);
-}
-
-function extractLoanPartData() {
-  var dataRows = $("#mlprender .brand tbody tr").detach();
-  return dataRows.slice(0, dataRows.length - 1).get().map((cell, i) => { 
-    var title = $(cell).children("td").eq(1).html();
-    return {
-      id: / - (\d+)/.exec(title)[1],
-      title: title,
-      partCount: 1,
-      risk: $(cell).children("td").eq(2).html().replace("--","").trim(),
-      repayments: $(cell).children("td").eq(3).html().trim(),
-      principal: $(cell).children("td").eq(4).html(),
-      rate: $(cell).children("td").eq(5).html(),
-      date: $(cell).children("td").eq(6).html(),
-      status: $(cell).children("td").eq(8).find("span").text().trim(),
-      parts: [{
-        id: $(cell).children("td").eq(0).html().trim(),
-        principal: $(cell).children("td").eq(4).html(),
-        rate: $(cell).children("td").eq(5).html(),
-        seller: $(cell).children("td").eq(7).html().trim(),
-      }],
-      partIds: [+$(cell).children("td").eq(0).html().trim()]
-    }; 
+    btn.addClass('active');
+    var div = $('#loan-part-advanced');
+    div.addClass('active');
+    if (!div.html()) {
+      div.append($(document.createElement('div')).attr('class', 'loan-parts-table__filter-wrapper'));
+      div.append(loanAdvancedLoanParts());
+    }
   });
+  return btn;
 }
 
-function merge(myLoanParts) {
+function createAdvancedLoanPartsPanel() {
+  var div = $(document.createElement('div'))
+    .attr('id', 'loan-part-advanced')
+    .attr('data-toggleable', true)
+    .attr('class', 'loan-parts-table-wrapper');
+  
+  return div;
+}
+
+function loanAdvancedLoanParts() {
+  var table = initTable();
+  table.hide();
+  $.ajax('https://www.fundingcircle.com/investors/historical_loan_parts.csv?disable_pagination=true')
+   .fail(payload => { 
+     console.error(payload);
+   })
+   .done(payload => {
+     var dataTable = configure(table);
+     parse(payload, dataTable);
+     dataTable.draw(false);
+     table.show();
+   });
+  return table;
+}
+
+function initTable() {
+  var table = $(document.createElement('table'))
+    .attr('class', 'brand')
+    .html(`
+    <thead>
+      <tr>
+        <th class="text_center" width="5%"></th>
+        <th class="text_center" width="5%">Loan ID</th>
+        <th class="text_center" width="20%">Loan title</th>
+        <th class="text_center" width="10%">Sector</th>
+        <th class="text_center" width="5%">Part count</th>
+        <th class="text_center" width="3%">Risk</th>
+        <th class="text_center" width="5%">Repayments left</th>
+        <th class="text_center" width="18%">Principal remaining</th>
+        <th class="text_center" width="5%">Rate</th>
+        <th class="text_center" width="12%">Next payment</th>
+        <th class="text_center" width="10%">Status</th>
+      </tr>
+    </thead>
+    <tfoot>
+      <tr>
+        <th class="text_center" width="5%"></th>
+        <th class="text_center" width="5%">Loan ID</th>
+        <th class="text_center" width="20%">Loan title</th>
+        <th class="text_center" width="10%">Sector</th>
+        <th class="text_center" width="5%">Part count</th>
+        <th class="text_center" width="3%">Risk</th>
+        <th class="text_center" width="5%">Repayments left</th>
+        <th class="text_center" width="18%">Principal remaining</th>
+        <th class="text_center" width="5%">Rate</th>
+        <th class="text_center" width="12%">Next payment</th>
+        <th class="text_center" width="10%">Status</th>
+      </tr>
+    </tfoot>
+    `);
+  return table;
+}
+
+function parse(payload, dataTable) {
+  var rows = payload.split(/\n/).slice(1, -1);
+  var json = rows.map(extractLoanPartData);
+  console.log(json);
+  json.forEach(mergeInto(dataTable))
+}
+
+function extractLoanPartData(row, i) {
+  var cols = row.split(/,/);
+  var title = cols[1];
+  return { 
+    id: cols[3],
+    title: title,
+    sector: cols[2],
+    partCount: 1,
+    risk: cols[4].trim(),
+    repayments: cols[5],
+    principal: cols[6],
+    rate: cols[7],
+    date: cols[8],
+    status: cols[9],
+    parts: [{
+      id: cols[0],
+      principal: cols[6],
+      rate: cols[7],
+    }],
+    partIds: [cols[0]]
+  };
+}
+
+function mergeInto(myLoanParts) {
   return d => {
     var row = myLoanParts.row("#" + d.id);
     if (row.data() == undefined) {
@@ -149,11 +168,12 @@ function merge(myLoanParts) {
 
 function configure(myLoanPartsBase) {
   var dataTable = myLoanPartsBase.DataTable({ 
-    order: [ [8,'asc'] ],
+    order: [ [9,'asc'] ],
     rowId: "id",
+    dom: '<"top"f>tp<"bottom"il>',
     columnDefs:[
       {
-        "targets": [ 10 ],
+        "targets": [ 11 ],
         "visible": false,
         "searchable": true
       },
@@ -167,6 +187,7 @@ function configure(myLoanPartsBase) {
       },
       { "data": "id" },
       { "data": "title" },
+      { "data": "sector" },
       { "data": "partCount" },
       { "data": "risk" },
       { "data": "repayments" },
@@ -177,11 +198,11 @@ function configure(myLoanPartsBase) {
       { "data": "partIds" },
     ],
     initComplete: function() {
-      addSearchBox(this.api(), [2,4,8,9]);
+      addSearchBox(this.api(), [2,3,5,9,10]);
     }
   });
   // Add event listener for opening and closing details
-  $("#all_lends table.brand tbody").on('click', 'td.details-control', function () {
+  $(".dataTables_wrapper tbody").on('click', 'td.details-control', function () {
         var tr = $(this).closest('tr');
         var row = dataTable.row( tr );
  
@@ -219,14 +240,12 @@ function renderPartsForLoan(parts) {
             '<th>Part ID</th>'+
             '<th>Rate</th>'+
             '<th>Part Principal</th>'+
-            '<th>Seller</th>'+
         '</tr>';
     parts.forEach(part => table += ''+
         '<tr>'+
             '<td>'+part.id+'</td>'+
             '<td>'+part.rate+'</td>'+
             '<td>'+part.principal+'</td>'+
-            '<td>'+part.seller+'</td>'+
         '</tr>');
         
     table += '</table>';
