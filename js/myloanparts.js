@@ -63,16 +63,41 @@ function loanAdvancedLoanParts() {
   var table = initTable();
   table.hide();
   $.ajax('https://www.fundingcircle.com/investors/historical_loan_parts.csv?disable_pagination=true')
-   .fail(payload => { 
-     console.error(payload);
-   })
+   .fail(payload => console.error(payload))
    .done(payload => {
      var dataTable = configure(table);
      parse(payload, dataTable);
      dataTable.draw(false);
      table.show();
+     addLinksToAdvancedLoanParts(dataTable);
    });
   return table;
+}
+
+function addLinksToAdvancedLoanParts(dataTable, page = 1) {
+  $.ajax('https://www.fundingcircle.com/investors/loan_parts_summaries.html?page=' + page)
+   .fail(payload => console.error(payload))
+   .done(payload => {
+     $(payload).find('tbody tr').each(extractLink.bind(this, dataTable));
+     dataTable.draw(false);
+     if ($(payload).find('.last').length > 0) {
+       addLinksToAdvancedLoanParts(dataTable, page + 1);
+     }
+   });
+}
+
+function extractLink(dataTable, index, row) {
+  var loanId = $(row).find('td:first-child').html().trim();
+  var title = $(row).find('a');
+  var tableRow = dataTable.row("#" + loanId);
+  if (tableRow.data() !== undefined) {
+    var data = tableRow.data();
+    data.title = {
+      title: data.title,
+      href: title.attr('href'),
+    };
+    tableRow.invalidate();
+  }
 }
 
 function initTable() {
@@ -116,7 +141,6 @@ function initTable() {
 function parse(payload, dataTable) {
   var rows = payload.split(/\n/).slice(1, -1);
   var json = rows.map(extractLoanPartData);
-  console.log(json);
   json.forEach(mergeInto(dataTable))
 }
 
@@ -177,6 +201,12 @@ function configure(myLoanPartsBase) {
         "visible": false,
         "searchable": true
       },
+      {
+        "targets": 2,
+        "render": function (data, type, full, meta) {
+          return data.href ? '<a href="' + data.href + '">' + data.title + '</a>' : data;
+        }
+      }
     ],
     columns:[
       {
