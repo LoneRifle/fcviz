@@ -97,19 +97,18 @@ function enrichLoanRequests() {
     var creditOptions = creditBandFilter.find("option");
     creditBandFilter.attr("multiple","multiple").chosen()
       .on("change", function(e, params){
-        //Hint - 0 is the number code for All
         var values = $(this).val();
         if (params.deselected && values == null) {
-          $(this).val("0");
+          $(this).val("All");
           $(this).trigger("chosen:updated");        
         } else if (params.selected && (
           +params.selected == 0 || values.length == creditOptions.length - 1
         )) {          
-          $(this).val("0");
+          $(this).val("All");
           $(this).trigger("chosen:updated");
         } else if (params.selected) {
           var val = +params.selected;
-          var zeroPos = values.indexOf("0");
+          var zeroPos = values.indexOf("All");
           if (zeroPos != -1) {
             values.splice(zeroPos,1);
           }
@@ -117,8 +116,8 @@ function enrichLoanRequests() {
           $(this).trigger("chosen:updated");
         }
       });
-    $("#loan_request_filter_credit_band_chosen").css(
-      "width",$("#loan_request_filter_region").css("width")
+    $("#filters_credit_band_chosen").css(
+      "width",$("#filters_credit_band").css("width")
     );
   };
   
@@ -143,7 +142,7 @@ function enrichLoanRequests() {
         }
         section.find("tbody").append(tr);
       });
-      if ($("select#loan_request_filter_credit_band").val()[0] === "0") {
+      if ($("select#filters_credit_band").val()[0] === "All") {
         section.find("tfoot strong").first().html(section.find("tbody tr").length);
       }
       
@@ -151,25 +150,31 @@ function enrichLoanRequests() {
       $("section").detach();
       parent.append(section);
       enrichLoanRequests();
+      
+      var banners = $("td.loan-parts-banner");
+      banners.slice(0, banners.length - 1).parent().detach();
+      $("div.row tbody tr td").attr("style", "background-color: #ffffff;")
+      $("div.row tbody tr:nth-child(odd) td").attr("style", "background-color: #f9f9f9;")
+      
       window.sections[origParams] = {section: $("section"), bands: bands};
-      window.history.pushState({ params : origParams }, document.title, url);
+      window.history.pushState({ params : origParams }, document.title, url + '?' + origParams);
       window.currentParams = origParams;
       //select the creditBandFilter again, and populate with the correct values
-      $("select#loan_request_filter_credit_band").val(bands).trigger("chosen:updated")
+      $("select#filters_credit_band").val(bands).trigger("chosen:updated")
       var isFxOff = $.fx.off;
       $.fx.off = true;
-      showhidefilters();
+      $("#showfilterbtn").click();
       $.fx.off = isFxOff;
     }
   };
 
-  makeMultiBandFilter($("select#loan_request_filter_credit_band"));
+  makeMultiBandFilter($("select#filters_credit_band"));
   
-  $("form[id!=watch_form]").submit(function(){
-    $("button[value=Filter]").after(" <span class=pulser>Loading...</span>");    
+  $("form#new_filters").submit(function(){
+    $("form#new_filters button").after(" <span class=pulser>Loading...</span>");    
     var url = $(this).attr('action');
     var origParams = $(this).serialize();
-    var creditBandFilter = $("select#loan_request_filter_credit_band");
+    var creditBandFilter = $("select#filters_credit_band");
     var bands = creditBandFilter.val().slice();
     var bandResponses = { keySet: [] };
     var form = $(this);
@@ -219,16 +224,16 @@ function enrichLoanRequests() {
       var parent = $("section").parent();
       $("section").detach();
       parent.append(window.sections[e.state.params].section);
-      var creditBandFilter = $("select#loan_request_filter_credit_band");
+      var creditBandFilter = $("select#filters_credit_band");
       creditBandFilter.val(window.sections[e.state.params].bands);
       creditBandFilter.trigger("chosen:updated");
       $(".pulser").detach();
-      if ($("select#loan_request_filter_credit_band").val().length == 1) {
+      if ($("select#filters_credit_band").val().length === 1) {
         //Fire a request to FC so that if the user decides to click
         //on the paginator the backend is correctly loaded with data.
-        var form = $("form[id!=watch_form]");
+        var form = $("form[id=new_filters]");
         $.ajax({
-          url     : "https://www.fundingcircle.com/lend/loan-requests/",
+          url     : window.location.href,
           type    : form.attr('method'),
           dataType: 'html',
           data    : form.serialize(),
