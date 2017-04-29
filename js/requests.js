@@ -195,30 +195,7 @@ function enrichLoanRequests() {
     });
     return false;
   });
-  
-  $("form[id=watch_form]").submit(function(){
-    $("span#watch-status").detach();
-    $("button[value='Update watchlist']").before("<span id=watch-status class=pulser>Updating...&nbsp;&nbsp;</span> ");    
-    var url = $(this).attr('action');
-    var form = $(this);
-    var params = form.serialize();
-    $.ajax({
-      url     : url,
-      type    : form.attr('method'),
-      dataType: 'html',
-      data    : params,
-      success : function( data ) {
-        $("span#watch-status").removeAttr("class").html("Done.&nbsp;&nbsp;").animate({ opacity: 0 }, 2000);
-      },
-      error   : function( xhr, err ) {
-        console.log(xhr);
-        $("span#watch-status").removeAttr("class").html("Failure: "+err);     
-      }
-    }); 
-    return false;
-  });
-  
-    
+
   window.onpopstate = function(e){
     if(e.state && window.sections[e.state.params]){        
       var parent = $("section").parent();
