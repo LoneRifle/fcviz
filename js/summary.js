@@ -27,7 +27,7 @@ window.repayGraphContainer = $(document.createElement("tr"))
   .attr("id", "repay_graph_container")
   .attr("style", "display: none")
   .append(window.repayGraph);
-$(".all_lends_wrapper table.brand tbody").append(window.repayGraphContainer);
+$(".all_lends_wrapper table.brand:first-child() tbody").append(window.repayGraphContainer);
 
 var repayGraphLink = $(document.createElement("span")).html("(graph)")
   .attr("id", "repay_graph_link")
