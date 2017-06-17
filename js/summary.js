@@ -2,17 +2,6 @@
  * FCViz 
  * Payload script for summary page
  */
- 
-//Retain a table element in globals so that we can easily reattach 
-//whenever the Loan Parts pane gets wiped
-window.repayGraph = $(document.createElement("td"))
-  .attr("colspan",10)
-  .attr("style", "background-color: #f9f9f9; height: 300px")
-  .attr("id", "repay_graph");
-window.repayGraphContainer = $(document.createElement("tr"))
-  .attr("id", "repay_graph_container")
-  .attr("style", "display: none")
-  .append(window.repayGraph);
 
 window.repayByDate = { dates: [] };
 
@@ -28,52 +17,29 @@ datesWeek = ['date', df(new Date())];
   
 repayChart = null;
   
-//Observe mutations made to table.zebra-striped, so that we can reapply window.fcViz
-var addRepayGraph = function(mutations) {
-  mutations.forEach(mutation => {
-    mutation.target.classList.forEach(clazz => {
-      switch (clazz) {
-        case "all_lends_wrapper":
-          //Get rid of the pesky popover divs that get injected into place,
-          //but are not needed since one is generated already.
-          $("div.popover").detach();
-          if ($("#repay_graph_link").length == 0) {
-            var repayGraphLink = $(document.createElement("span")).html("(graph)")
-              .attr("id", "repay_graph_link")
-              .attr("class", "leftblue");
-            var repayCsvLink = $("a:contains('Download repayment schedule')");
-            repayCsvLink.after(" ",repayGraphLink);
-            $(".all_lends_wrapper table.brand tbody").append(window.repayGraphContainer);
-            repayGraphLink.on("click", function(){            
-              if (window.repayGraphContainer.find("svg").length == 0) {
-                createRepayGraph(repayCsvLink.attr("href"));
-                window.repayGraphContainer.animate({height: "toggle"}, "fast");
-              } else {
-                var visible = window.repayGraphContainer.is(":visible");
-                window.repayGraphContainer.attr("style", visible? "display: none" : null);
-              }
-            });
-            //Re-register the event handlers for the links that load the data since they would have been unregistered on detach
-            if (repayChart != null) {
-              $("#repay_by_day").on("click", activateAndLoad("#repay_by_week", principal, interest, fee, total, dates));
-              $("#repay_by_week").on("click", activateAndLoad("#repay_by_day", principalWeek, interestWeek, feeWeek, totalWeek, datesWeek));
-            }
-          }
-          break;
-        default:
-          break;
-      }
-    });
-  })
-};
+//Retain a table element in globals so that we can easily reattach 
+//whenever the Loan Parts pane gets wiped
+window.repayGraph = $(document.createElement("td"))
+  .attr("colspan",10)
+  .attr("style", "background-color: #f9f9f9; height: 300px")
+  .attr("id", "repay_graph");
+window.repayGraphContainer = $(document.createElement("tr"))
+  .attr("id", "repay_graph_container")
+  .attr("style", "display: none")
+  .append(window.repayGraph);
+$(".all_lends_wrapper table.brand tbody").append(window.repayGraphContainer);
 
-if ($(".all_lends_wrapper").length > 0) {
-  addRepayGraph([{ target: $(".all_lends_wrapper")[0] }]);
-}
-
-var MutationObserver = window.MutationObserver || window.WebKitMutationObserver;
-window.fcVizObserver = new MutationObserver(addRepayGraph);
-window.fcVizObserver.observe(document, { childList: true, subtree: true });
+var repayGraphLink = $(document.createElement("span")).html("(graph)")
+  .attr("id", "repay_graph_link")
+  .attr("class", "leftblue");
+var repayCsvLink = $("a:contains('Download repayment schedule')");
+repayCsvLink.after(" ",repayGraphLink);
+repayGraphLink.on("click", function(){            
+  if (window.repayGraphContainer.find("svg").length == 0) {
+    createRepayGraph(repayCsvLink.attr("href"));
+  }
+  window.repayGraphContainer.toggle("fast");
+});
 
 function changeRepaidRowsAndReformat() {
   if (window.repaidHidden) {
