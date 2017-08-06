@@ -86,8 +86,6 @@ var addRepaymentInfoToLoanPartEntries = loanPartTable => {
     $(el).append(icon);
   });
 };
-window.fcVizObserver(isLoanPartTable, addRepaymentInfoToLoanPartEntries)
-  .observe(document, { childList: true, subtree: true });
   
 var markAuctionAsVisitedOnClick = loanPartTable => {
   $(loanPartTable).find("a")
@@ -97,13 +95,15 @@ var markAuctionAsVisitedOnClick = loanPartTable => {
                     window.history.replaceState({}, "", currentUrl);
                   });
 };
-window.fcVizObserver(isLoanPartTable, markAuctionAsVisitedOnClick)
-  .observe(document, { childList: true, subtree: true });
 
-  
-addRepaymentInfoToLoanPartEntries($("table.loan-parts"));
-markAuctionAsVisitedOnClick($("table.loan-parts"));
-  
+var enhanceLoanPartTable = loanPartTable => {
+  markAuctionAsVisitedOnClick(loanPartTable);
+  addRepaymentInfoToLoanPartEntries(loanPartTable);
+};
+
+window.fcVizObserver(isLoanPartTable, enhanceLoanPartTable).observe(document, { childList: true, subtree: true });
+
+enhanceLoanPartTable($("table.loan-parts"));
   
 function rearrangeKeywordPriceControls() {
   var keywordPriceContainer = $(document.createElement("li"));
