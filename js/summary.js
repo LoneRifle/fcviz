@@ -3,22 +3,6 @@
  * Payload script for summary page
  */
 
-//Hack Recent Loan Comments height as a temporary bugfix
-window.commentsCollapsedHeight = 150;
-var f = e => {
-    var t = e.source.frameElement;
-    var loaded = 
-      $(t.contentDocument.body).find(".loan-comment-holder").children().length > 0 &&
-      $(t.contentDocument.body).find("p:contains(Loading...)").hasClass("ng-hide");
-
-    if (loaded) {
-      var detailsCollapsed = 
-        $(t.contentDocument.body).find("span:contains(Less details)").hasClass("ng-hide");
-      t && (t.height = detailsCollapsed? window.commentsCollapsedHeight : t.contentDocument.body.scrollHeight);
-    }
-}
-window.addEventListener('message', f);
-
 window.repayByDate = { dates: [] };
 
 df = d3.time.format("%Y-%m-%d");
