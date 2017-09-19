@@ -39,8 +39,11 @@ function createNamedLoanPartsButton(name, generateTable) {
     var div = $('#loan-part-' + name);
     div.addClass('active');
     if (!div.html()) {
-      div.append($(document.createElement('div')).attr('class', 'loan-parts-table__filter-wrapper'));
-      div.append(generateTable());
+      console.log(generateTable);
+      console.log(typeof generateTable);
+      var [table, configureTable] = generateTable();
+      div.append(table);
+      configureTable(table);
     }
   });
   return btn;

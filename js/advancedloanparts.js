@@ -7,16 +7,16 @@
 function loadAdvancedLoanParts() {
   var table = initAdvancedTable();
   table.hide();
-  $.ajax('https://www.fundingcircle.com/investors/historical_loan_parts.csv?disable_pagination=true')
+  var configureTable = t => $.ajax('https://www.fundingcircle.com/investors/historical_loan_parts.csv?disable_pagination=true')
    .fail(payload => console.error(payload))
    .done(payload => {
-     var dataTable = configureAdvanced(table);
-     parse(payload, dataTable);
+     var dataTable = configureAdvanced(t);
+     parseAdvanced(payload, dataTable);
      dataTable.draw(false);
-     table.show();
+     t.show();
      addLinksToAdvancedLoanParts(dataTable);
    });
-  return table;
+  return [table, configureTable];
 }
 
 function addLinksToAdvancedLoanParts(dataTable, page = 1) {
@@ -83,7 +83,7 @@ function initAdvancedTable() {
   return table;
 }
 
-function parse(payload, dataTable) {
+function parseAdvanced(payload, dataTable) {
   var rows = payload.split(/\n/).slice(1, -1);
   var json = rows.map(extractLoanPartData);
   json.forEach(mergeInto(dataTable))
