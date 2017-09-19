@@ -26,40 +26,64 @@ var compareDateStrings = (a, b) => {
 jQuery.fn.dataTableExt.oSort['date-yyyy-mm-dd-asc'] = compareDateStrings; 
 jQuery.fn.dataTableExt.oSort['date-yyyy-mm-dd-desc'] = (a, b) => compareDateStrings(b, a);
 
-$('#loan-parts-tab').after(createAdvancedLoanPartsButton());
-$('#loan-part-list').after(createAdvancedLoanPartsPanel());
-
-function createAdvancedLoanPartsButton() {
+function createNamedLoanPartsButton(name, generateTable) {
   var btn = $(document.createElement('button'))
-    .attr('id', 'loan-parts-advanced-tab')
+    .attr('id', 'loan-parts-' + name + '-tab')
     .attr('data-toggleable', true)
     .attr('class', 'btn')
-    .text('Advanced');
+    .text(name[0].toUpperCase() + name.substring(1));
   btn.click(e =>{
     $('button.active').removeClass('active');
     $('div.active').removeClass('active');
 
     btn.addClass('active');
-    var div = $('#loan-part-advanced');
+    var div = $('#loan-part-' + name);
     div.addClass('active');
     if (!div.html()) {
       div.append($(document.createElement('div')).attr('class', 'loan-parts-table__filter-wrapper'));
-      div.append(loanAdvancedLoanParts());
+      div.append(generateTable());
     }
   });
   return btn;
 }
 
-function createAdvancedLoanPartsPanel() {
+function createNamedLoanPartsPanel(name) {
   var div = $(document.createElement('div'))
-    .attr('id', 'loan-part-advanced')
+    .attr('id', 'loan-part-' + name)
     .attr('data-toggleable', true)
     .attr('class', 'loan-parts-table-wrapper');
   
   return div;
 }
 
-function loanAdvancedLoanParts() {
+$('#loan-parts-tab').after(
+  createNamedLoanPartsButton('advanced', loadAdvancedLoanParts),
+  createNamedLoanPartsButton('comments', loadLoanPartComments)
+);
+$('#loan-part-list').after(
+  createNamedLoanPartsPanel('advanced'),
+  createNamedLoanPartsPanel('comments')
+);
+
+function loadLoanPartComments() {
+  var div = $(document.createElement('div'))
+
+  $.getJSON('/lenders/summary/comments.json')
+   .fail(payload => console.error(payload))
+   .done(data => {
+     console.log(data.items);
+     div.append(
+       '<br/><br/>' + 
+       JSON.stringify(data.items, null, 2)
+         .replace(/\n/g, "<br/>")
+         .replace(/\s/g, '&nbsp;')
+     );
+   });
+
+  return div;
+}
+
+function loadAdvancedLoanParts() {
   var table = initTable();
   table.hide();
   $.ajax('https://www.fundingcircle.com/investors/historical_loan_parts.csv?disable_pagination=true')
