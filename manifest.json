@@ -71,6 +71,8 @@
     "js/sell.js",
     "js/forsale.js",
     "js/market.js",
+    "js/advancedloanparts.js",
+    "js/loanpartcomments.js",
     "js/myloanparts.js"
   ],
   "permissions": [
