@@ -11,83 +11,72 @@ function loadLoanPartComments() {
 }
 
 function initCommentsTable() {
+  var headers = `
+  <tr>
+    <th class="text_center" width="5%">ID</th>
+    <th class="text_center" width="15%">Loan title</th>
+    <th class="text_center" width="5%">Risk</th>
+    <th class="text_center" width="5%">Exposure</th>
+    <th class="text_center" width="5%">Days late</th>
+    <th class="text_center" width="65%">Comment</th>
+  </tr>`;
   var table = $(document.createElement('table'))
     .attr('class', 'brand')
-    .html(`
-    <thead>
-      <tr>
-        <th class="text_center" width="5%">Loan ID</th>
-        <th class="text_center" width="20%">Loan title</th>
-        <th class="text_center" width="5%">Risk</th>
-        <th class="text_center" width="10%">Exposure</th>
-        <th class="text_center" width="10%">Date of last comment</th>
-        <th class="text_center" width="50%">Comment</th>
-      </tr>
-    </thead>
-    <tfoot>
-      <tr>
-        <th class="text_center" width="5%">Loan ID</th>
-        <th class="text_center" width="15%">Loan title</th>
-        <th class="text_center" width="5%">Risk</th>
-        <th class="text_center" width="5%">Exposure</th>
-        <th class="text_center" width="15%">Date of last comment</th>
-        <th class="text_center" width="55%">Comment</th>
-      </tr>
-    </tfoot>
-    `);
+    .html(`<thead>${headers}</thead><tfoot>${headers}</tfoot>`);
   return table;
 }
 
-function parseComments(data) {
-  const items = data && data.items.map(d => {
-    const details = d._embedded;
+function parseCommentsData(data) {
+  const items = data && data.items.map(payload => {
+    const details = payload._embedded;
     const lastComment = details && details.comments.items[0];
+    let risk = details && details.business.risk_band;
+    if (payload.defaulted) {
+      risk = risk ? risk + '&#9760;' : '&#9760;';
+    }
     return {
-      id: d.auction_id,
+      id: payload.auction_id,
       title: {
-        title: d.title,
-        display_id: d.display_id
+        title: payload.title,
+        display_id: payload.display_id
       },
-      risk: details && details.business.risk_band,
+      risk,
       exposure: details && details.exposure.amount_cents / 100,
-      lastCommentDate: lastComment.created_at,
-      lastCommentText: lastComment.body,
-      payload: d,
+      lastCommentDate: lastComment && lastComment.created_at,
+      lateRepayments: details.late_repayments,
+      payload,
     };
   });
   console.log(items);
   return items;
+}1
+
+function renderComments (payload) {
+  const details = payload._embedded;
+  const lastComment = details && details.comments.items[0];
+  return lastComment ? `<strong>${lastComment.created_at}</strong><br/>${lastComment.body}` : '';
 }
 
 function configureComments(myLoanPartsBase) {
   var dataTable = myLoanPartsBase.DataTable({
     ajax: {
       url: '/lenders/summary/comments.json',
-      dataSrc: parseComments
+      dataSrc: parseCommentsData
     },
     dom: '<"top"f>tp<"bottom"il>',
-    order: [ [4,'desc'] ],
+    order: [ [5,'desc'] ],
     rowId: "id",
     columnDefs:[
-      {
-        "targets": [6],
-        "visible": false,
-        "searchable": true
-      },
-      {
-        "targets": 1,
-        "render": function (data, type, full, meta) {
-          return '<a href="/loans/' + data.display_id + '/auction">' + data.title + '</a>';
-        }
-      }
+      { targets: 1, render: data => `<a href="/loans/${data.display_id}/auction">${data.title}</a>` },
+      { targets: 4, render: data => data.items.length === 0 ? '0' : '>0' },
+      { targets: 5, render: renderComments },
     ],
     columns:[
       { "data": "id" },
       { "data": "title" },
       { "data": "risk" },
       { "data": "exposure" },
-      { "data": "lastCommentDate", "type": "date-yyyy-mm-dd" },
-      { "data": "lastCommentText" },
+      { "data": "lateRepayments" },
       { "data": "payload" },
     ],
     initComplete: function() {

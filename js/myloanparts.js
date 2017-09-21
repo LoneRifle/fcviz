@@ -39,8 +39,6 @@ function createNamedLoanPartsButton(name, generateTable) {
     var div = $('#loan-part-' + name);
     div.addClass('active');
     if (!div.html()) {
-      console.log(generateTable);
-      console.log(typeof generateTable);
       var [table, configureTable] = generateTable();
       div.append(table);
       configureTable(table);
