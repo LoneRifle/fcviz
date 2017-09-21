@@ -53,8 +53,17 @@ function parseCommentsData(data) {
 
 function renderComments (payload) {
   const details = payload._embedded;
-  const lastComment = details && details.comments.items[0];
-  return lastComment ? `<strong>${lastComment.created_at}</strong><br/>${lastComment.body}` : '';
+  const comments = (details.comments.items || [])
+    .map((c, i) => `
+      <p ${i > 0 ? 'style="display:none"' : ''} id="${payload.auction_id}-${i}">
+        <strong>${c.created_at}</strong><br/>
+        <span style="text-align:justify;">${c.body}</span>
+      </p>`
+    )
+    .join('\n');
+  const commentsDiv = `<div id="comments-${payload.auction_id}">${comments}</div>`
+  const showAll = '<span style="position: absolute;right: 20px;" class="see_more">Show all</span>'
+  return showAll + commentsDiv;
 }
 
 function configureComments(myLoanPartsBase) {
@@ -82,6 +91,10 @@ function configureComments(myLoanPartsBase) {
     initComplete: function() {
       addSearchBox(this.api(), [1,2,4,5]);
     }
+  });
+  // Add event listener for opening and closing details
+  $(".dataTables_wrapper tbody").on('click', 'td span.see_more', function () {
+    $(this).next('div').children('p:not(:first-child)').toggle();
   });
   myLoanPartsBase.show();
   return dataTable;
