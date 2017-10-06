@@ -133,6 +133,9 @@ $("#financial_summary").each(function(){window.fcVizObserver(triggerPropertyLayo
 $("#financial_summary").each(function(){window.fcVizObserver(triggerConsolidateAccountsWidgets).observe(this, { childList: true, subtree: false })});
 $("#repayments").each(function(){window.fcVizObserver(triggerRepayLayout).observe(this, { childList: true, subtree: false })});
 
+$("#questions").detach();
+$("a[href='#questions']").parent().detach();
+
 //Modify the repayments tab, changing it to a term sheet. Add our own custom repayments tab.
 var customRepay = $(document.createElement("a")).attr("href", "#customrepay").html("Repayments");
 var customRepayTab = $(document.createElement("li")).append(customRepay);

@@ -77,7 +77,7 @@ function configureComments(myLoanPartsBase) {
     rowId: "id",
     columnDefs:[
       { targets: 1, render: data => `<a href="/loans/${data.display_id}/auction">${data.title}</a>` },
-      { targets: 4, render: data => data.items.length === 0 ? '0' : '>0' },
+      { targets: 4, render: data => Math.max(data.items.map(i => i.days_late)) },
       { targets: 5, render: renderComments },
     ],
     columns:[
