@@ -112,8 +112,31 @@ window.triggerFCViz = function (id) {
 }
 
 window.triggerRepayLayout = function(id) {
-  var table = $("#repayments table.brand").detach();
-  $("h2:contains(Repayments)").after(table);
+  const table = $("#repayments table.brand");
+
+  const totalPayments = table.find("tr").length - 1;
+  const paymentsMade = table.find("td:contains(paid)").length;
+  const paymentsScheduled = table.find("td:contains(scheduled)").length;
+  const unaccountedPayments = totalPayments - paymentsMade - paymentsScheduled;
+  const counts = $(document.createElement("h4"))
+    .css("text-align", "center")
+    .append($(document.createElement("span")).html(`Payments Made: ${paymentsMade}`))
+    .append($(document.createElement("span")).html(` | `))
+    .append($(document.createElement("span")).html(`Processing/Retry/Late: ${unaccountedPayments}`))
+    .append($(document.createElement("span")).html(` | `))
+    .append($(document.createElement("span")).html(`Scheduled: ${paymentsScheduled}`));
+
+  const nextScheduledPayment = table.find("td:contains(scheduled)")
+    .first().parent().children().first().html();
+  const finalScheduledPayment = table.find("td:contains(scheduled)")
+    .last().parent().children().first().html();
+  const dates = $(document.createElement("h4"))
+    .css("text-align", "center")
+    .append($(document.createElement("span")).html(`Next Scheduled Payment: ${nextScheduledPayment}`))
+    .append($(document.createElement("span")).html(` | `))
+    .append($(document.createElement("span")).html(`Final Scheduled Payment: ${finalScheduledPayment}`));
+
+  $("h2:contains(Repayments)").after(counts, dates);
 }
 
 //Observe mutations made to #bids-summary, so that we can reapply window.fcViz
@@ -132,29 +155,6 @@ $(".tab-pane").each(function(){window.fcVizObserver(triggerFCViz).observe(this, 
 $("#financial_summary").each(function(){window.fcVizObserver(triggerPropertyLayout).observe(this, { childList: true, subtree: false })});
 $("#financial_summary").each(function(){window.fcVizObserver(triggerConsolidateAccountsWidgets).observe(this, { childList: true, subtree: false })});
 $("#repayments").each(function(){window.fcVizObserver(triggerRepayLayout).observe(this, { childList: true, subtree: false })});
-
-$("#questions").detach();
-$("a[href='#questions']").parent().detach();
-
-//Modify the repayments tab, changing it to a term sheet. Add our own custom repayments tab.
-var customRepay = $(document.createElement("a")).attr("href", "#customrepay").html("Repayments");
-var customRepayTab = $(document.createElement("li")).append(customRepay);
-$("a[href='#repayments']").html("Term Sheet").parent().before(customRepayTab);
-var customRepayDiv = $(document.createElement("div")).attr("id","customrepay")
-  .append($(document.createElement("div")).addClass("text_center loading_div").html("Loading..."));
-customRepayTab.click(function(){
-  if ($("#customrepay div").hasClass("loading_div")) {
-    $.ajax({
-      url: "/auctions/"+/\d+/.exec(location.pathname)+"?section=repayments",
-      success: function (data) {
-        $("#customrepay").html(data);
-        $("#customrepay div#repayments").attr("id", "customrepayrow");
-      }
-    });
-  }
-});
-$("#repayments").before(customRepayDiv);
-
 
 var activeId = $("div.active").filter("div.tab-pane").attr("id");
 var el = jQuery(document.createElement("a")).attr("href", "#"+activeId);
