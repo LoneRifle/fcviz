@@ -7,14 +7,14 @@
 
 function getAllTimeEarningsCents() {
   const [interest, sales, purchases, promotions, fees, badDebt, recoveries] = Array.from(
-    $("#earnings_summary td.currency").map((i, e) => +(parseFloat($(e).html().replace('£', '')) * 100).toFixed(0))
+    $('#earnings_summary td.currency').map((i, e) => +(parseFloat($(e).html().replace('£', '')) * 100).toFixed(0))
   );
-  return {interest, sales, purchases, promotions, fees, badDebt, recoveries}
+  return {interest, sales, purchases, promotions, fees: -fees, badDebt, recoveries};
 }
 
 window.earningsDataCents = getAllTimeEarningsCents();
 
-$.ajax('https://www.fundingcircle.com/lenders/summary.json')
+const getSummaryNumbersThenRenderGraph = () => $.ajax('https://www.fundingcircle.com/lenders/summary.json')
   .fail(console.error)
   .done(payload => {
     const portfolio_numbers = payload._embedded.financial_totals;
@@ -37,6 +37,8 @@ $.ajax('https://www.fundingcircle.com/lenders/summary.json')
 
     Object.assign(window.earningsDataCents, portfolioNumbers, calculatePVs(pv, window.earningsDataCents));
   });
+
+getSummaryNumbersThenRenderGraph();
 
 // Repayment Graph Rendering -----------------------------------------------
 
