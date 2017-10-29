@@ -5,6 +5,110 @@
 
 // Earnings Graph Rendering ------------------------------------------------
 
+function renderEarningsGraph(data) {
+  $('#my_lending').prepend(
+    $(document.createElement('div'))
+      .attr('class', 'row')
+      .append(
+        $(document.createElement('div'))
+          .attr('id', 'portfolio_summary')
+          .attr('class', 'span16 white border pad')
+      )
+  );
+  $('#portfolio_summary')
+    .append($(document.createElement('h3')).html('Portfolio Summary'))
+
+  const margin = +$('#portfolio_summary').css('padding').replace('px','');
+  const width = +$('#portfolio_summary').css('width').replace('px','') - (margin * 2);
+  const height = 300;
+  
+  var x = d3.scale.ordinal()
+      .rangeRoundBands([0, width - margin * 3], .1);
+
+  var y = d3.scale.linear()
+      .range([height, 0]);
+
+  var xAxis = d3.svg.axis()
+      .scale(x)
+      .orient('bottom');
+      
+  var yAxis = d3.svg.axis()
+      .scale(y)
+      .orient('left')
+      .tickFormat(d => d3.formatPrefix(d, 3).scale(d));
+
+  const labels = [
+    'deposits', 
+    'sales', 'purchases', 'promotions',
+    'depositsAndLegacyItems',
+    'interest',
+    'pvBeforeBadDebtAndFees',
+    'fees',
+    'pvBeforeBadDebt',
+    'badDebt', 'recoveries',
+    'pv',
+    'lent', 'bid', 'available', 'accrued'
+  ];
+  const portfolioLabels = ['lent', 'bid', 'available'];
+  const displayLabels = labels.filter(l => !portfolioLabels.includes(l))
+  displayLabels.splice(-1, 0, 'portfolio')
+  console.log(displayLabels)
+  x.domain(displayLabels);
+  y.domain([0, data.pvBeforeBadDebtAndFees]);
+  
+  var chart = d3.select('#portfolio_summary')
+    .append('svg')
+      .attr('id', 'portfolio_summary_graph')
+      .attr('width', width)
+      .attr('height', height + margin * 2);
+
+  chart.append("g")      
+    .attr("class", "x axis")
+    .attr("transform", `translate(${margin * 2},${height + margin * 0.5})`)
+    .call(xAxis);
+
+  chart.append("g")
+    .attr("class", "y axis")
+    .attr("transform", `translate(${margin * 2},${margin * 0.5})`)
+    .call(yAxis)    
+  .append("text")
+    .attr("transform", "translate(10,-20)")
+    .attr("dy", ".71em")
+    .style("text-anchor", "end");
+
+  const incrementalItems = [
+    'sales', 'purchases', 'promotions',
+    'interest',
+    'fees',
+    'badDebt', 'recoveries',
+    'lent', 'bid'
+  ]
+  
+  const nonIncrementalItems = labels.filter(l => !incrementalItems.includes(l));
+
+  const incrementalY = d => {
+    var labelIndex = labels.indexOf(d[0]);
+    var y = Math.max(d[1], 0);
+    while (incrementalItems.includes(labels[labelIndex])) {
+      --labelIndex;
+      y += data[labels[labelIndex]];
+    }
+    return y;
+  };
+
+  chart.selectAll("rect")
+    .data(Object.entries(data))
+  .enter().append("rect")
+    .attr("x", function(d) { return x(portfolioLabels.includes(d[0]) ? 'portfolio' : d[0]) + 2 * margin; })
+    .attr("y", function(d) { 
+      return margin * 0.5 + y(incrementalItems.includes(d[0]) ? incrementalY(d) : d[1]);
+    })
+    .attr("height", function(d) { 
+      return height - y(Math.abs(d[1]))
+    })
+    .attr("width", x.rangeBand())
+}
+
 function getAllTimeEarningsCents() {
   const [interest, sales, purchases, promotions, fees, badDebt, recoveries] = Array.from(
     $('#earnings_summary td.currency').map((i, e) => +(parseFloat($(e).html().replace('£', '')) * 100).toFixed(0))
@@ -21,8 +125,8 @@ const getSummaryNumbersThenRenderGraph = () => $.ajax('https://www.fundingcircle
     const pv = portfolio_numbers.total_cents;
     const portfolioNumbers = {
       pv,
-      bid: portfolio_numbers.bidding_cents,
-      lent: portfolio_numbers.lending_cents,
+      bid: -portfolio_numbers.bidding_cents,
+      lent: -portfolio_numbers.lending_cents,
       available: portfolio_numbers.balance_cents,
       accrued: portfolio_numbers.accrued_interest_cents
     };
@@ -36,6 +140,7 @@ const getSummaryNumbersThenRenderGraph = () => $.ajax('https://www.fundingcircle
     };
 
     Object.assign(window.earningsDataCents, portfolioNumbers, calculatePVs(pv, window.earningsDataCents));
+    renderEarningsGraph(window.earningsDataCents);
   });
 
 getSummaryNumbersThenRenderGraph();
