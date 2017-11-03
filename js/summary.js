@@ -118,9 +118,25 @@ function getAllTimeEarningsCents() {
 
 window.earningsDataCents = getAllTimeEarningsCents();
 
-const getSummaryNumbersThenRenderGraph = () => $.ajax('https://www.fundingcircle.com/lenders/summary.json')
-  .fail(console.error)
-  .done(payload => {
+
+
+const getSummaryNumbersThenRenderGraph = async () => {
+  let payload;
+  while (!payload) {
+    try {
+      payload = await $.getJSON('https://www.fundingcircle.com/lenders/summary.json')
+    } catch (err) {
+      console.error(err);
+      if (err.status === 404) {
+        // Probably the usual FC failure to 
+        // receive the auth tokens in time, wait a little longer
+        await setTimeout(() => {}, 500);
+      } else {
+        throw err;
+      }
+    }
+  }
+  if (payload) {
     const portfolio_numbers = payload._embedded.financial_totals;
     const pv = portfolio_numbers.total_cents;
     const portfolioNumbers = {
@@ -141,7 +157,8 @@ const getSummaryNumbersThenRenderGraph = () => $.ajax('https://www.fundingcircle
 
     Object.assign(window.earningsDataCents, portfolioNumbers, calculatePVs(pv, window.earningsDataCents));
     renderEarningsGraph(window.earningsDataCents);
-  });
+  }
+}
 
 getSummaryNumbersThenRenderGraph();
 
