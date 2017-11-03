@@ -41,13 +41,17 @@ table.tooltip  td, td:first-child {
 
 rect.fcviz, rect.int, rect.inactive { fill: #772d72; }
 
-rect.active { fill: #c7eefe; }
+rect.active, rect.fees { fill: #c7eefe; }
 
-rect.clicked { fill: #0fb3ca; }
+rect.lent { fill: #77c738; }
 
-rect.fcviz-bid{ fill: #CA4FCA; }
+rect.clicked, rect.bid { fill: #0fb3ca; }
 
-rect.prin { fill: #DADADA; }
+rect.prin, rect.available { fill: #DADADA; }
+
+rect.fcviz-bid, rect.gain { fill: #CA4FCA; }
+
+rect.loss { fill: #FC3A3A; }
 
 div.tooltip {   
   position: absolute;           

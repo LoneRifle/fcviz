@@ -40,19 +40,18 @@ function renderEarningsGraph(data) {
   const labels = [
     'deposits', 
     'sales', 'purchases', 'promotions',
-    'depositsAndLegacyItems',
+    // 'depositsAndLegacyItems',
     'interest',
-    'pvBeforeBadDebtAndFees',
+    // 'pvBeforeBadDebtAndFees',
     'fees',
-    'pvBeforeBadDebt',
+    // 'pvBeforeBadDebt',
     'badDebt', 'recoveries',
-    'pv',
+    // 'pv',
     'lent', 'bid', 'available', 'accrued'
   ];
   const portfolioLabels = ['lent', 'bid', 'available'];
   const displayLabels = labels.filter(l => !portfolioLabels.includes(l))
   displayLabels.splice(-1, 0, 'portfolio')
-  console.log(displayLabels)
   x.domain(displayLabels);
   y.domain([0, data.pvBeforeBadDebtAndFees]);
   
@@ -97,9 +96,9 @@ function renderEarningsGraph(data) {
   };
 
   chart.selectAll("rect")
-    .data(Object.entries(data))
+    .data(Object.entries(data).filter(([label]) => labels.includes(label)))
   .enter().append("rect")
-    .attr("x", function(d) { return x(portfolioLabels.includes(d[0]) ? 'portfolio' : d[0]) + 2 * margin; })
+    .attr("x", ([label]) => { return x(portfolioLabels.includes(label) ? 'portfolio' : label) + 2 * margin; })
     .attr("y", function(d) { 
       return margin * 0.5 + y(incrementalItems.includes(d[0]) ? incrementalY(d) : d[1]);
     })
@@ -107,6 +106,19 @@ function renderEarningsGraph(data) {
       return height - y(Math.abs(d[1]))
     })
     .attr("width", x.rangeBand())
+    .attr("class", ([label, value]) => {
+      if (label.startsWith('deposits') || label.startsWith('pv')) {
+        return 'fcviz';
+      } else if (portfolioLabels.includes(label) || label === 'fees') {
+        return label;
+      } else if (value > 0) {
+        return 'gain';
+      } else if (value < 0) {
+        return 'loss';
+      } else {
+        return undefined;
+      }
+    })
 }
 
 function getAllTimeEarningsCents() {
