@@ -172,7 +172,7 @@ const getSummaryNumbersThenRenderGraph = async () => {
   }
 }
 
-getSummaryNumbersThenRenderGraph();
+// getSummaryNumbersThenRenderGraph();
 
 // Repayment Graph Rendering -----------------------------------------------
 

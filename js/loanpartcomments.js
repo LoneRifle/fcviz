@@ -30,7 +30,7 @@ function parseCommentsData(data) {
   const items = data && data.items.map(payload => {
     const details = payload._embedded;
     const lastComment = details && details.comments.items[0];
-    let risk = details && details.business.risk_band;
+    let risk = details && details.business.risk_band || 'rbr';
     if (payload.defaulted) {
       risk = risk ? risk + '&#9760;' : '&#9760;';
     }
@@ -77,7 +77,7 @@ function configureComments(myLoanPartsBase) {
     rowId: "id",
     columnDefs:[
       { targets: 1, render: data => `<a href="/loans/${data.display_id}/auction">${data.title}</a>` },
-      { targets: 4, render: data => Math.max(data.items.map(i => i.days_late)) },
+      { targets: 4, render: data => data.items.map(i => i.days_late).join(', ') || '0' },
       { targets: 5, render: renderComments },
     ],
     columns:[
