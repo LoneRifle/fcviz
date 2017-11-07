@@ -15,13 +15,28 @@ function renderEarningsGraph(data) {
           .attr('class', 'span16 white border pad')
       )
   );
-  $('#portfolio_summary')
-    .append($(document.createElement('h3')).html('Portfolio Summary'))
+  $('#portfolio_summary').append(
+    $(document.createElement('h3')).html('Portfolio Summary').css('margin-bottom', 0)
+  );
 
   const margin = +$('#portfolio_summary').css('padding').replace('px','');
   const width = +$('#portfolio_summary').css('width').replace('px','') - (margin * 2);
   const height = 300;
-  
+
+  var chart = d3.select('#portfolio_summary')
+    .append('svg')
+      .attr('id', 'portfolio_summary_graph')
+      .attr('width', width)
+      .attr('height', height + margin * 2);
+
+  const summaryHeadline = $(document.createElement('h4')).html('Yields - ').css('text-align', 'center');
+  summaryHeadline.append(' Gross: ', $(window.headlineYields).eq(0).children());
+  summaryHeadline.append(', after fees and bad debts - ');
+  summaryHeadline.append(' Annualised: ', $(window.headlineYields).eq(1).children());
+  summaryHeadline.append(' Estimated Fully Diversified: ', $(window.headlineYields).eq(2).children());
+
+  $('#portfolio_summary').append(summaryHeadline);
+
   var x = d3.scale.ordinal()
       .rangeRoundBands([0, width - margin * 3], .1);
 
@@ -42,10 +57,10 @@ function renderEarningsGraph(data) {
     'sales', 'purchases', 'promotions',
     // 'depositsAndLegacyItems',
     'interest',
-    // 'pvBeforeBadDebtAndFees',
+    // 'pvBeforeDefaultsAndFees',
     'fees',
-    // 'pvBeforeBadDebt',
-    'badDebt', 'recoveries',
+    // 'pvBeforeDefaults',
+    'defaults', 'recoveries',
     // 'pv',
     'lent', 'bid', 'available', 'accrued'
   ];
@@ -53,13 +68,7 @@ function renderEarningsGraph(data) {
   const displayLabels = labels.filter(l => !portfolioLabels.includes(l))
   displayLabels.splice(-1, 0, 'portfolio')
   x.domain(displayLabels);
-  y.domain([0, data.pvBeforeBadDebtAndFees]);
-  
-  var chart = d3.select('#portfolio_summary')
-    .append('svg')
-      .attr('id', 'portfolio_summary_graph')
-      .attr('width', width)
-      .attr('height', height + margin * 2);
+  y.domain([0, data.pvBeforeDefaultsAndFees]);
 
   chart.append("g")      
     .attr("class", "x axis")
@@ -79,7 +88,7 @@ function renderEarningsGraph(data) {
     'sales', 'purchases', 'promotions',
     'interest',
     'fees',
-    'badDebt', 'recoveries',
+    'defaults', 'recoveries',
     'lent', 'bid'
   ]
   
@@ -122,15 +131,19 @@ function renderEarningsGraph(data) {
 }
 
 function getAllTimeEarningsCents() {
-  const [interest, sales, purchases, promotions, fees, badDebt, recoveries] = Array.from(
+  const [interest, sales, purchases, promotions, fees, defaults, recoveries] = Array.from(
     $('#earnings_summary td.currency').map((i, e) => +(parseFloat($(e).html().replace('£', '')) * 100).toFixed(0))
   );
-  return {interest, sales, purchases, promotions, fees: -fees, badDebt, recoveries};
+  return {interest, sales, purchases, promotions, fees: -fees, defaults, recoveries};
+}
+
+function getHeadlineYields() {
+  return $('#returns_summary .currency h2');
 }
 
 window.earningsDataCents = getAllTimeEarningsCents();
 
-
+window.headlineYields = getHeadlineYields();
 
 const getSummaryNumbersThenRenderGraph = async () => {
   let payload;
@@ -159,12 +172,12 @@ const getSummaryNumbersThenRenderGraph = async () => {
       accrued: portfolio_numbers.accrued_interest_cents
     };
 
-    const calculatePVs = (pv, {badDebt, recoveries, fees, interest, promotions, purchases, sales}) => {
-      const pvBeforeBadDebt = pv - badDebt - recoveries;
-      const pvBeforeBadDebtAndFees = pvBeforeBadDebt - fees;
-      const depositsAndLegacyItems = pvBeforeBadDebtAndFees - interest;
+    const calculatePVs = (pv, {defaults, recoveries, fees, interest, promotions, purchases, sales}) => {
+      const pvBeforeDefaults = pv - defaults - recoveries;
+      const pvBeforeDefaultsAndFees = pvBeforeDefaults - fees;
+      const depositsAndLegacyItems = pvBeforeDefaultsAndFees - interest;
       const deposits = depositsAndLegacyItems - promotions - purchases - sales;
-      return { pvBeforeBadDebt, pvBeforeBadDebtAndFees, depositsAndLegacyItems, deposits}
+      return { pvBeforeDefaults, pvBeforeDefaultsAndFees, depositsAndLegacyItems, deposits}
     };
 
     Object.assign(window.earningsDataCents, portfolioNumbers, calculatePVs(pv, window.earningsDataCents));
@@ -172,7 +185,10 @@ const getSummaryNumbersThenRenderGraph = async () => {
   }
 }
 
-// getSummaryNumbersThenRenderGraph();
+getSummaryNumbersThenRenderGraph();
+
+// Detach the now-useless widgets
+$("iframe#funds_summary").parent().parent().detach();
 
 // Repayment Graph Rendering -----------------------------------------------
 
