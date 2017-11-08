@@ -75,6 +75,11 @@ function configureComments(myLoanPartsBase) {
     dom: '<"top"f>tp<"bottom"il>',
     order: [ [5,'desc'] ],
     rowId: "id",
+    createdRow: function (row, data, index) {
+      if (data.risk === 'rbr') {
+        $(row).addClass('warning');
+      }
+    },
     columnDefs:[
       { targets: 1, render: data => `<a href="/loans/${data.display_id}/auction">${data.title}</a>` },
       { targets: 4, render: data => data.items.map(i => i.days_late).join(', ') || '0' },
@@ -96,6 +101,9 @@ function configureComments(myLoanPartsBase) {
   $(".dataTables_wrapper tbody").on('click', 'td span.see_more', function () {
     $(this).next('div').children('p:not(:first-child)').toggle();
   });
+  
+  $('.dataTables_wrapper tbody')
+
   myLoanPartsBase.show();
   return dataTable;
 }

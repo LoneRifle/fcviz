@@ -185,10 +185,10 @@ const getSummaryNumbersThenRenderGraph = async () => {
   }
 }
 
-getSummaryNumbersThenRenderGraph();
+// getSummaryNumbersThenRenderGraph();
 
 // Detach the now-useless widgets
-$("iframe#funds_summary").parent().parent().detach();
+// $("iframe#funds_summary").parent().parent().detach();
 
 // Repayment Graph Rendering -----------------------------------------------
 
