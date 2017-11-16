@@ -6,7 +6,7 @@
 // Earnings Graph Rendering ------------------------------------------------
 
 function renderEarningsGraph(data) {
-  $('#my_lending').prepend(
+  $('#my-loan-parts').before(
     $(document.createElement('div'))
       .attr('class', 'row')
       .append(
@@ -27,7 +27,7 @@ function renderEarningsGraph(data) {
     .append('svg')
       .attr('id', 'portfolio_summary_graph')
       .attr('width', width)
-      .attr('height', height + margin * 2);
+      .attr('height', height + margin * 4);
 
   const summaryHeadline = $(document.createElement('h4')).html('Yields - ').css('text-align', 'center');
   summaryHeadline.append(' Gross: ', $(window.headlineYields).eq(0).children());
@@ -128,6 +128,30 @@ function renderEarningsGraph(data) {
         return undefined;
       }
     })
+
+  // put new text elements under the existing ones indicating values
+  $('#portfolio_summary .x .tick text').each((index, e) => {
+    const label = $(e).html()
+    const y = +$(e).attr('y')
+    const rawValues = label === 'portfolio' ? ['lent', 'available'].map(l => Math.abs(data[l])) : [data[label]]
+    const values = rawValues.map(v => (v / 100).toFixed(2))
+    const textEls = values.map((v, i) => {
+      const textEl = $(e).clone()
+      return textEl
+        .attr('class', 'portfolio-component')
+        .click(event => {
+          if (textEl.attr('class') === 'portfolio-component clicked') {
+            textEl.attr('class', 'portfolio-component')
+          } else {
+            textEl.attr('class', 'portfolio-component clicked')
+          }
+        })
+        .attr('y', 8 + (i + 1) * y * 2)
+        .html(v)
+    })
+    $(e).after(textEls)
+  })
+
 }
 
 function getAllTimeEarningsCents() {
@@ -185,10 +209,10 @@ const getSummaryNumbersThenRenderGraph = async () => {
   }
 }
 
-// getSummaryNumbersThenRenderGraph();
+getSummaryNumbersThenRenderGraph();
 
 // Detach the now-useless widgets
-// $("iframe#funds_summary").parent().parent().detach();
+$("iframe#funds_summary").parent().parent().detach();
 
 // Repayment Graph Rendering -----------------------------------------------
 

@@ -61,6 +61,15 @@ rect.fcviz-bid, rect.gain { fill: #CA4FCA; }
 
 rect.loss { fill: #FC3A3A; }
 
+text.portfolio-component {
+  cursor: pointer;
+}
+
+text.portfolio-component.clicked {
+  stroke: #772d72;
+  fill: #772d72;
+}
+
 div.tooltip {   
   position: absolute;           
   text-align: center;
