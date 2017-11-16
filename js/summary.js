@@ -20,7 +20,7 @@ function renderEarningsGraph(data) {
   );
 
   const margin = +$('#portfolio_summary').css('padding').replace('px','');
-  const width = +$('#portfolio_summary').css('width').replace('px','') - (margin * 2);
+  const width = +$('#portfolio_summary').css('width').replace('px','') - (margin * 3);
   const height = 300;
 
   var chart = d3.select('#portfolio_summary')
@@ -50,7 +50,7 @@ function renderEarningsGraph(data) {
   var yAxis = d3.svg.axis()
       .scale(y)
       .orient('left')
-      .tickFormat(d => d3.formatPrefix(d, 3).scale(d));
+      .tickFormat(d => d3.formatPrefix(d / 100000, 3).scale(d / 100000));
 
   const labels = [
     'deposits', 
@@ -72,12 +72,12 @@ function renderEarningsGraph(data) {
 
   chart.append("g")      
     .attr("class", "x axis")
-    .attr("transform", `translate(${margin * 2},${height + margin * 0.5})`)
+    .attr("transform", `translate(${margin * 3},${height + margin * 0.5})`)
     .call(xAxis);
 
   chart.append("g")
     .attr("class", "y axis")
-    .attr("transform", `translate(${margin * 2},${margin * 0.5})`)
+    .attr("transform", `translate(${margin * 3},${margin * 0.5})`)
     .call(yAxis)    
   .append("text")
     .attr("transform", "translate(10,-20)")
@@ -107,7 +107,7 @@ function renderEarningsGraph(data) {
   chart.selectAll("rect")
     .data(Object.entries(data).filter(([label]) => labels.includes(label)))
   .enter().append("rect")
-    .attr("x", ([label]) => { return x(portfolioLabels.includes(label) ? 'portfolio' : label) + 2 * margin; })
+    .attr("x", ([label]) => { return x(portfolioLabels.includes(label) ? 'portfolio' : label) + 3 * margin; })
     .attr("y", function(d) { 
       return margin * 0.5 + y(incrementalItems.includes(d[0]) ? incrementalY(d) : d[1]);
     })
