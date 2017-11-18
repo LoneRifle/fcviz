@@ -4,6 +4,13 @@
  */
 
 // Earnings Graph Rendering ------------------------------------------------
+function calculateNewTotals() {
+  return $('.portfolio-component.clicked')
+    .map((i, e) => +$(e).html())
+    .toArray()
+    .reduce((x, y) => x + y, 0)
+    .toFixed(2)
+}
 
 function renderEarningsGraph(data) {
   $('#my-loan-parts').before(
@@ -21,7 +28,7 @@ function renderEarningsGraph(data) {
 
   const margin = +$('#portfolio_summary').css('padding').replace('px','');
   const width = +$('#portfolio_summary').css('width').replace('px','') - (margin * 3);
-  const height = 300;
+  const height = 250;
 
   var chart = d3.select('#portfolio_summary')
     .append('svg')
@@ -29,13 +36,47 @@ function renderEarningsGraph(data) {
       .attr('width', width)
       .attr('height', height + margin * 4);
 
+  const clearSelectedTotals = $(document.createElement('span'))
+    .html('clear')
+    .attr('class', 'select-portfolio-totals')
+    .click(event => {
+      $('.portfolio-component').toArray()
+        .filter(textEl => $(textEl).attr('class').endsWith(' clicked'))
+        .forEach(textEl => $(textEl).attr('class', $(textEl).attr('class').replace(' clicked', '')))
+      $('#selected-totals').html(calculateNewTotals())
+    })
+
+  const selectSlice = (t, startIndex, endIndex) => $(document.createElement('span'))
+    .html(t)
+    .attr('class', 'select-portfolio-totals')
+    .click(event => {
+      $('.portfolio-component').toArray().slice(startIndex, endIndex)
+        .filter(textEl => !$(textEl).attr('class').endsWith(' clicked'))
+        .forEach(textEl => $(textEl).attr('class', $(textEl).attr('class') + ' clicked', ''))
+      $('#selected-totals').html(calculateNewTotals())
+    })
+
+  const selectEarnings = selectSlice('earnings', 1, 5)
+  const selectLosses = selectSlice('losses', 6, 8)
+  const selectNetEarnings = selectSlice('net-earnings', 1, 8)
+
+  const totalsSelectors = $(document.createElement('div'))
+    .css('text-align', 'center')
+    .append(selectEarnings, ' ', selectLosses, ' ', selectNetEarnings)
+    
+  const selectedTotals = $(document.createElement('div'))
+    .css('text-align', 'center')
+    .html('Selected Totals: ')
+    .append($(document.createElement('span')).attr('id', 'selected-totals').html('0.00'))
+    .append(' ', clearSelectedTotals)
+
   const summaryHeadline = $(document.createElement('h4')).html('Yields - ').css('text-align', 'center');
   summaryHeadline.append(' Gross: ', $(window.headlineYields).eq(0).children());
   summaryHeadline.append(', after fees and bad debts - ');
   summaryHeadline.append(' Annualised: ', $(window.headlineYields).eq(1).children());
   summaryHeadline.append(' Estimated Fully Diversified: ', $(window.headlineYields).eq(2).children());
 
-  $('#portfolio_summary').append(summaryHeadline);
+  $('#portfolio_summary').append(totalsSelectors, selectedTotals, summaryHeadline);
 
   var x = d3.scale.ordinal()
       .rangeRoundBands([0, width - margin * 3], .1);
@@ -140,11 +181,13 @@ function renderEarningsGraph(data) {
       return textEl
         .attr('class', 'portfolio-component')
         .click(event => {
-          if (textEl.attr('class') === 'portfolio-component clicked') {
-            textEl.attr('class', 'portfolio-component')
+          const textClass = textEl.attr('class')
+          if (textClass.endsWith(' clicked')) {
+            textEl.attr('class', textClass.replace(' clicked', ''))
           } else {
-            textEl.attr('class', 'portfolio-component clicked')
+            textEl.attr('class', textClass + ' clicked')
           }
+          $('#selected-totals').html(calculateNewTotals())
         })
         .attr('y', 8 + (i + 1) * y * 2)
         .html(v)

@@ -70,6 +70,11 @@ text.portfolio-component.clicked {
   fill: #772d72;
 }
 
+span.select-portfolio-totals {
+  color: #097fc9;
+  cursor: pointer;
+}
+
 div.tooltip {   
   position: absolute;           
   text-align: center;
