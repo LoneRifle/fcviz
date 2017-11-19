@@ -174,8 +174,8 @@ function renderEarningsGraph(data) {
   $('#portfolio_summary .x .tick text').each((index, e) => {
     const label = $(e).html()
     const y = +$(e).attr('y')
-    const rawValues = label === 'portfolio' ? ['lent', 'available'].map(l => Math.abs(data[l])) : [data[label]]
-    const values = rawValues.map(v => (v / 100).toFixed(2))
+    const earningsDataStrings = window.earningsDataStrings
+    const values = label === 'portfolio' ? ['lent', 'available'].map(l => Math.abs(earningsDataStrings[l])) : [earningsDataStrings[label]]
     const textEls = values.map((v, i) => {
       const textEl = $(e).clone()
       return textEl
@@ -197,18 +197,28 @@ function renderEarningsGraph(data) {
 
 }
 
-function getAllTimeEarningsCents() {
+function getAllTimeEarningsStrings() {
   const [interest, sales, purchases, promotions, fees, defaults, recoveries] = Array.from(
-    $('#earnings_summary td.currency').map((i, e) => +(parseFloat($(e).html().replace('£', '')) * 100).toFixed(0))
+    $('#earnings_summary td.currency').map((i, e) => $(e).html().replace('+', '').replace('£', '').trim())
   );
-  return {interest, sales, purchases, promotions, fees: -fees, defaults, recoveries};
+  return {interest, sales, purchases, promotions, fees: '-' + fees, defaults, recoveries};
 }
 
 function getHeadlineYields() {
   return $('#returns_summary .currency h2');
 }
 
-window.earningsDataCents = getAllTimeEarningsCents();
+window.earningsDataStrings = getAllTimeEarningsStrings();
+
+window.earningsDataCents = Object.assign.apply(
+  null, 
+  Object.entries(window.earningsDataStrings)
+    .map(([key, value]) => {
+      const o = {}
+      o[key] = parseFloat(value) * 100
+      return o
+    })
+);
 
 window.headlineYields = getHeadlineYields();
 
@@ -248,6 +258,9 @@ const getSummaryNumbersThenRenderGraph = async () => {
     };
 
     Object.assign(window.earningsDataCents, portfolioNumbers, calculatePVs(pv, window.earningsDataCents));
+    for (const key of ['lent', 'bid', 'available', 'deposits', 'accrued']) {
+      window.earningsDataStrings[key] = (window.earningsDataCents[key] / 100).toFixed(2)
+    }
     renderEarningsGraph(window.earningsDataCents);
   }
 }
