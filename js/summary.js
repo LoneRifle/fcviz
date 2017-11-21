@@ -199,7 +199,7 @@ function renderEarningsGraph(data) {
 
 function getAllTimeEarningsStrings() {
   const [interest, sales, purchases, promotions, fees, defaults, recoveries] = Array.from(
-    $('#earnings_summary td.currency').map((i, e) => $(e).html().replace('+', '').replace('£', '').trim())
+    $('#earnings_summary td.currency').map((i, e) => $(e).html().replace(/[+£,]/g, '').trim())
   );
   return {interest, sales, purchases, promotions, fees: '-' + fees, defaults, recoveries};
 }
