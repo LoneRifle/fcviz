@@ -78,6 +78,7 @@
   "permissions": [
     "webRequest",
     "webRequestBlocking",
-    "https://www.fundingcircle.com/lend/loan-requests/download/*"
+    "https://www.fundingcircle.com/lend/loan-requests/download/*",
+    "https://d2ondqc76inyu3.cloudfront.net/shared_assets/js/shared_assets.js"
   ]
 }
