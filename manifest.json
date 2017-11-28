@@ -73,7 +73,9 @@
     "js/market.js",
     "js/advancedloanparts.js",
     "js/loanpartcomments.js",
-    "js/myloanparts.js"
+    "js/myloanparts.js",
+    "js/portfoliosummarygraph.js",
+    "js/repaymentgraph.js"
   ],
   "permissions": [
     "webRequest",
