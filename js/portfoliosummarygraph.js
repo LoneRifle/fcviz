@@ -223,20 +223,13 @@ window.earningsDataCents = Object.assign.apply(
 window.headlineYields = getHeadlineYields();
 
 const getSummaryNumbersThenRenderGraph = async () => {
-  let payload;
-  while (!payload) {
-    try {
-      payload = await $.getJSON('https://www.fundingcircle.com/lenders/summary.json')
-    } catch (err) {
-      console.error(err);
-      if (err.status === 404) {
-        // Probably the usual FC failure to 
-        // receive the auth tokens in time, wait a little longer
-        await setTimeout(() => {}, 500);
-      } else {
-        throw err;
-      }
-    }
+  await window.waitForLogin
+  let payload
+  try {
+    payload = await $.getJSON('https://www.fundingcircle.com/lenders/summary.json')
+  } catch (err) {
+    console.error(err)
+    throw err
   }
   if (payload) {
     const portfolio_numbers = payload._embedded.financial_totals;

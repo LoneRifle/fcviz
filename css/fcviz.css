@@ -43,6 +43,12 @@ tr.odd.warning td, tr.even.warning td {
   background-color: #f3edd2 ! important;
 }
 
+.loan-comments a {
+  color: #097FC9;
+  cursor: pointer;
+  text-decoration: underline;
+}
+
 html[ng-app=fc] {
   overflow-y: auto;
 }

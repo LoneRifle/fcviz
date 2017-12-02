@@ -71,6 +71,7 @@
     "js/sell.js",
     "js/forsale.js",
     "js/market.js",
+    "js/waitforlogin.js",
     "js/advancedloanparts.js",
     "js/loanpartcomments.js",
     "js/myloanparts.js",
