@@ -47,6 +47,49 @@ tr.odd.warning td, tr.even.warning td {
   color: #097FC9;
   cursor: pointer;
   text-decoration: underline;
+  font-weight: normal;
+}
+
+.loan-comment {
+  padding-bottom: 20px;
+}
+
+.loan-comment-header {
+  font-size: 18px;
+  font-family: "myriad pro", "myriad-pro", Helvetica, sans-serif;
+  padding: 10px;
+}
+
+.loan-comment-header a:link, .loan-comment-header a:visited {
+  font-weight: normal;
+}
+
+.loan-comment-risk-band {
+  float: right;
+  display: block;
+}
+
+.loan-comment-body {
+  padding: 10px;
+  background: #F2F2F2;
+}
+
+.loan-comment-body.warning {
+  background: #f3edd2;
+}
+
+.loan-comment-body div, .loan-comment-body a {
+  padding-left: 40px;
+}
+
+.loan-comment-body div * {
+  margin-bottom: 5px;
+  line-height: 1.5;
+}
+
+.loan-comment-body div time {
+  font-family: "Roboto", Arial, sans-serif;
+  font-weight: 600;
 }
 
 html[ng-app=fc] {
