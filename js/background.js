@@ -26,3 +26,9 @@ chrome.webRequest.onBeforeRequest.addListener(
   { urls: ["https://d2ondqc76inyu3.cloudfront.net/shared_assets/js/shared_assets.js"] },
   ["blocking"]
 )
+
+chrome.webRequest.onBeforeRequest.addListener(
+  () => ({ cancel: true }),
+  { urls: ["https://wa.fundingcircle.com/dc.min.js"] },
+  ["blocking"]
+)
