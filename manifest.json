@@ -3,9 +3,9 @@
 
   "name": "FCViz",
   "description": "Provides extra visualisations for Funding Circle pages",
-  "version": "3.3.1",
+  "version": "3.3.2",
   "icons": {"48": "png/favicon48.png", "128": "png/favicon128.png"},
-  
+
   "content_scripts": [
     {
       "matches": ["https://www.fundingcircle.com/loans/*/auction"],
@@ -21,18 +21,18 @@
       "matches": ["https://www.fundingcircle.com/*loan-requests*", "https://www.fundingcircle.com/my-account/my-watchlist/*"],
       "css": [ "css/chosen.min.css", "css/fcviz.css" ],
       "js": [ "js/injector.js", "js/requestsresources.js" ]
-    },    
+    },
     {
       "matches": ["https://www.fundingcircle.com/investors/summary*"],
       "css": [ "css/fcviz.css" ],
       "js": [ "js/injector.js", "js/summaryresources.js" ]
-    },    
+    },
     {
       "matches": ["https://www.fundingcircle.com/sell_individual_loan_parts*"],
       "all_frames": true,
       "css": [ "css/fcviz.css" ],
       "js": [ "js/injector.js", "js/sellresources.js" ]
-    },    
+    },
     {
       "matches": ["https://www.fundingcircle.com/loan_parts_for_sale*"],
       "all_frames": true,

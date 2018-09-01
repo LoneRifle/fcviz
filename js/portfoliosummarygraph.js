@@ -1,8 +1,8 @@
 /**
- * FCViz 
+ * FCViz
  * Payload script for summary page - portfolio summary graph
  */
- 
+
 // Portfolio Summary Rendering ------------------------------------------------
 function calculateNewTotals() {
   return $('.portfolio-component.clicked')
@@ -13,7 +13,7 @@ function calculateNewTotals() {
 }
 
 function renderEarningsGraph(data) {
-  $('#my-loan-parts').before(
+  $('#loan-parts-summary-section').before(
     $(document.createElement('div'))
       .attr('class', 'row')
       .append(
@@ -63,7 +63,7 @@ function renderEarningsGraph(data) {
   const totalsSelectors = $(document.createElement('div'))
     .css('text-align', 'center')
     .append(selectEarnings, ' ', selectLosses, ' ', selectNetEarnings)
-    
+
   const selectedTotals = $(document.createElement('div'))
     .css('text-align', 'center')
     .html('Selected Totals: ')
@@ -87,14 +87,14 @@ function renderEarningsGraph(data) {
   var xAxis = d3.svg.axis()
       .scale(x)
       .orient('bottom');
-      
+
   var yAxis = d3.svg.axis()
       .scale(y)
       .orient('left')
       .tickFormat(d => d3.formatPrefix(d / 100000, 3).scale(d / 100000));
 
   const labels = [
-    'deposits', 
+    'deposits',
     'sales', 'purchases', 'promotions',
     // 'depositsAndLegacyItems',
     'interest',
@@ -111,7 +111,7 @@ function renderEarningsGraph(data) {
   x.domain(displayLabels);
   y.domain([0, data.pvBeforeDefaultsAndFees]);
 
-  chart.append("g")      
+  chart.append("g")
     .attr("class", "x axis")
     .attr("transform", `translate(${margin * 3},${height + margin * 0.5})`)
     .call(xAxis);
@@ -119,7 +119,7 @@ function renderEarningsGraph(data) {
   chart.append("g")
     .attr("class", "y axis")
     .attr("transform", `translate(${margin * 3},${margin * 0.5})`)
-    .call(yAxis)    
+    .call(yAxis)
   .append("text")
     .attr("transform", "translate(10,-20)")
     .attr("dy", ".71em")
@@ -132,7 +132,7 @@ function renderEarningsGraph(data) {
     'defaults', 'recoveries',
     'lent', 'bid'
   ]
-  
+
   const nonIncrementalItems = labels.filter(l => !incrementalItems.includes(l));
 
   const incrementalY = d => {
@@ -149,10 +149,10 @@ function renderEarningsGraph(data) {
     .data(Object.entries(data).filter(([label]) => labels.includes(label)))
   .enter().append("rect")
     .attr("x", ([label]) => { return x(portfolioLabels.includes(label) ? 'portfolio' : label) + 3 * margin; })
-    .attr("y", function(d) { 
+    .attr("y", function(d) {
       return margin * 0.5 + y(incrementalItems.includes(d[0]) ? incrementalY(d) : d[1]);
     })
-    .attr("height", function(d) { 
+    .attr("height", function(d) {
       return height - y(Math.abs(d[1]))
     })
     .attr("width", x.rangeBand())
@@ -211,7 +211,7 @@ function getHeadlineYields() {
 window.earningsDataStrings = getAllTimeEarningsStrings();
 
 window.earningsDataCents = Object.assign.apply(
-  null, 
+  null,
   Object.entries(window.earningsDataStrings)
     .map(([key, value]) => {
       const o = {}
