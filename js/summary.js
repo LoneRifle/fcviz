@@ -1,13 +1,16 @@
 /**
- * FCViz 
+ * FCViz
  * Payload script for summary page
  */
 
 const recentLoanCommentsIframe = $('#recent-loan-comments')
 window.recentLoanCommentsDiv = recentLoanCommentsIframe.prev().clone()
+recentLoanCommentsDiv.attr('id', 'loan-parts-comments-section')
 recentLoanCommentsDiv.attr('class', 'row loan-comments')
 recentLoanCommentsDiv.find('h3').html('Recent Loan Comments')
 recentLoanCommentsDiv.find('p').last().detach()
+recentLoanCommentsDiv.find('div.portfolio_wrapper').detach()
+recentLoanCommentsDiv.find('div.span12').css('width', '912px')
 
 const commentDetailsDiv = $(document.createElement('div'))
 
@@ -31,13 +34,13 @@ const makeComment = comment => {
     .attr('href', `https://www.fundingcircle.com/loans/${comment.display_id}/auction`)
     .html(comment.title)
   const daysLate = Math.max.apply(null, comment._embedded.late_repayments.items.map(d => d.days_late).concat(0))
-  const lateOrDefault = comment.defaulted_at ? `defaulted on ${comment.defaulted_at.split('T')[0]}` : `${daysLate} days late`
+  const lateOrDefault = comment.defaulted_at ? `defaulted ${comment.defaulted_at.split('T')[0]}` : `${daysLate} days late`
   const exposure = (comment._embedded.exposure.amount_cents / 100).toFixed(2)
   const riskBand = $(document.createElement('span'))
     .attr('class', 'loan-comment-risk-band')
     .html(
       comment._embedded.business.risk_band ||
-      `Downgraded (No risk band - 
+      `Downgraded (No risk band -
         <a href="https://support.fundingcircle.com/entries/22555151--What-does-it-mean-if-a-loan-has-no-risk-band-">
           More info</a>)`
     )
@@ -53,7 +56,7 @@ const makeComment = comment => {
   const body  = $(document.createElement('div'))
     .attr('class', comment._embedded.business.risk_band ? 'loan-comment-body' : 'loan-comment-body warning')
     .append(commentEntries)
-    
+
   if (commentEntries.length > 1) {
     const toggleLink = $(document.createElement('a'))
       .on('click', () => {
@@ -68,7 +71,7 @@ const makeComment = comment => {
   const commentDiv = $(document.createElement('div'))
     .attr('class', 'loan-comment')
     .append(header, body)
-    
+
   return commentDiv
 }
 
@@ -81,7 +84,7 @@ const populateLoanCommentDetails = comments => {
     ${downgradeCount} ${downgradeCount === 1 ? 'is' : 'are'} downgraded.
     ${defaultCount} ${defaultCount === 1 ? 'has' : 'have'} defaulted.
   `)
-  
+
   const moreText = $(document.createElement('span')).html('More')
   const lessText = $(document.createElement('span')).html('Less').hide()
   const commentsContainer = $(document.createElement('div'))

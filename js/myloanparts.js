@@ -1,5 +1,5 @@
 /**
- * FCViz 
+ * FCViz
  * Payload script for my loan parts grid
  */
 
@@ -22,7 +22,7 @@ var compareDateStrings = (a, b) => {
 }
 
 // define the sorts
-jQuery.fn.dataTableExt.oSort['date-yyyy-mm-dd-asc'] = compareDateStrings; 
+jQuery.fn.dataTableExt.oSort['date-yyyy-mm-dd-asc'] = compareDateStrings;
 jQuery.fn.dataTableExt.oSort['date-yyyy-mm-dd-desc'] = (a, b) => compareDateStrings(b, a);
 
 function createNamedLoanPartsButton(name, generateTable) {
@@ -52,15 +52,15 @@ function createNamedLoanPartsPanel(name) {
     .attr('id', 'loan-part-' + name)
     .attr('data-toggleable', true)
     .attr('class', 'loan-parts-table-wrapper');
-  
+
   return div;
 }
 
-$('#loan-parts-tab').after(
+$('#portfolio-tab').after(
   createNamedLoanPartsButton('advanced', loadAdvancedLoanParts),
   createNamedLoanPartsButton('comments', loadLoanPartComments)
 );
-$('#loan-part-list').after(
+$('#loan-part-portfolio-list').after(
   createNamedLoanPartsPanel('advanced'),
   createNamedLoanPartsPanel('comments')
 );
