@@ -20,15 +20,11 @@ chrome.webRequest.onHeadersReceived.addListener(
   ["blocking", "responseHeaders"]
 )
 
-//Add a listener that stubs a legacy .js that implements unneeded or duplicate functionality
-chrome.webRequest.onBeforeRequest.addListener(
-  () => ({ redirectUrl: "https://lonerifle.github.io/fcviz/bootstrap.js" }),
-  { urls: ["https://d2ondqc76inyu3.cloudfront.net/shared_assets/js/shared_assets.js"] },
-  ["blocking"]
-)
-
 chrome.webRequest.onBeforeRequest.addListener(
   () => ({ cancel: true }),
-  { urls: ["https://wa.fundingcircle.com/dc.min.js"] },
+  { urls: [
+    "https://wa.fundingcircle.com/dc.min.js",
+    "https://d2ondqc76inyu3.cloudfront.net/shared_assets/js/shared_assets.js",
+  ] },
   ["blocking"]
 )
